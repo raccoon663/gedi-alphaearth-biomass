@@ -2,7 +2,7 @@
 
 This page records the design decisions that were frozen before any Kaihua
 evaluation. It is the methodological companion to
-[`research_report.md`](research_report.md) and the public
+[`technical_report.md`](technical_report.md) and the public
 [`README.md`](../README.md).
 
 ## Study regions
@@ -18,6 +18,28 @@ The design intentionally creates a difficult transfer setting: a model trained
 in the southeastern United States is applied to an eastern Chinese forest
 landscape **without using target labels until after zero-shot predictions are
 frozen**.
+
+### Study design rationale
+
+- **Why Georgia + South Carolina as the source.** The southeastern U.S. is a
+  well-sampled temperate forest region with dense, high-quality GEDI L4A
+  footprint coverage and a marked ecological contrast to subtropical East Asia.
+  Using consistent state boundaries keeps the source region unambiguous and
+  reproducible, and the contrast makes a credible hard case for geographic
+  transfer rather than an easy within-ecoregion extrapolation.
+- **Why Kaihua County as the target.** Kaihua is a subtropical forested county in
+  western Zhejiang that includes the Qianjiangyuan protected forest area. It is a
+  realistic operational target (a single manageable administrative unit with
+  available GEDI coverage) while differing sharply from the source in climate,
+  species composition, and disturbance regime — exactly the shift a transfer
+  method should be tested against.
+- **Why 50 km blocks in the source but 5 km blocks in the target.** Source
+  sampling spans a large multistate area, so 50 km blocks yield enough footprints
+  per fold for stable spatial cross-validation. The target is a single small
+  county: at 50 km the county would collapse into only one or two blocks with too
+  few partitions for meaningful spatial holdout. Five 5 km blocks give several
+  independent spatial folds for few-shot adaptation while still being small enough
+  that neighbouring-block leakage is limited.
 
 ## Data
 
@@ -63,15 +85,38 @@ component-wise mean followed by L2 renormalization. Under a predeclared source
 block-CV rule the two were practically equivalent: central mean R² was 0.56735
 and aggregate-25 mean R² was 0.56597, a relative RMSE difference of 0.156%. The
 rule therefore selected the less expensive central-pixel method **before full
-extraction and before any Zhejiang evaluation** (see
-`outputs/tables/aef_aggregation_decision.json`).
+extraction and before any Zhejiang evaluation**. The decision is recorded in the
+frozen reproducibility manifest
+(`outputs/manifests/final_reproducibility_manifest.json`) alongside the exact
+R² and RMSE values.
 
 ## Provenance note
 
 AlphaEarth pretraining incorporates GEDI L2A relative-height information. This is
-**GEDI-derived structural provenance overlap, not direct downstream AGBD label
-leakage**: the AlphaEarth features used here are the public annual embeddings,
-and no AGBD labels entered representation selection.
+documented in the AlphaEarth Foundations release, whose training-data table lists
+"LiDAR GEDI L2A Relative height metrics (rh*)" as one of the model's target
+modalities (Brown et al., 2025, *AlphaEarth Foundations: An embedding field
+model for accurate and efficient global mapping from sparse label data*,
+arXiv:2507.22291, Table S1).
+
+This is **GEDI-derived structural provenance overlap, not direct downstream AGBD
+label leakage**: the AlphaEarth features used here are the public annual
+embeddings, and no AGBD labels entered representation selection.
+
+## Data products and citations
+
+- GEDI L4A Aboveground Biomass Density — NASA GEDI, distributed by the ORNL DAAC
+  (Earth Engine asset `LARSE/GEDI/GEDI04_A_002_MONTHLY`).
+- AlphaEarth Foundations annual embeddings — Google DeepMind; Brown, N., et al.
+  (2025). *AlphaEarth Foundations: An embedding field model for accurate and
+  efficient global mapping from sparse label data.* arXiv:2507.22291.
+- Sentinel-1 GRD and Sentinel-2 SR Harmonized — Copernicus programme, ESA (Earth
+  Engine assets `COPERNICUS/S1_GRD` and `COPERNICUS/S2_SR_HARMONIZED`).
+- Copernicus DEM GLO-30 — Copernicus programme, ESA (Earth Engine asset
+  `COPERNICUS/DEM/GLO30`).
+
+Dataset IDs and access paths are also listed in `config.yaml` and
+[`data/README.md`](../data/README.md).
 
 ## Reproducibility artifacts
 

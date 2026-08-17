@@ -1,13 +1,13 @@
 # Experiments
 
 This page summarizes the experiments that support the project's conclusions. It
-is the companion to [`research_report.md`](research_report.md) and
+is the companion to [`technical_report.md`](technical_report.md) and
 [`methodology.md`](methodology.md). All numbers are taken from the frozen result
 tables in `outputs/tables/` and the frozen manifests in `outputs/manifests/`.
 
 The experiments separate three questions that are often conflated: **source-domain
 prediction**, **direct geographic transfer**, and **target-domain label
-efficiency**. Each is reported under its own metric口径 (caliber) so that
+efficiency**. Each is reported under its own evaluation setting (caliber) so that
 different evaluation settings are not directly compared against one another.
 
 ## 1. Source-domain spatial cross-validation

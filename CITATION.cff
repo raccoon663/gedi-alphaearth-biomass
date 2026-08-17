@@ -11,6 +11,7 @@ abstract: >-
 authors:
   - family-names: Wan
     given-names: Chengzhi
+    email: cwan07@student.ubc.ca
 repository-code: "https://github.com/raccoon663/gedi-alphaearth-biomass"
 license: MIT
 keywords:

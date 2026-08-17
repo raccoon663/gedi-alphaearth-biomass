@@ -28,7 +28,7 @@ required to re-run the pipeline.
   (Google Satellite Embedding V1) terms should be reviewed by the user before
   any reuse; the code here only *references* the public Earth Engine asset IDs.
 - **Reproducible by design.** Every input is regenerated deterministically from
-  public Earth Engine assets using the scripts in `src/` and the frozen
+  public Earth Engine assets using the scripts in `scripts/` and the frozen
   configurations in `config.yaml` and `outputs/manifests/`.
 
 ## Licensing posture (verify before reuse)
@@ -47,8 +47,8 @@ required to re-run the pipeline.
 2. Authenticate Google Earth Engine (`earthengine authenticate`) with your own
    project; the extraction scripts call `ee.Initialize()` and require an
    Earth-Engine-enabled account.
-3. Run the extraction and freeze scripts in `src/` in the order implied by
-   `docs/methodology.md` and `docs/experiments.md`. Deterministic seeds
+3. Run the extraction and freeze scripts in `scripts/` in the order implied by
+   `docs/methodology.md` and `docs/reproduction.md`. Deterministic seeds
    (`config.yaml`: `seed: 42`) and frozen manifests reproduce the exact sample
    draws and folds.
 4. Place local inputs under the `data/` tree expected by `config.yaml`
@@ -63,8 +63,11 @@ required to re-run the pipeline.
 - `outputs/manifests/*.json` and selected `*.csv` — frozen sample designs,
   fold mappings, label draws, and SHA-256 checksums of frozen artifacts.
 - `figures/*.png` — publication-style result figures.
-- `docs/research_report.md` — the full methodological and results synthesis.
+- `docs/technical_report.md` — the full methodological and results synthesis.
 
 Large binary products (model weights, prediction rasters, raw/processed rasters,
-the full 24 MB frozen source manifest, and all `*.parquet` intermediates) are
-excluded to keep the repository lean and license-clean.
+all `*.parquet` intermediates, and the per-sample manifests that carry GEDI shot
+IDs or coordinates, e.g. `source_aef_central_input.csv` and
+`kaihua_fewshot_spatial_folds.csv`) are excluded to keep the repository lean and
+avoid redistributing sample-level locations. The frozen designs, folds, seeds, and
+SHA-256 checksums remain so the experiment can be verified without those files.
