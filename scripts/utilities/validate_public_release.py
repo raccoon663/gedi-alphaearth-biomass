@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+"""Static consistency checks for the public release of ``gedi-alphaearth-biomass``.
+
+This is a stdlib-only sanity gate. It does not run any model training or read any
+remote-sensing data; it only inspects files that are already in the repository and
+fails (non-zero exit) on the kinds of inconsistency the public-release audit is
+meant to prevent:
+
+  * a non-MIT or appended LICENSE (GitHub would flag it as NOASSERTION);
+  * ``config.yaml`` re-enabling wall-to-wall mapping or a random test split;
+  * a leftover ``scripts/archive/`` directory or per-sample label-draw manifest;
+  * stale figure file names referenced from the docs;
+  * a source-model manifest whose structure or safeguards are wrong;
+  * missing key dependencies in ``requirements.txt``;
+  * shouty internal/AI-developer language left in the documentation.
+
+Run from anywhere; the repository root is derived from this file's location
+(``scripts/utilities/validate_public_release.py`` -> parents[2]).
+"""
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+
+CHECKS: list[tuple[str, bool, str]] = []
+
+
+def check(name: str, ok: bool, detail: str = "") -> None:
+    CHECKS.append((name, bool(ok), detail))
+
+
+def read(path: str) -> str:
+    return (ROOT / path).read_text(encoding="utf-8", errors="ignore")
+
+
+def main() -> int:
+    # --- 1. Required root files --------------------------------------------
+    for f in ["README.md", "LICENSE", "CITATION.cff", "requirements.txt",
+              "config.yaml", "DATA_LICENSE.md", "environment.yml"]:
+        check(f"root file exists: {f}", (ROOT / f).exists())
+
+    # --- 2. LICENSE is pure MIT -------------------------------------------
+    lic = read("LICENSE")
+    check("LICENSE starts with 'MIT License'",
+          lic.lstrip().startswith("MIT License"))
+    check("LICENSE has no appended data notice",
+          "Data licensing notice" not in lic)
+
+    # --- 3. config.yaml settings ------------------------------------------
+    cfg = read("config.yaml")
+    check("config wall_to_wall.target_map is false", "target_map: false" in cfg)
+    check("config has no 'target_map: true'", "target_map: true" not in cfg)
+    check("config has no random_test_fraction", "random_test_fraction" not in cfg)
+
+    # --- 4. scripts/archive removed ---------------------------------------
+    check("scripts/archive absent", not (ROOT / "scripts/archive").exists())
+
+    # --- 5. per-sample label-draw manifest removed -----------------------
+    manifests_dir = ROOT / "outputs/manifests"
+    bad = list(manifests_dir.glob("*label_draws*")) if manifests_dir.exists() else []
+    check("no label_draws manifest present", len(bad) == 0,
+          str([p.name for p in bad]))
+
+    # --- 6. figures: canonical name present, old name absent -------------
+    check("figures/kaihua_label_efficiency.png exists",
+          (ROOT / "figures/kaihua_label_efficiency.png").exists())
+    check("figures/kaihua_label_efficiency_final.png absent",
+          not (ROOT / "figures/kaihua_label_efficiency_final.png").exists())
+
+    # --- 7. no stale figure name in docs ---------------------------------
+    stale = []
+    for d in (ROOT / "docs", ROOT):
+        for md in d.glob("*.md"):
+            if "kaihua_label_efficiency_final" in md.read_text(encoding="utf-8",
+                                                              errors="ignore"):
+                stale.append(md.name)
+    check("no stale figure name in docs", len(stale) == 0, str(stale))
+
+    # --- 8. source-model manifest structure & safeguards -----------------
+    mpath = ROOT / "outputs/manifests/frozen_source_model_manifest.json"
+    if mpath.exists():
+        m = json.loads(mpath.read_text())
+        sm = m.get("selected_models", {})
+        ok_struct, detail = True, ""
+        for rep in ("alphaearth", "conventional"):
+            if rep not in sm:
+                ok_struct, detail = False, f"{detail} missing {rep}"
+                continue
+            info = sm[rep]
+            for k in ("model", "config", "source_cv"):
+                if k not in info:
+                    ok_struct, detail = False, f"{detail} {rep}.{k} missing"
+            for k in ("R2", "RMSE", "MAE", "Bias"):
+                if k not in info.get("source_cv", {}):
+                    ok_struct, detail = False, f"{detail} {rep}.source_cv.{k} missing"
+        check("source manifest selected_models structure", ok_struct, detail)
+        check("target_label_locked is true", m.get("target_label_locked") is True)
+        check("zhejiang_labels_used is false", m.get("zhejiang_labels_used") is False)
+        check("zhejiang_performance_used is false",
+              m.get("zhejiang_performance_used") is False)
+    else:
+        check("source manifest exists", False, str(mpath))
+
+    # --- 9. requirements.txt key dependencies ----------------------------
+    req = read("requirements.txt").lower()
+    for dep in ("pyarrow", "scipy", "pyproj", "shapely", "requests"):
+        check(f"requirements.txt has {dep}", dep in req)
+
+    # --- 10. no shouty internal language in docs -------------------------
+    shouty = ["HARD STOP", "TARGET LABEL LOCKED", "cryptographically frozen",
+              "FROZEN_SOURCE_MODELS", "CORE_EXPERIMENTS_COMPLETE"]
+    hits = []
+    for d in (ROOT / "docs", ROOT):
+        for md in d.glob("*.md"):
+            txt = md.read_text(encoding="utf-8", errors="ignore")
+            for s in shouty:
+                if s in txt:
+                    hits.append(f"{md.name}:{s}")
+    check("no shouty terms in docs", len(hits) == 0, str(hits))
+
+    # --- report -----------------------------------------------------------
+    failed = [c for c in CHECKS if not c[1]]
+    for name, ok, detail in CHECKS:
+        line = f"[{'PASS' if ok else 'FAIL'}] {name}"
+        if detail:
+            line += f"  -> {detail}"
+        print(line)
+    print(f"\n{len(CHECKS) - len(failed)}/{len(CHECKS)} checks passed.")
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
