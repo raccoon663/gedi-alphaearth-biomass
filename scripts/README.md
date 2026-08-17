@@ -30,7 +30,7 @@ GEDI, AlphaEarth, Sentinel, and DEM inputs.
 | `submit_source_dem_exports.py` | Submit Copernicus GLO-30 DEM source exports. |
 | `submit_source_sampling_exports.py` | Submit source sampling exports (also imported by the two scripts below). |
 | `submit_source_manifest_200.py` | Submit the revised cap-200 source manifest exports. |
-| `submit_source_sampling_audit_recovery.py` | One-off recovery export for the sampling audit. |
+| `submit_source_sampling_audit_recovery.py` | One-off export supporting the sampling audit. |
 | `download_source_aef_central_direct.py` | Download the frozen full-source central AEF directly from Earth Engine. |
 | `download_source_conventional_direct.py` | Download frozen annual-median S1/S2 features directly from Earth Engine. |
 
@@ -43,7 +43,7 @@ the Kaihua few-shot design.
 |---|---|
 | `aggregate_gedi_qa_exports.py` | Aggregate per-granule GEDI QA count exports locally. |
 | `gedi_qa_audit.py` | Source-only GEDI L4A QA, evaluated per official vector granule. |
-| `finalize_source_sample.py` | Finalize and cryptographically freeze completed sampled GEDI exports. |
+| `finalize_source_sample.py` | Finalize and freeze completed sampled GEDI exports. |
 | `finalize_source_sample_200.py` | Finalize the cap-200 source manifest and 75-cap AEF subset. |
 | `finalize_source_aef_central.py` | Finalize full-source central AEF and join frozen DEM/AGBD. |
 | `finalize_source_conventional.py` | Finalize conventional features and build the frozen common representation. |
@@ -80,12 +80,4 @@ Domain-shift diagnostics and final figure/manifest generation.
 
 | Script | Purpose |
 |---|---|
-| `guards.py` | Hard guards against target-label leakage; enforced at runtime by the modeling scripts. |
-
-## archive (`archive/`)
-
-Internal task-monitoring, one-off audit, and recovery scripts used during
-development. They are retained for provenance but are **not** part of the
-documented reproduction workflow in [`docs/reproduction.md`](../docs/reproduction.md).
-Full Earth Engine export reproduction would also depend on these monitor/check
-helpers.
+| `guards.py` | Guards against target-label leakage; enforced at runtime by the modeling scripts. |

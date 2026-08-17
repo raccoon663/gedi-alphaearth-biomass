@@ -10,8 +10,10 @@ validation. It accompanies [`technical_report.md`](technical_report.md) and
   were mapped at the 50 km block level so that no source block crosses
   train/test partitions (`config.yaml`: `validation.spatial_block_km: 50`,
   `spatial_folds: 5`).
-- **Target domain:** five fixed 5 km spatial blocks in EPSG:32650, each with
-  ~26,000 evaluation footprints. Label budgets and seeds (42–44) were shared
+- **Target domain:** 117 fixed 5 km × 5 km grid cells in EPSG:32650, with entire
+  cells assigned to five approximately sample-balanced spatial folds (~26,000
+  evaluation footprints each) so that no cell crosses a train/test partition.
+  Label budgets and seeds (42–44) were shared
   identically across both representations to isolate the representation effect.
 
 ## GEDI quality control

@@ -41,26 +41,45 @@ folds. Target labels are unlocked only after zero-shot predictions are frozen
 - **Skip with frozen outputs?** yes — the frozen AOI hashes are in
   `outputs/manifests/`.
 
-## Stage 3 — Export GEDI and predictor samples
+## Stage 3 — Export GEDI source samples
 
-- **Input:** AOIs; public dataset IDs in `config.yaml` (GEDI L4A, AlphaEarth,
-  Sentinel-1/2, GLO-30).
-- **Output:** Earth Engine export tasks and Drive/asset sample tables.
+- **Input:** source AOIs; public dataset IDs in `config.yaml` (GEDI L4A).
+- **Output:** Earth Engine export tasks and Drive/asset GEDI sample tables.
 - **Scripts:** `scripts/01_data_extraction/submit_gedi_source_exports.py`,
-  `submit_source_aef_central_exports.py`, `submit_source_dem_exports.py`,
-  `submit_source_sampling_exports.py`, `submit_source_manifest_200.py`,
-  `download_source_aef_central_direct.py`, `download_source_conventional_direct.py`.
+  `submit_source_manifest_200.py`.
 - **GEE needed:** yes.
 - **Cost / duration:** paid exports; can run for hours depending on quota.
 - **Skip with frozen outputs?** yes — see `outputs/manifests/` and `data/README.md`
   for how to obtain the inputs instead.
 
-## Stage 4 — Build frozen spatial folds
+## Stage 4 — Export AlphaEarth source samples
 
-- **Input:** exported samples from Stage 3.
-- **Output:** finalized, cryptographically frozen source samples; the 50 km source
-  block folds; the Kaihua 5 km few-shot fold design and label-draw budgets; GEDI QA
-  tables.
+- **Input:** source AOIs; AlphaEarth `GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL`.
+- **Output:** Earth Engine export tasks and Drive/asset AlphaEarth sample tables
+  (central-pixel and AEF-development subsets).
+- **Scripts:** `scripts/01_data_extraction/submit_source_aef_central_exports.py`,
+  `submit_aef_development_exports.py`, `download_source_aef_central_direct.py`.
+- **GEE needed:** yes — these scripts call `ee.Initialize()` and submit
+  `ee.batch.Export` tasks.
+- **Cost / duration:** paid exports; can run for hours depending on quota.
+- **Skip with frozen outputs?** yes — see `outputs/manifests/` and `data/README.md`.
+
+## Stage 5 — Export Sentinel-1/2 and DEM source samples
+
+- **Input:** source AOIs; Sentinel-1/2 and Copernicus GLO-30 DEM assets.
+- **Output:** Earth Engine export tasks and Drive/asset conventional-feature and
+  DEM sample tables.
+- **Scripts:** `scripts/01_data_extraction/submit_source_dem_exports.py`,
+  `submit_source_sampling_exports.py`, `download_source_conventional_direct.py`.
+- **GEE needed:** yes.
+- **Cost / duration:** paid exports; can run for hours depending on quota.
+- **Skip with frozen outputs?** yes — see `outputs/manifests/` and `data/README.md`.
+
+## Stage 6 — Build frozen spatial folds
+
+- **Input:** exported samples from Stages 3–5.
+- **Output:** finalized, frozen source samples; the 50 km source block folds; the
+  Kaihua 5 km few-shot fold design and label-draw budgets; GEDI QA tables.
 - **Scripts:** `scripts/02_data_preparation/finalize_source_sample.py`,
   `finalize_source_sample_200.py`, `finalize_source_aef_central.py`,
   `finalize_source_conventional.py`, `finalize_source_dem.py`,
@@ -71,20 +90,19 @@ folds. Target labels are unlocked only after zero-shot predictions are frozen
 - **Skip with frozen outputs?** yes — the frozen manifests already encode the folds
   and draws.
 
-## Stage 5 — Train source models
+## Stage 7 — Train and freeze source models
 
 - **Input:** frozen source samples.
 - **Output:** trained and frozen source models for both representations (AlphaEarth
   + DEM, conventional + DEM); the pre-declared AEF aggregation decision.
 - **Scripts:** `scripts/03_modeling/train_and_freeze_source_models.py`,
-  `prepare_aef_development_common.py`, `finalize_and_compare_aef_development.py`,
-  `submit_aef_development_exports.py`.
+  `prepare_aef_development_common.py`, `finalize_and_compare_aef_development.py`.
 - **GEE needed:** no.
 - **Cost / duration:** minutes to low-hours of CPU.
 - **Skip with frozen outputs?** partly — model metrics are in
   `outputs/tables/main_results/`.
 
-## Stage 6 — Run zero-shot evaluation
+## Stage 8 — Run zero-shot evaluation
 
 - **Input:** frozen source models; frozen Kaihua predictors.
 - **Output:** zero-shot predictions (hashed before label unlock); the zero-shot
@@ -96,7 +114,7 @@ folds. Target labels are unlocked only after zero-shot predictions are frozen
 - **Skip with frozen outputs?** yes — results are in
   `outputs/tables/main_results/representation_transfer_summary.csv`.
 
-## Stage 7 — Run few-shot adaptation
+## Stage 9 — Run few-shot adaptation
 
 - **Input:** frozen Kaihua folds and label draws.
 - **Output:** few-shot adaptation results across label budgets 25–2,500.
@@ -106,7 +124,7 @@ folds. Target labels are unlocked only after zero-shot predictions are frozen
 - **Skip with frozen outputs?** yes — results are in
   `outputs/tables/main_results/kaihua_fewshot_summary.csv`.
 
-## Stage 8 — Generate figures
+## Stage 10 — Generate figures and reproducibility manifest
 
 - **Input:** frozen results and predictions.
 - **Output:** publication-style figures in `figures/` and the final

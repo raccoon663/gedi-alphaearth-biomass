@@ -37,9 +37,11 @@ frozen**.
   sampling spans a large multistate area, so 50 km blocks yield enough footprints
   per fold for stable spatial cross-validation. The target is a single small
   county: at 50 km the county would collapse into only one or two blocks with too
-  few partitions for meaningful spatial holdout. Five 5 km blocks give several
-  independent spatial folds for few-shot adaptation while still being small enough
-  that neighbouring-block leakage is limited.
+  few partitions for meaningful spatial holdout. Kaihua GEDI footprints are
+  therefore first assigned to 117 fixed 5 km × 5 km grid cells in EPSG:32650, and
+  entire grid cells are then assigned to five approximately sample-balanced
+  spatial folds (~26,000 evaluation footprints each) so that no grid cell crosses
+  a train/test partition.
 
 ## Data
 
