@@ -156,6 +156,94 @@ def check_manifest_paths_posix() -> None:
     check("manifest paths use / not \\", len(bad) == 0, str(bad))
 
 
+def check_source_n_train_consistency() -> None:
+    """The source_spatial_cv N_train in final_project_summary.csv must equal the
+    actual outer-training size used by the nested evaluation, derived from the
+    recorded per-fold provenance and the manifest train_cap (NOT the uncapped
+    total). It must also never exceed train_cap.
+    """
+    mpath = ROOT / "outputs/manifests/frozen_source_model_manifest.json"
+    spath = ROOT / "outputs/tables/main_results/final_project_summary.csv"
+    if not mpath.exists() or not spath.exists():
+        check("source N_train matches recorded training provenance", False,
+              "missing manifest or final_project_summary.csv")
+        return
+    manifest = json.loads(mpath.read_text(encoding="utf-8"))
+    train_cap = int(manifest.get("train_cap", 60000))
+    n_train_recorded = manifest.get("nested_cv_n_train", {})
+    tol = 1.0
+    mism = []
+    with spath.open(encoding="utf-8", newline="") as fh:
+        for r in csv.DictReader(fh):
+            if r["stage"] != "source_spatial_cv":
+                continue
+            rep = r["representation"].lower()
+            try:
+                csv_n = float(r["N_train"])
+            except (KeyError, ValueError):
+                mism.append(f"{rep}: N_train absent")
+                continue
+            if csv_n > train_cap + tol:
+                mism.append(f"{rep}: N_train={csv_n} exceeds train_cap={train_cap}")
+            expected = n_train_recorded.get(rep)
+            if expected is None:
+                mism.append(f"{rep}: manifest missing nested_cv_n_train")
+            elif abs(csv_n - float(expected)) > tol:
+                mism.append(f"{rep}: csv N_train={csv_n} != manifest {expected}")
+    check("source N_train matches recorded training provenance", len(mism) == 0, str(mism))
+
+
+def check_source_metrics_pooled_not_five_fold_mean() -> None:
+    """The headline source metrics are a pooled estimate over the aggregated
+    nested out-of-fold prediction vector, NOT the arithmetic mean of the five
+    fold-level R2/RMSE values. The reporting must not label them a 'five-fold
+    mean', and must say 'pooled'/'out-of-fold'.
+    """
+    spath = ROOT / "outputs/tables/main_results/final_project_summary.csv"
+    bad = []
+    if spath.exists():
+        with spath.open(encoding="utf-8", newline="") as fh:
+            for r in csv.DictReader(fh):
+                if r["stage"] != "source_spatial_cv":
+                    continue
+                notes = (r.get("notes") or "").lower()
+                if "five-fold mean" in notes or "5-fold mean" in notes:
+                    bad.append(f"{r['representation']}: notes say 'five-fold mean'")
+                if "pooled" not in notes and "out-of-fold" not in notes:
+                    bad.append(f"{r['representation']}: notes missing pooled/out-of-fold wording")
+    # Also forbid the exact misleading phrase anywhere in the docs.
+    for d in (ROOT / "docs", ROOT):
+        for md in d.glob("*.md"):
+            if "five-fold mean" in md.read_text(encoding="utf-8", errors="ignore").lower():
+                bad.append(f"{md.name}: contains 'five-fold mean'")
+    check("source metrics labeled pooled OOF, not five-fold mean", len(bad) == 0, str(bad))
+
+
+def check_nested_evaluation_distinct_from_deployment() -> None:
+    """The nested source-evaluation estimate (source_cv) must be explicitly
+    distinguishable from the final deployment model in the manifest.
+    """
+    mpath = ROOT / "outputs/manifests/frozen_source_model_manifest.json"
+    if not mpath.exists():
+        check("nested evaluation distinct from deployment model", False, "manifest missing")
+        return
+    manifest = json.loads(mpath.read_text(encoding="utf-8"))
+    sm = manifest.get("selected_models", {})
+    mism = []
+    for rep in ("alphaearth", "conventional"):
+        info = sm.get(rep)
+        if not info:
+            mism.append(f"{rep}: missing")
+            continue
+        se = info.get("source_evaluation")
+        fd = info.get("final_deployment_model")
+        if not isinstance(se, dict) or se.get("model") != "nested_selected":
+            mism.append(f"{rep}: source_evaluation missing or wrong")
+        if not isinstance(fd, dict) or "model" not in fd or "config" not in fd:
+            mism.append(f"{rep}: final_deployment_model missing")
+    check("nested evaluation distinct from deployment model", len(mism) == 0, str(mism))
+
+
 def main() -> int:
     # --- 1. Required root files --------------------------------------------
     for f in ["README.md", "LICENSE", "CITATION.cff", "requirements.txt",
@@ -249,6 +337,15 @@ def main() -> int:
 
     # --- 13. manifest paths are POSIX (no backslashes) --------------------
     check_manifest_paths_posix()
+
+    # --- 14. source N_train matches recorded training provenance ----------
+    check_source_n_train_consistency()
+
+    # --- 15. source metrics are pooled OOF, not a five-fold mean ----------
+    check_source_metrics_pooled_not_five_fold_mean()
+
+    # --- 16. nested evaluation distinct from final deployment model -------
+    check_nested_evaluation_distinct_from_deployment()
 
     # --- report -----------------------------------------------------------
     failed = [c for c in CHECKS if not c[1]]

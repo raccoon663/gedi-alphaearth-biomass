@@ -15,9 +15,27 @@ Two reproduction levels are supported:
   costs and can run for hours.
 
 Deterministic seeds (`config.yaml`: `seed: 42`, few-shot seeds 42–44) and the
-frozen manifests in `outputs/manifests/` reproduce the exact sample draws and
-folds. Target labels are unlocked only after zero-shot predictions are frozen
-(see `utilities/guards.py`).
+  frozen manifests in `outputs/manifests/` reproduce the exact sample draws and
+  folds. Target labels are unlocked only after zero-shot predictions are frozen
+  (see `utilities/guards.py`).
+
+## Reproduction prerequisites
+
+The three downstream runner scripts have different external dependencies. A failure
+to run them in a sandbox is an **environment/dependency** failure, **not** a
+scientific or test failure of the reported results (those live in
+`outputs/tables/`, `figures/`, and `docs/`).
+
+- **Stage A — `scripts/03_modeling/evaluate_kaihua_zero_shot.py`:** requires the
+  dependencies listed in `requirements.txt` **and** an authenticated Google Earth
+  Engine account (`earthengine-api`; the script calls `ee.Initialize()`). It is the
+  only runner that needs GEE.
+- **Stages B/C — `scripts/04_diagnostics/build_summary_outputs.py` and
+  `build_final_reproducibility_manifest.py`:** require the *frozen runtime
+  artifacts* (intermediate predictions and sample manifests under
+  `outputs/predictions/` and `outputs/manifests/`). These large intermediates are
+  intentionally **not distributed in Git** (see `.gitignore`); the committed
+  `outputs/tables/` and `figures/` already contain the final, validated results.
 
 ## Stage 1 — Authenticate Earth Engine
 
