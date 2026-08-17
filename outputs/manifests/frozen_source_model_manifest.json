@@ -1,7 +1,7 @@
 {
   "status": "source_models_selected",
-  "selection_method": "Nested spatial cross-validation: 5 outer spatial-block holdouts; 4-fold spatial inner CV on each outer-training set selects the configuration per family by RMSE. Outer test blocks are never used for tuning.",
-  "frozen_at": "2026-08-17T21:21:37.281756+08:00",
+  "selection_method": "Nested spatial cross-validation: 5 outer spatial-block holdouts; 4-fold spatial inner CV on each outer-training set jointly selects one model-family/configuration pair using mean RMSE across the inner spatial folds. Outer test blocks are never used for tuning.",
+  "frozen_at": "2026-08-18T00:15:43.307768+08:00",
   "source_sample_sha256": null,
   "common_sample_sha256": "319e025c271e715e98941303bb64da95b8c11edb7f7af5d3ef44771e4f13136e",
   "common_sample_n": 124303,
@@ -156,17 +156,17 @@
         "verbosity": null
       },
       "source_cv": {
-        "R2": 0.5768427552440758,
-        "R2_std": 0.026630226829401943,
-        "RMSE": 69.0527159382571,
-        "RMSE_std": 3.2815992582423674,
-        "MAE": 41.790340255591445,
-        "MAE_std": 0.38057491185690956,
-        "Bias": 0.6030482632352844,
-        "Bias_std": 0.5707310657921006
+        "R2": 0.5761031871412678,
+        "R2_std": 0.025422281275913106,
+        "RMSE": 69.1130326318012,
+        "RMSE_std": 3.179020924153268,
+        "MAE": 42.22568320849209,
+        "MAE_std": 0.3489281302686707,
+        "Bias": 1.0797043120671825,
+        "Bias_std": 0.9819612974432487
       },
       "model_sha256": "638f79d56832afc1d1caa231e177aa5c2763745eec4e7a096c6d1e005291248d",
-      "model_file": "outputs\\models\\frozen_source_alphaearth_xgboost.joblib"
+      "model_file": "outputs/models/frozen_source_alphaearth_xgboost.joblib"
     },
     "conventional": {
       "model": "xgboost",
@@ -214,17 +214,17 @@
         "verbosity": null
       },
       "source_cv": {
-        "R2": 0.4273059690564104,
-        "R2_std": 0.023154789724771033,
-        "RMSE": 80.33248518123392,
-        "RMSE_std": 2.7062785311772433,
-        "MAE": 53.071076570389565,
-        "MAE_std": 0.19402741169493673,
-        "Bias": 0.21078417756541082,
-        "Bias_std": 1.3401966628233792
+        "R2": 0.4251059611784339,
+        "R2_std": 0.023527255890335195,
+        "RMSE": 80.4866361646239,
+        "RMSE_std": 2.6829201704547785,
+        "MAE": 53.47569217303464,
+        "MAE_std": 0.31124197607082676,
+        "Bias": 1.0850747203940423,
+        "Bias_std": 1.984526317310036
       },
       "model_sha256": "5a7ed542c48f2add534ee5fd6f99587c4b66e74d32405dfb1824bf3f3a725878",
-      "model_file": "outputs\\models\\frozen_source_conventional_xgboost.joblib"
+      "model_file": "outputs/models/frozen_source_conventional_xgboost.joblib"
     }
   },
   "package_versions": {

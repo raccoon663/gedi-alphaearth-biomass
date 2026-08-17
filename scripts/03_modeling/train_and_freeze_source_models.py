@@ -11,9 +11,10 @@ reported numbers are an honest estimate of out-of-region predictive skill:
 
   * Outer loop: the five spatial blocks (``spatial_fold`` 0..4) are held out one at a
     time. The held-out block is never used for tuning.
-  * Inner loop: for each outer-training set, a 4-fold spatial CV (the remaining blocks)
-    jointly selects ONE (model family, configuration) from all RF/XGB candidates by
-    RMSE. Family selection is therefore nested, not taken from outer-fold performance.
+    * Inner loop: for each outer-training set, a 4-fold spatial CV (the remaining blocks)
+    jointly selects ONE (model family, configuration) from all RF/XGB candidates using
+    the mean RMSE across the inner spatial folds. Family selection is therefore nested,
+    not taken from outer-fold performance.
   * Outer test: only the configuration selected by the inner CV on the outer-training
     set is refit on that set and evaluated on the untouched outer-test block. The five
     outer-test blocks are aggregated into a single out-of-fold prediction set for the
@@ -108,15 +109,15 @@ def build(model: str, config: str):
 def inner_select(train_df: pd.DataFrame, xcols, candidates) -> tuple[tuple[str, str], pd.DataFrame]:
     """4-fold spatial inner CV on an outer-training set.
 
-    Returns the single (family, config) with the lowest mean inner-CV RMSE across
-    ALL RF/XGB candidates, plus a long table of the inner-CV RMSE/R2 per candidate
-    (for diagnostics). Selecting the family inside the inner CV is what makes the
-    family choice fully nested rather than leaked from outer-fold performance.
+    Every (family, config) candidate is evaluated on every inner spatial fold. The
+    per-candidate RMSEs are averaged across the inner folds, and the single
+    (family, config) with the lowest MEAN inner-fold RMSE is selected. Selecting the
+    family from the mean across folds (not from any single best fold, and not from
+    outer-fold performance) is what keeps the family/config choice fully nested and
+    unbiased by one lucky fold.
     """
     inner_folds = sorted(int(f) for f in train_df["spatial_fold"].unique())
     records = []
-    best: tuple[str, str] | None = None
-    best_rmse = float("inf")
     for hold in inner_folds:
         itr = train_df[train_df.spatial_fold != hold]
         ite = train_df[train_df.spatial_fold == hold]
@@ -128,11 +129,17 @@ def inner_select(train_df: pd.DataFrame, xcols, candidates) -> tuple[tuple[str, 
                 m = metrics(ite.agbd.to_numpy(), pred)
                 records.append({"model": fam, "config": cfg, "inner_fold": hold,
                                 "RMSE": m["RMSE"], "R2": m["R2"]})
-                if m["RMSE"] < best_rmse:
-                    best_rmse = m["RMSE"]
-                    best = (fam, cfg)
-    assert best is not None, "inner_select found no candidate"
-    return best, pd.DataFrame(records)
+    records_df = pd.DataFrame(records)
+    candidate_summary = (
+        records_df
+        .groupby(["model", "config"], as_index=False)
+        .agg(mean_RMSE=("RMSE", "mean"),
+             std_RMSE=("RMSE", "std"),
+             mean_R2=("R2", "mean"))
+    )
+    winner = candidate_summary.loc[candidate_summary["mean_RMSE"].idxmin()]
+    best = (winner["model"], winner["config"])
+    return best, records_df
 
 
 def main() -> None:
@@ -174,6 +181,14 @@ def main() -> None:
     tune_records = []   # inner-CV diagnostics (joint family+config selection)
     rows = []           # outer-CV per-fold metrics (honest estimate)
     oof_pred = {rep: np.empty(len(df), dtype=float) for rep, df in datasets.items()}
+    # Per-OOF-prediction provenance. Different outer folds can select different
+    # (family, config) pipelines; we record the one that actually produced each
+    # outer-test prediction rather than labelling every prediction with the final
+    # deployment model/config.
+    oof_meta = {rep: {"model": np.empty(len(df), dtype=object),
+                      "config": np.empty(len(df), dtype=object),
+                      "outer_fold": np.empty(len(df), dtype=int)}
+                for rep, df in datasets.items()}
 
     for rep, df in datasets.items():
         xcols = features[rep]
@@ -192,6 +207,9 @@ def main() -> None:
             pred = est.predict(df.loc[test_mask, xcols])
             idx = np.flatnonzero(test_mask.to_numpy())
             oof_pred[rep][idx] = pred
+            oof_meta[rep]["model"][idx] = family
+            oof_meta[rep]["config"][idx] = config
+            oof_meta[rep]["outer_fold"][idx] = o
             m = metrics(df.loc[test_mask, "agbd"].to_numpy(), pred)
             rows.append({"representation": rep, "model": family, "config": config,
                          "split_type": OUTER_SPLIT_TYPE, "outer_fold": o, **m})
@@ -259,7 +277,7 @@ def main() -> None:
                           ["R2", "R2_std", "RMSE", "RMSE_std",
                            "MAE", "MAE_std", "Bias", "Bias_std"]},
             "model_sha256": sha256(model_path),
-            "model_file": str(model_path.relative_to(root)),
+            "model_file": model_path.relative_to(root).as_posix(),
         }
 
         # OOF diagnostics for the nested-selected pipeline (no shot_number written out).
@@ -267,8 +285,11 @@ def main() -> None:
         residual = oof_vec - df.agbd.to_numpy()
         diag = pd.DataFrame({
             "agbd": df.agbd, "prediction": oof_vec, "residual": residual,
-            "absolute_error": np.abs(residual), "spatial_fold": df.spatial_fold,
-            "model": family, "config": config,
+            "absolute_error": np.abs(residual),
+            "spatial_fold": df.spatial_fold,
+            "outer_fold": oof_meta[rep]["outer_fold"],
+            "selected_model": oof_meta[rep]["model"],
+            "selected_config": oof_meta[rep]["config"],
         })
         diag.to_parquet(diagnostics / f"source_{rep}_oof_predictions.parquet", index=False)
 
@@ -313,7 +334,8 @@ def main() -> None:
         "status": "source_models_selected",
         "selection_method": ("Nested spatial cross-validation: 5 outer spatial-block "
                              "holdouts; 4-fold spatial inner CV on each outer-training "
-                             "set selects the configuration per family by RMSE. Outer "
+                             "set jointly selects one model-family/configuration pair "
+                             "using mean RMSE across the inner spatial folds. Outer "
                              "test blocks are never used for tuning."),
         "frozen_at": datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(),
         "source_sample_sha256": source_sample_sha256,
