@@ -154,5 +154,3 @@ SHA-256 checksums remain so the experiment can be verified without them.
 ## Citation
 
 If you use the code or results, please cite the repository (see `CITATION.cff`).
-
-Contact: Chengzhi Wan — cwan07@student.ubc.ca (University of British Columbia).
