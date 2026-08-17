@@ -1,9 +1,35 @@
-"""Source-only balanced-budget selection, CV, diagnostics, and model freeze."""
+"""Source-domain model selection and evaluation with nested spatial cross-validation.
+
+This script selects and evaluates source-domain (USA GEDI L4A) aboveground biomass
+models for two predictor representations:
+
+  * AlphaEarth Foundations embeddings (A00-A63) + DEM derivatives
+  * Conventional Sentinel-1/2 indices + DEM derivatives
+
+Both model selection and performance estimation respect spatial blocking so that the
+reported numbers are an honest estimate of out-of-region predictive skill:
+
+  * Outer loop: the five spatial blocks (``spatial_fold`` 0..4) are held out one at a
+    time. The held-out block is never used for tuning.
+  * Inner loop: for each outer-training set, a 4-fold spatial CV (the remaining blocks)
+    selects the best hyperparameter configuration per model family by RMSE.
+  * Outer test: the configuration selected on the outer-training set is refit on that
+    set and evaluated on the untouched outer-test block. The five outer-test blocks are
+    aggregated into a single out-of-fold prediction set for the final metrics.
+
+The final deployment model for each representation is refit on all source data after
+selection. Its in-sample fit is intentionally NOT reported as an evaluation metric.
+
+The Zhejiang/Kaihua target labels and performance are never used to select or tune
+these source models (see the ``target_label_locked`` safeguard in the manifest).
+"""
 from __future__ import annotations
 
 import hashlib
 import json
+import os
 import platform
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -20,17 +46,24 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.inspection import permutation_importance
 from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
 SEED = 42
+N_OUTER = 5
+TRAIN_CAP = 60000  # cap outer-training size for compute-efficient, equal budgets
 DEM = ["elevation", "slope", "aspect_sin", "aspect_cos"]
 AEF = [f"A{i:02d}" for i in range(64)] + DEM
 CONVENTIONAL = ["VV", "VH", "VV_minus_VH", "B2", "B3", "B4", "B5", "B6",
                 "B7", "B8", "B8A", "B11", "B12", "NDVI", "EVI", "NDMI",
                 "NBR", "NDRE"] + DEM
+
+# Every outer-test prediction is produced under this design; the manifest and the
+# downstream figure filter on this exact label so the reported metric is unambiguous.
+OUTER_SPLIT_TYPE = "nested_spatial_cv"
+CANDIDATES = {"random_forest": ["rf_sqrt", "rf_half"],
+              "xgboost": ["xgb_depth6", "xgb_depth8"]}
 
 
 def sha256(path: Path) -> str:
@@ -38,6 +71,8 @@ def sha256(path: Path) -> str:
 
 
 def metrics(y: np.ndarray, pred: np.ndarray) -> dict:
+    y = np.asarray(y, dtype=float)
+    pred = np.asarray(pred, dtype=float)
     return {"R2": float(r2_score(y, pred)),
             "RMSE": float(mean_squared_error(y, pred) ** 0.5),
             "MAE": float(mean_absolute_error(y, pred)),
@@ -64,166 +99,232 @@ def build(model: str, config: str):
     raise ValueError(model)
 
 
+def inner_select(train_df: pd.DataFrame, xcols, candidates) -> tuple[dict, pd.DataFrame]:
+    """4-fold spatial inner CV on an outer-training set.
+
+    Returns the best configuration per family (lowest mean inner-CV RMSE) and a long
+    table of the inner-CV RMSE/R2 per (family, config, inner_fold) for diagnostics.
+    """
+    inner_folds = sorted(int(f) for f in train_df["spatial_fold"].unique())
+    rmse_acc = {fam: {cfg: [] for cfg in cfgs} for fam, cfgs in candidates.items()}
+    records = []
+    for hold in inner_folds:
+        itr = train_df[train_df.spatial_fold != hold]
+        ite = train_df[train_df.spatial_fold == hold]
+        for fam, cfgs in candidates.items():
+            for cfg in cfgs:
+                est = build(fam, cfg)
+                est.fit(itr[xcols], itr.agbd)
+                pred = est.predict(ite[xcols])
+                m = metrics(ite.agbd.to_numpy(), pred)
+                rmse_acc[fam][cfg].append(m["RMSE"])
+                records.append({"model": fam, "config": cfg, "inner_fold": hold,
+                                "RMSE": m["RMSE"], "R2": m["R2"]})
+    selected = {fam: min(cfgs, key=lambda c: float(np.mean(rmse_acc[fam][c])))
+                for fam, cfgs in candidates.items()}
+    return selected, pd.DataFrame(records)
+
+
 def main() -> None:
     root = Path(__file__).resolve().parents[2]
-    processed, tables, reports = root / "data/processed", root / "outputs/tables", root / "reports"
-    models_dir, figures = root / "outputs/models", root / "outputs/figures"
-    models_dir.mkdir(parents=True, exist_ok=True)
-    figures.mkdir(parents=True, exist_ok=True)
-    paths = {"alphaearth": processed / "source_common_alphaearth.parquet",
-             "conventional": processed / "source_common_conventional.parquet"}
+    env = os.environ.get("GEDI_SOURCE_DATA")
+    processed = Path(env) if env else root / "data/processed"
+    alpha_path = processed / "source_common_alphaearth.parquet"
+    conv_path = processed / "source_common_conventional.parquet"
+    if not alpha_path.exists() or not conv_path.exists():
+        sys.stderr.write(
+            f"Source parquets not found in {processed}. Set GEDI_SOURCE_DATA to the "
+            "directory containing source_common_alphaearth.parquet and "
+            "source_common_conventional.parquet.\n")
+        sys.exit(2)
+
+    tables = root / "outputs/tables"
+    diagnostics = tables / "diagnostics"
+    main_results = tables / "main_results"
+    figures = root / "outputs/figures"
+    models_dir = root / "outputs/models"
+    manifests = root / "outputs/manifests"
+    for d in (tables, diagnostics, main_results, figures, models_dir, manifests):
+        d.mkdir(parents=True, exist_ok=True)
+
+    paths = {"alphaearth": alpha_path, "conventional": conv_path}
     features = {"alphaearth": AEF, "conventional": CONVENTIONAL}
     datasets = {k: pd.read_parquet(v) for k, v in paths.items()}
-    if not datasets["alphaearth"]["shot_number"].equals(datasets["conventional"]["shot_number"]):
-        raise RuntimeError("Common shot order differs")
-    for field in ["agbd", "year", "spatial_block_id", "spatial_fold"]:
+
+    # The two representations must describe identical shots, AGBD and spatial folds so
+    # that any performance gap reflects the predictors, not the sample.
+    if not datasets["alphaearth"]["agbd"].equals(datasets["conventional"]["agbd"]):
+        raise RuntimeError("AGBD differs between representations")
+    for field in ["year", "spatial_block_id", "spatial_fold"]:
         if not datasets["alphaearth"][field].equals(datasets["conventional"][field]):
             raise RuntimeError(f"Shared field differs: {field}")
-    if set(datasets["alphaearth"]["spatial_fold"].unique()) != set(range(5)):
+    if set(datasets["alphaearth"]["spatial_fold"].unique()) != set(range(N_OUTER)):
         raise RuntimeError("Expected frozen folds 0..4")
 
-    tune_rows = []
-    candidates = {"random_forest": ["rf_sqrt", "rf_half"],
-                  "xgboost": ["xgb_depth6", "xgb_depth8"]}
-    selected = {}
-    # Fixed fold 0 is the source-only development validation fold. Cap training
-    # at 60k with deterministic sampling for equal, compute-efficient budgets.
-    for representation, df in datasets.items():
-        xcols = features[representation]
-        train = df[df.spatial_fold != 0]
-        if len(train) > 60000:
-            train = train.sample(60000, random_state=SEED)
-        valid = df[df.spatial_fold == 0]
-        for family, configs in candidates.items():
-            for config in configs:
-                start = time.time()
-                estimator = build(family, config)
-                estimator.fit(train[xcols], train.agbd)
-                row = {"representation": representation, "model": family,
-                       "config": config, "split_type": "source_tuning_fold0",
-                       **metrics(valid.agbd.to_numpy(), estimator.predict(valid[xcols])),
-                       "elapsed_seconds": round(time.time() - start, 2)}
-                tune_rows.append(row)
-            family_rows = [r for r in tune_rows if r["representation"] == representation and r["model"] == family]
-            selected[(representation, family)] = min(family_rows, key=lambda r: r["RMSE"])["config"]
-    pd.DataFrame(tune_rows).to_csv(tables / "source_model_tuning.csv", index=False)
+    tune_records = []   # inner-CV diagnostics (config selection)
+    rows = []           # outer-CV per-fold metrics (honest estimate)
+    oof = {rep: {fam: np.empty(len(df), dtype=float) for fam in CANDIDATES}
+           for rep, df in datasets.items()}
 
-    rows, predictions = [], {}
-    for representation, df in datasets.items():
-        xcols = features[representation]
-        y = df.agbd.to_numpy()
-        # Mean and Ridge sanity baselines under identical spatial folds.
-        for fold in range(5):
-            tr, te = df.spatial_fold != fold, df.spatial_fold == fold
-            mean_pred = np.full(te.sum(), df.loc[tr, "agbd"].mean())
-            rows.append({"representation": representation, "model": "mean",
-                         "config": "train_mean", "split_type": "block_5fold", "fold": fold,
-                         **metrics(df.loc[te, "agbd"].to_numpy(), mean_pred)})
+    for rep, df in datasets.items():
+        xcols = features[rep]
+        for o in range(N_OUTER):
+            test_mask = df.spatial_fold == o
+            train_df = df[~test_mask]
+            if len(train_df) > TRAIN_CAP:
+                train_df = train_df.sample(TRAIN_CAP, random_state=SEED)
+            selected, inner_df = inner_select(train_df, xcols, CANDIDATES)
+            inner_df["representation"] = rep
+            inner_df["outer_fold"] = o
+            tune_records.append(inner_df)
+            for fam, cfgs in CANDIDATES.items():
+                cfg = selected[fam]
+                est = build(fam, cfg)
+                est.fit(train_df[xcols], train_df.agbd)
+                pred = est.predict(df.loc[test_mask, xcols])
+                idx = np.flatnonzero(test_mask.to_numpy())
+                oof[rep][fam][idx] = pred
+                m = metrics(df.loc[test_mask, "agbd"].to_numpy(), pred)
+                rows.append({"representation": rep, "model": fam, "config": cfg,
+                             "split_type": OUTER_SPLIT_TYPE, "outer_fold": o, **m})
+
+    # Mean and Ridge baselines under the identical outer folds (no tuning involved).
+    for rep, df in datasets.items():
+        xcols = features[rep]
+        for o in range(N_OUTER):
+            test_mask = df.spatial_fold == o
+            tr, te = df[~test_mask], df[test_mask]
+            mean_pred = np.full(int(test_mask.sum()), tr.agbd.mean())
+            rows.append({"representation": rep, "model": "mean", "config": "train_mean",
+                         "split_type": OUTER_SPLIT_TYPE, "outer_fold": o,
+                         **metrics(te.agbd.to_numpy(), mean_pred)})
             ridge = build("ridge", "ridge_alpha10")
-            ridge.fit(df.loc[tr, xcols], df.loc[tr, "agbd"])
-            rows.append({"representation": representation, "model": "ridge",
-                         "config": "ridge_alpha10", "split_type": "block_5fold", "fold": fold,
-                         **metrics(df.loc[te, "agbd"].to_numpy(), ridge.predict(df.loc[te, xcols]))})
-        for family in ["random_forest", "xgboost"]:
-            config = selected[(representation, family)]
-            oof = np.empty(len(df), dtype=np.float64)
-            for fold in range(5):
-                tr, te = df.spatial_fold != fold, df.spatial_fold == fold
-                estimator = build(family, config)
-                estimator.fit(df.loc[tr, xcols], df.loc[tr, "agbd"])
-                pred = estimator.predict(df.loc[te, xcols])
-                oof[np.flatnonzero(te.to_numpy())] = pred
-                rows.append({"representation": representation, "model": family,
-                             "config": config, "split_type": "block_5fold", "fold": fold,
-                             **metrics(df.loc[te, "agbd"].to_numpy(), pred)})
-            predictions[(representation, family)] = oof
-            tr_idx, te_idx = train_test_split(np.arange(len(df)), test_size=0.2, random_state=SEED)
-            estimator = build(family, config)
-            estimator.fit(df.iloc[tr_idx][xcols], df.iloc[tr_idx].agbd)
-            rows.append({"representation": representation, "model": family,
-                         "config": config, "split_type": "random_80_20", "fold": 0,
-                         **metrics(df.iloc[te_idx].agbd.to_numpy(), estimator.predict(df.iloc[te_idx][xcols]))})
+            ridge.fit(tr[xcols], tr.agbd)
+            rows.append({"representation": rep, "model": "ridge", "config": "ridge_alpha10",
+                         "split_type": OUTER_SPLIT_TYPE, "outer_fold": o,
+                         **metrics(te.agbd.to_numpy(), ridge.predict(te[xcols]))})
+
     comparison = pd.DataFrame(rows)
-    comparison.to_csv(tables / "source_model_comparison.csv", index=False)
-    summary = (comparison[comparison.split_type == "block_5fold"]
-               .groupby(["representation", "model", "config"])
-               .agg({"R2": ["mean", "std"], "RMSE": ["mean", "std"],
-                     "MAE": ["mean", "std"], "Bias": ["mean", "std"], "N": "sum"})
-               .reset_index())
-    summary.columns = ["_".join(c).strip("_") if isinstance(c, tuple) else c for c in summary.columns]
-    summary.to_csv(tables / "source_model_comparison_summary.csv", index=False)
+    comparison.to_csv(diagnostics / "source_model_comparison.csv", index=False)
+    pd.concat(tune_records, ignore_index=True).to_csv(diagnostics / "source_model_tuning.csv", index=False)
+
+    # Honest aggregated out-of-fold metrics per family, plus cross-fold variability.
+    summary_rows, fold_metric_records = [], []
+    for rep, df in datasets.items():
+        y = df.agbd.to_numpy()
+        for fam in CANDIDATES:
+            pred = oof[rep][fam]
+            agg = metrics(y, pred)
+            fold_metrics = [r for r in rows
+                            if r["representation"] == rep and r["model"] == fam
+                            and r["split_type"] == OUTER_SPLIT_TYPE]
+            summary_rows.append({
+                "representation": rep, "model": fam, "config": "nested_oof",
+                "split_type": OUTER_SPLIT_TYPE,
+                "R2": agg["R2"], "RMSE": agg["RMSE"], "MAE": agg["MAE"], "Bias": agg["Bias"],
+                "N": agg["N"],
+                "R2_std": float(np.std([r["R2"] for r in fold_metrics])),
+                "RMSE_std": float(np.std([r["RMSE"] for r in fold_metrics])),
+                "MAE_std": float(np.std([r["MAE"] for r in fold_metrics])),
+                "Bias_std": float(np.std([r["Bias"] for r in fold_metrics])),
+            })
+    summary = pd.DataFrame(summary_rows)
+    summary.to_csv(main_results / "source_model_comparison_summary.csv", index=False)
 
     best = {}
-    for representation in datasets:
-        eligible = summary[(summary.representation == representation) &
-                           (summary.model.isin(["random_forest", "xgboost"]))]
-        winner = eligible.loc[eligible.RMSE_mean.idxmin()].to_dict()
+    for rep, df in datasets.items():
+        eligible = summary[(summary.representation == rep) &
+                           (summary.model.isin(CANDIDATES))]
+        winner = eligible.loc[eligible.RMSE.idxmin()].to_dict()
         family, config = winner["model"], winner["config"]
-        best[representation] = {"model": family, "config": config,
-                                "hyperparameters": build(family, config).get_params(),
-                                "source_cv": {k: float(winner[k]) for k in
-                                              ["R2_mean", "R2_std", "RMSE_mean", "RMSE_std",
-                                               "MAE_mean", "MAE_std", "Bias_mean", "Bias_std"]}}
-        df, xcols = datasets[representation], features[representation]
-        final_model = build(family, config)
-        final_model.fit(df[xcols], df.agbd)
-        model_path = models_dir / f"frozen_source_{representation}_{family}.joblib"
+        # Final deployment config: inner-CV selection on the full source set.
+        selected_full, _ = inner_select(df, features[rep], CANDIDATES)
+        final_config = selected_full[family]
+        final_model = build(family, final_config)
+        final_model.fit(df[features[rep]], df.agbd)
+        model_path = models_dir / f"frozen_source_{rep}_{family}.joblib"
         joblib.dump(final_model, model_path, compress=3)
-        best[representation]["model_sha256"] = sha256(model_path)
-        best[representation]["model_file"] = str(model_path.relative_to(root))
 
-        oof = predictions[(representation, family)]
-        residual = oof - df.agbd.to_numpy()
-        diag = pd.DataFrame({"shot_number": df.shot_number, "agbd": df.agbd,
-                             "prediction": oof, "residual": residual,
-                             "absolute_error": np.abs(residual), "spatial_fold": df.spatial_fold})
-        diag.to_parquet(tables / f"source_{representation}_best_oof.parquet", index=False)
+        best[rep] = {
+            "model": family,
+            "config": final_config,
+            "hyperparameters": build(family, final_config).get_params(),
+            "source_cv": {k: float(winner[k]) for k in
+                          ["R2", "R2_std", "RMSE", "RMSE_std",
+                           "MAE", "MAE_std", "Bias", "Bias_std"]},
+            "model_sha256": sha256(model_path),
+            "model_file": str(model_path.relative_to(root)),
+        }
+
+        # OOF diagnostics for the winning family (no shot_number written out).
+        oof_pred = oof[rep][family]
+        residual = oof_pred - df.agbd.to_numpy()
+        diag = pd.DataFrame({
+            "agbd": df.agbd, "prediction": oof_pred, "residual": residual,
+            "absolute_error": np.abs(residual), "spatial_fold": df.spatial_fold,
+            "model": family, "config": final_config,
+        })
+        diag.to_parquet(diagnostics / f"source_{rep}_oof_predictions.parquet", index=False)
+
         fig, axes = plt.subplots(1, 3, figsize=(14, 4))
-        axes[0].hexbin(df.agbd, oof, gridsize=60, mincnt=1); axes[0].set(xlabel="Observed AGBD", ylabel="OOF predicted", title=representation)
-        axes[1].hist(residual, bins=80); axes[1].set(xlabel="Residual (pred-observed)", title="Residual distribution")
-        axes[2].hexbin(oof, residual, gridsize=60, mincnt=1); axes[2].axhline(0, color="red"); axes[2].set(xlabel="Predicted", ylabel="Residual")
-        fig.tight_layout(); fig.savefig(figures / f"source_{representation}_diagnostics.png", dpi=160); plt.close(fig)
+        axes[0].hexbin(df.agbd, oof_pred, gridsize=60, mincnt=1)
+        axes[0].set(xlabel="Observed AGBD (Mg/ha)", ylabel="Predicted (OOF)", title=rep)
+        axes[1].hist(residual, bins=80)
+        axes[1].set(xlabel="Residual (pred-observed)", title="Residual distribution")
+        axes[2].hexbin(oof_pred, residual, gridsize=60, mincnt=1)
+        axes[2].axhline(0, color="red")
+        axes[2].set(xlabel="Predicted", ylabel="Residual")
+        fig.tight_layout()
+        fig.savefig(figures / f"source_{rep}_diagnostics.png", dpi=160)
+        plt.close(fig)
 
-        # Source-only interpretation on a deterministic 5k subset with 5 repeats.
         sample = df.sample(min(5000, len(df)), random_state=SEED)
-        imp = permutation_importance(final_model, sample[xcols], sample.agbd,
+        imp = permutation_importance(final_model, sample[features[rep]], sample.agbd,
                                      scoring="neg_root_mean_squared_error", n_repeats=5,
                                      random_state=SEED, n_jobs=1)
-        pd.DataFrame({"feature": xcols, "importance_mean": imp.importances_mean,
+        pd.DataFrame({"feature": features[rep],
+                      "importance_mean": imp.importances_mean,
                       "importance_sd": imp.importances_std}).sort_values(
                           "importance_mean", ascending=False).to_csv(
-                              tables / f"source_{representation}_permutation_importance.csv", index=False)
+                              diagnostics / f"source_{rep}_permutation_importance.csv", index=False)
 
     packages = {"python": platform.python_version(), "numpy": np.__version__,
                 "pandas": pd.__version__, "scikit_learn": sklearn.__version__,
                 "xgboost": xgboost.__version__, "pyarrow": pyarrow.__version__,
                 "joblib": joblib.__version__}
+
+    # Provenance hashes are recorded only when the referenced files are present.
+    source_sample_sha256 = None
+    s200 = manifests / "frozen_source_manifest_200.csv"
+    if s200.exists():
+        source_sample_sha256 = sha256(s200)
+    common_sample_sha256, common_sample_n = None, len(datasets["alphaearth"])
     common_path = processed / "source_common_representation.parquet"
-    source_manifest = root / "outputs/manifests/frozen_source_manifest_200.csv"
+    if common_path.exists():
+        common_sample_sha256 = sha256(common_path)
+
     freeze = {
-        "status": "FROZEN_SOURCE_MODELS_TARGET_LABEL_LOCKED",
+        "status": "source_models_selected",
+        "selection_method": ("Nested spatial cross-validation: 5 outer spatial-block "
+                             "holdouts; 4-fold spatial inner CV on each outer-training "
+                             "set selects the configuration per family by RMSE. Outer "
+                             "test blocks are never used for tuning."),
         "frozen_at": datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(),
-        "source_sample_sha256": sha256(source_manifest),
-        "common_sample_sha256": sha256(common_path),
-        "common_sample_n": len(datasets["alphaearth"]),
+        "source_sample_sha256": source_sample_sha256,
+        "common_sample_sha256": common_sample_sha256,
+        "common_sample_n": common_sample_n,
         "aef_extraction_method": "central_pixel_10m_exact_year",
         "conventional_temporal_rule": "exact_year_calendar_year_median",
         "features": features, "spatial_block_km": 50, "spatial_block_crs": "EPSG:5070",
-        "folds": 5, "fold_field": "spatial_fold", "random_seed": SEED,
-        "tuning_budget": "2 RF + 2 XGBoost configs per representation on source fold 0; 60k train cap",
+        "folds": N_OUTER, "fold_field": "spatial_fold", "random_seed": SEED,
+        "train_cap": TRAIN_CAP,
         "selected_models": best, "package_versions": packages,
         "target_label_locked": True, "zhejiang_labels_used": False,
         "zhejiang_performance_used": False,
     }
-    freeze_path = root / "outputs/manifests/frozen_source_model_manifest.json"
+    freeze_path = manifests / "frozen_source_model_manifest.json"
     freeze_path.write_text(json.dumps(freeze, indent=2), encoding="utf-8")
-    report = "# Source Model Freeze\n\nStatus: **FROZEN; TARGET_LABEL_LOCKED = True**\n\n"
-    report += f"Common N: {len(datasets['alphaearth']):,}. Both representations use identical shots, folds and AGBD.\n\n"
-    for rep, info in best.items():
-        cv = info["source_cv"]
-        report += f"- {rep}: {info['model']} / {info['config']}; mean block-CV R2 {cv['R2_mean']:.4f}, RMSE {cv['RMSE_mean']:.3f}, MAE {cv['MAE_mean']:.3f}, Bias {cv['Bias_mean']:.3f}.\n"
-    report += "\nNo Zhejiang predictors, labels or performance were used. A00–A63 are learned latent features and are not assigned physical meanings.\n"
-    (reports / "source_model_freeze.md").write_text(report, encoding="utf-8")
+
     print(json.dumps({"selected": best, "manifest": str(freeze_path)}, indent=2))
 
 
