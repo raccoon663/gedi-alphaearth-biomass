@@ -1,0 +1,223 @@
+{
+  "status": "CORE_EXPERIMENTS_COMPLETE_FINAL_SYNTHESIS_COMPLETE",
+  "created_at": "2026-08-14T15:13:46.318146+08:00",
+  "scientific_scope": {
+    "source_domain": "Georgia and South Carolina, USA",
+    "source_aoi_rule": "Google Earth Engine TIGER/2018/States features NAME in {Georgia, South Carolina}",
+    "target_domain": "Kaihua County (administrative code 330824), Zhejiang, China",
+    "target_aoi_file": "data/boundaries/kaihua_target_aoi.geojson",
+    "target_aoi_sha256": "367d74d72446d643eac86e8212d3737a2f5cda5af73dac5ffc818d59533370ae",
+    "wall_to_wall_mapping_performed": false
+  },
+  "earth_engine_dataset_ids": {
+    "alphaearth": "GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL",
+    "gedi_l4a_monthly_raster": "LARSE/GEDI/GEDI04_A_002_MONTHLY",
+    "gedi_l4a_vector_granules": "LARSE/GEDI/GEDI04_A_002/*",
+    "sentinel_1": "COPERNICUS/S1_GRD",
+    "sentinel_2": "COPERNICUS/S2_SR_HARMONIZED",
+    "dem": "COPERNICUS/DEM/GLO30"
+  },
+  "frozen_feature_rules": {
+    "alphaearth": "central_pixel_10m_exact_year",
+    "conventional": "exact_year_calendar_year_median",
+    "dem": "Copernicus GLO-30 elevation, slope, aspect_sin, aspect_cos"
+  },
+  "sampling_and_validation": {
+    "source": {
+      "manifest_sha256": "28d98c52976a5a8bc87cc6d0b0574aa09fc4735a335a20a439f04f71519df9a2",
+      "sample_n": 127622,
+      "crs": "EPSG:5070",
+      "block_size_km": 50,
+      "strata": "spatial_block_id x GEDI year",
+      "cap_per_stratum": 200,
+      "seed": 42,
+      "folds": 5,
+      "no_agbd_based_sampling": true,
+      "no_oversampling": true,
+      "zhejiang_used_for_source_decisions": false
+    },
+    "target": {
+      "shot_manifest_sha256": "2edcca72b77cff3819e5c062791bed15b91ad77b4f7eb37dc19ecdddf4e11925",
+      "evaluation_n": 130195,
+      "crs": "EPSG:32650",
+      "block_size_km": 5.0,
+      "block_n": 117,
+      "folds": 5,
+      "fold_seed": 42,
+      "label_draw_seeds": [
+        42,
+        43,
+        44
+      ],
+      "label_budgets": [
+        25,
+        50,
+        100,
+        250,
+        500,
+        1000,
+        2500
+      ]
+    }
+  },
+  "frozen_asset_verification": {
+    "source_sample": {
+      "path": "outputs/manifests/frozen_source_manifest_200.csv",
+      "sha256": "28d98c52976a5a8bc87cc6d0b0574aa09fc4735a335a20a439f04f71519df9a2",
+      "verified": true
+    },
+    "source_model_alphaearth": {
+      "path": "outputs/models/frozen_source_alphaearth_xgboost.joblib",
+      "sha256": "3b7c29c628a2ae406e08e5fc01e31fc556e80917b982fd3ef179f7f92bd49034",
+      "verified": true
+    },
+    "source_model_conventional": {
+      "path": "outputs/models/frozen_source_conventional_xgboost.joblib",
+      "sha256": "d61103ae67730f3a4d4d7dcf674ab9f931b64b57cf8240abfcd7aacad12b4142",
+      "verified": true
+    },
+    "zero_shot_alphaearth": {
+      "path": "outputs/predictions/kaihua_zero_shot_aef.csv",
+      "sha256": "8b6d28e0d0c2654cfc4950371e8dcab5c08f05a6468849e2e38bc5b83312d2d6",
+      "verified": true
+    },
+    "zero_shot_conventional": {
+      "path": "outputs/predictions/kaihua_zero_shot_conventional.csv",
+      "sha256": "ed260f88a0e1e32ad1521c9afaf64649c459090faacffbddfaa2769c1b36a3f6",
+      "verified": true
+    },
+    "fewshot_folds": {
+      "path": "outputs/manifests/kaihua_fewshot_spatial_folds.csv",
+      "sha256": "89db7de20e71178d8242a4854b90e8505cfac7692d2396f46c90bf73d04a321d",
+      "verified": true
+    },
+    "fewshot_label_draws": {
+      "path": "outputs/manifests/kaihua_fewshot_label_draws.csv",
+      "sha256": "d70ec0b840c889222a57036078453e9b6443f2ce6691c70a1c15aa65c5c1f1a0",
+      "verified": true
+    }
+  },
+  "environment": {
+    "recorded_experiment_package_versions": {
+      "python": "3.12.10",
+      "earthengine-api": "1.7.38",
+      "geemap": "0.38.3",
+      "geopandas": "1.1.4",
+      "pyogrio": "0.13.0",
+      "PyYAML": "6.0.3",
+      "pandas": "3.0.3",
+      "numpy": "2.5.0",
+      "scikit-learn": "1.9.0",
+      "xgboost": "3.4.0",
+      "matplotlib": "3.11.0",
+      "seaborn": "0.13.2",
+      "joblib": "1.5.3",
+      "pyarrow": "25.0.1",
+      "shapely": "2.1.2",
+      "pyproj": "3.7.2",
+      "requests": "2.34.2"
+    },
+    "manifest_generation_python": "3.12.4",
+    "environment_file": "environment.yml"
+  },
+  "main_artifacts": {
+    "README.md": {
+      "sha256": "d1ffb1d9c6d50f976c28071386d560929769473cead6fa1e280c1de0a500cd42",
+      "bytes": 4127
+    },
+    "PROJECT_STATUS.md": {
+      "sha256": "b89fe6b684e3c66dfac8043ce3aa8f2dd1306aa599baac8e8882869f06698519",
+      "bytes": 4047
+    },
+    "environment.yml": {
+      "sha256": "ffed12296c0ad9a2af6f97097ce0e01cf5e8334839d882eafb1459477db7e41f",
+      "bytes": 494
+    },
+    "reports/final_research_report.md": {
+      "sha256": "4ea06a73b338a00c6a9dbfcdd497960e5fcfb03928dc913924708dd03f8a8983",
+      "bytes": 10123
+    },
+    "reports/kaihua_zero_shot_transfer.md": {
+      "sha256": "967ca8ea10f5ec7463b5ffeba7c46e6a151b8383bb78bd3c62f4e04af11c9758",
+      "bytes": 2190
+    },
+    "reports/kaihua_fewshot_adaptation.md": {
+      "sha256": "a9c8690ea27e1456f5fc923b2a8e79fa1743f14e39230fad99b23176c28b8fae",
+      "bytes": 8299
+    },
+    "docs/cv_project_bullets.md": {
+      "sha256": "e6aa9b85182fae9b4402371d61de21ab0545e43aded1ef18b8673de9b20906a8",
+      "bytes": 1433
+    },
+    "docs/project_abstract.md": {
+      "sha256": "171d38e42af93dac01a836a51987b454778b302d7d81bc8f54c38dd36bf0825a",
+      "bytes": 1767
+    },
+    "docs/faculty_outreach_summary.md": {
+      "sha256": "19fd0cb26e486f55b1107277d97ef01a73216ebf531588c5c7243ba9f3621f67",
+      "bytes": 922
+    },
+    "docs/repository_audit.md": {
+      "sha256": "47ae24a238894897c30b9bba5e76db84eade968aa06b961c0f58734b22be0a20",
+      "bytes": 1549
+    },
+    "outputs/tables/final_project_summary.csv": {
+      "sha256": "f1c900c876fa96e8478edf85d62dec6551ea30b0bc4b3cadba7bc2e00f0eeee5",
+      "bytes": 4131
+    },
+    "outputs/tables/source_model_comparison.csv": {
+      "sha256": "59504f8de4a06745922d5a3d8426dd00cd36b39c653411b0435fee66ae78a3f7",
+      "bytes": 5686
+    },
+    "outputs/tables/representation_transfer_summary.csv": {
+      "sha256": "7521feb78c8eea1119016ede04dbf6e8344a853ee7bfed6ec3b146107590b386",
+      "bytes": 567
+    },
+    "outputs/tables/kaihua_fewshot_summary.csv": {
+      "sha256": "1deb085c671e39e572b0109040726a7b2333df4566d71537635f4cd41b25d8dd",
+      "bytes": 11944
+    },
+    "outputs/tables/kaihua_fewshot_label_efficiency.csv": {
+      "sha256": "3366f27369b32ee9129c4e4ed5535da13d1ab4488d34001d8a41858dbd1eda0e",
+      "bytes": 74631
+    },
+    "outputs/tables/kaihua_label_thresholds.csv": {
+      "sha256": "65e1b877b88242a3120fcef1b09c53026c92f0de74d79cb2444989853fdbbb0f",
+      "bytes": 2148
+    },
+    "figures/final_workflow.png": {
+      "sha256": "44d621f433002adefeeaa3bd164378e2e315c8517619d974d476530b51378353",
+      "bytes": 219575
+    },
+    "figures/source_representation_comparison.png": {
+      "sha256": "7e1bcf55c6534f2cbb94e8766075d8ca28df1c5533c4302096ceb99b627fba15",
+      "bytes": 105378
+    },
+    "figures/zero_shot_transfer.png": {
+      "sha256": "c20e24bcda20bd7355225a8f620ac932a71371da72b5f5ebef31761420a488e9",
+      "bytes": 188260
+    },
+    "figures/kaihua_label_efficiency_final.png": {
+      "sha256": "df32245e43affe950908a81b72bcd1feebc3876658dda447a62b0456f3323d5f",
+      "bytes": 229212
+    },
+    "figures/calibration_vs_local_adaptation.png": {
+      "sha256": "599b2f473ba512d51eb751431a4f687c55741d5b0d2a53a68431f0dfec134071",
+      "bytes": 267774
+    },
+    "figures/usa_kaihua_domain_shift.png": {
+      "sha256": "c2e3f7ac502ddf09b1db29a1cf7975fd5aa51c39a114e472ab770983e4e61001",
+      "bytes": 1372299
+    },
+    "figures/aef_distance_vs_error.png": {
+      "sha256": "5343f5deccef9f2e92db028ec05ec0dcd3731bfe9ef99e6ca59c0377115a8b82",
+      "bytes": 115346
+    }
+  },
+  "interpretation_guardrails": {
+    "target_labels": "GEDI L4A footprint estimates, not independent field plots",
+    "zero_shot_transfer_operationally_adequate": false,
+    "fewshot_mean_r2_reached_0_2": false,
+    "formal_biomass_mapping_recommended": false
+  }
+}

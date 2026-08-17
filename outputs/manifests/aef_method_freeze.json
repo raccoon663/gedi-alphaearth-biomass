@@ -1,0 +1,23 @@
+{
+  "status": "frozen",
+  "selected_method": "central_pixel_10m",
+  "retired_main_experiment_method": "footprint_mean_25m_l2_renormalized",
+  "development_sample_N": 47395,
+  "mean_R2_central": 0.5673454850113369,
+  "mean_R2_aggregate": 0.5659734921993056,
+  "mean_RMSE_central": 70.02028353743354,
+  "mean_RMSE_aggregate": 70.12951829651412,
+  "decision_rule": {
+    "practically_similar_if": "abs(mean R2 difference) < 0.01 and relative mean RMSE difference < 0.01",
+    "tie_break": "select lower-compute central pixel",
+    "observed_abs_R2_difference": 0.0013719928120312641,
+    "observed_relative_RMSE_difference": 0.0015600445122759417,
+    "practically_similar": true
+  },
+  "decision_timestamp": "2026-08-13T11:09:54.513534+08:00",
+  "source_only_confirmation": true,
+  "zhejiang_predictors_used": false,
+  "zhejiang_labels_used": false,
+  "target_performance_may_change_decision": false,
+  "full_source_dual_extraction_forbidden": true
+}

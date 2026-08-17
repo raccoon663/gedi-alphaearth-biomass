@@ -1,0 +1,2 @@
+N,complete_64d,all_finite,nonzero_n,duplicate_shot_n,l2_min,l2_p05,l2_median,l2_p95,l2_max,year_consistent
+130195,True,True,130195,0,0.9921648193845025,0.9967852789736426,1.0000986325822678,1.0034259852955594,1.0086576252268804,True

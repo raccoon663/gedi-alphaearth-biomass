@@ -1,0 +1,11 @@
+{
+  "verified_at": "2026-08-14T10:48:22.853526+08:00",
+  "SOURCE_MODEL_FREEZE_VERIFIED": true,
+  "TARGET_LABEL_LOCKED": true,
+  "alphaearth_model_sha256": "3b7c29c628a2ae406e08e5fc01e31fc556e80917b982fd3ef179f7f92bd49034",
+  "conventional_model_sha256": "d61103ae67730f3a4d4d7dcf674ab9f931b64b57cf8240abfcd7aacad12b4142",
+  "target_aoi_sha256": "367d74d72446d643eac86e8212d3737a2f5cda5af73dac5ffc818d59533370ae",
+  "target_aoi_valid": true,
+  "target_admin_code": "330824",
+  "target_crs": "OGC:CRS84"
+}

@@ -1,0 +1,15 @@
+{
+  "status": "KAIHUA_FEWSHOT_ADAPTATION_COMPLETED_MAPPING_HELD_FOR_REVIEW",
+  "completed_at": "2026-08-14T14:30:22.4798693+08:00",
+  "design_manifest": "outputs/manifests/kaihua_fewshot_design_freeze.json",
+  "zero_shot_predictions_regenerated": false,
+  "source_experiment_modified": false,
+  "wall_to_wall_mapping_started": false,
+  "detailed_results_sha256": "3366f27369b32ee9129c4e4ed5535da13d1ab4488d34001d8a41858dbd1eda0e",
+  "summary_sha256": "1deb085c671e39e572b0109040726a7b2333df4566d71537635f4cd41b25d8dd",
+  "thresholds_sha256": "65e1b877b88242a3120fcef1b09c53026c92f0de74d79cb2444989853fdbbb0f",
+  "label_draws_sha256": "d70ec0b840c889222a57036078453e9b6443f2ce6691c70a1c15aa65c5c1f1a0",
+  "r2_figure_sha256": "9d88cefab2f21fa36f8eb0b3291dc322cabb64ea34428d4728936a3912c1bb21",
+  "rmse_figure_sha256": "f92a655f7ce080e78ea2867b328c7d28ccde09153f36ba379dcf6b8cd2db5ec0",
+  "mapping_recommendation": "do_not_start_formal_mapping; best spatial-holdout mean R2 is positive but remains below 0.2"
+}

@@ -1,0 +1,19 @@
+{
+  "status": "frozen",
+  "sample_n": 47395,
+  "source_development_n": 48692,
+  "dem_masked_removed_n": 1297,
+  "spatial_block_n": 114,
+  "stratum_n": 667,
+  "years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "all_blocks_single_fold": true,
+  "csv_sha256": "33ab71287c566d14969195fe9eb697c96ff72e073bcf29277a164119dc12ef01",
+  "parquet_sha256": "83649f9c83fe83521ce0e5a565b8af066b17b10b16d0b334079da4054d188e59"
+}

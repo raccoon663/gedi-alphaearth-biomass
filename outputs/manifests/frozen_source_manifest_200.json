@@ -1,0 +1,37 @@
+{
+  "status": "frozen",
+  "sampling_cap": 200,
+  "development_subset_cap": 75,
+  "sampling_policy": "EPSG5070_50km_x_year_max200_seed42_shot_number",
+  "sample_n": 127622,
+  "development_subset_n": 48692,
+  "unique_shot_number_n": 127622,
+  "spatial_block_n": 114,
+  "stratum_n": 669,
+  "years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "folds": 5,
+  "target_labels_read": false,
+  "no_2023_oversampling": true,
+  "all_strata_obey_cap": true,
+  "all_small_strata_fully_retained": true,
+  "all_blocks_single_fold": true,
+  "deterministic_seed_rank_reproducibility_pass": true,
+  "independent_block_assignment_check_pass": true,
+  "all_years_pass_agbd_smd_hard_gate": true,
+  "distribution_warning_years": [
+    2020,
+    2023
+  ],
+  "distribution_warning_is_hard_failure": false,
+  "manifest_csv_sha256": "28d98c52976a5a8bc87cc6d0b0574aa09fc4735a335a20a439f04f71519df9a2",
+  "manifest_parquet_sha256": "dd72992f925984bd597ef2dfd7c8a5189e15d99cd1d78af3ff8406171ae909b0",
+  "development_csv_sha256": "82d35fe21ae4cdb941b4609e2fb335b9ade340344ad2b50cc52c7ad07205d4a8",
+  "development_parquet_sha256": "f9a1d02f2acd66a5017a8f1d0ce50aa97bde845b39d550fb9ee6a268b96f9ed9"
+}
