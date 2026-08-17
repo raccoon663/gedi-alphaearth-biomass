@@ -150,7 +150,3 @@ SHA-256 checksums remain so the experiment can be verified without them.
   hyperparameter search.
 - Absolute Kaihua performance remained too weak for a reliable operational biomass
   map; wall-to-wall mapping was not pursued.
-
-## Citation
-
-If you use the code or results, please cite the repository (see `CITATION.cff`).
