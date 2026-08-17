@@ -109,8 +109,14 @@ folds. Target labels are unlocked only after zero-shot predictions are frozen
   transfer table.
 - **Scripts:** `scripts/03_modeling/run_kaihua_locked_predictors.py`,
   `evaluate_kaihua_zero_shot.py`, `finalize_kaihua_locked_zero_shot.py`.
-- **GEE needed:** no.
-- **Cost / duration:** minutes.
+- **GEE needed:** **yes when target labels must be regenerated.** If
+  `data/processed/kaihua_gedi_labels_unlocked.csv` is already present (the frozen
+  case), no Earth Engine call is made and the stage runs locally. Otherwise
+  `evaluate_kaihua_zero_shot.py` calls `ee.Initialize()` and pulls the Kaihua GEDI
+  L4A labels from Earth Engine, so a GEE account is required for a full
+  regeneration.
+- **Cost / duration:** minutes locally; the label-regeneration path adds Earth
+  Engine export time.
 - **Skip with frozen outputs?** yes — results are in
   `outputs/tables/main_results/representation_transfer_summary.csv`.
 

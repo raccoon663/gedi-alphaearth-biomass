@@ -116,7 +116,7 @@ def main() -> None:
     }).sort_values("shot_number")
     masked_output["missing_reason"] = "DEM_MASKED"
     processed = root / "data" / "processed"
-    tables = root / "outputs" / "tables"
+    tables = root / "outputs" / "tables" / "diagnostics"
     processed.mkdir(parents=True, exist_ok=True)
     tables.mkdir(parents=True, exist_ok=True)
     csv_path = processed / "source_dem_features.csv"

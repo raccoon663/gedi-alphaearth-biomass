@@ -20,6 +20,7 @@ Run from anywhere; the repository root is derived from this file's location
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -34,6 +35,57 @@ def check(name: str, ok: bool, detail: str = "") -> None:
 
 def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8", errors="ignore")
+
+
+def scan_scripts_for_stale_paths() -> None:
+    """Forbid path patterns that contradict the public repository layout.
+
+    The public repo uses ``outputs/tables/{main_results,diagnostics,audits}/`` and
+    ``figures/``. Any script still referencing ``root / "reports"``,
+    ``root / "outputs/figures"``, a bare ``outputs/tables/<file>.csv`` (instead of a
+    subdir), or one of the three historically-misplaced tables is inconsistent and
+    must be fixed.
+    """
+    forbidden_substrings = [
+        'root / "reports"', "root / 'reports'",
+        'root / "outputs/figures"', "root / 'outputs/figures'",
+        '"outputs/tables/representation_transfer_summary.csv"',
+        '"outputs/tables/kaihua_fewshot_summary.csv"',
+        '"outputs/tables/kaihua_label_thresholds.csv"',
+    ]
+    # The validator itself mentions these strings (in this docstring and below), so
+    # it must be excluded from its own scan.
+    self_path = ROOT / "scripts/utilities/validate_public_release.py"
+    hits = []
+    for py in (ROOT / "scripts").rglob("*.py"):
+        if py.resolve() == self_path.resolve():
+            continue
+        try:
+            text = py.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        for sub in forbidden_substrings:
+            if sub in text:
+                hits.append(f"{py.relative_to(ROOT)}: {sub}")
+    check("no stale path patterns in scripts", len(hits) == 0, str(hits))
+
+    # A bare outputs/tables/<non-subdir>/ path is forbidden; the only allowed
+    # continuations are main_results/, diagnostics/, audits/.
+    bare = []
+    pattern = re.compile(r'outputs/tables/(?!(main_results|diagnostics|audits)/)')
+    for py in (ROOT / "scripts").rglob("*.py"):
+        if py.resolve() == self_path.resolve():
+            continue
+        try:
+            text = py.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        for m in pattern.finditer(text):
+            snippet = text[max(0, m.start() - 25):m.end() + 25]
+            bare.append(f"{py.relative_to(ROOT)}: ...{snippet}...")
+            break
+    check("all outputs/tables paths use main_results/diagnostics/audits/",
+          len(bare) == 0, str(bare))
 
 
 def main() -> int:
@@ -120,6 +172,9 @@ def main() -> int:
                 if s in txt:
                     hits.append(f"{md.name}:{s}")
     check("no shouty terms in docs", len(hits) == 0, str(hits))
+
+    # --- 11. no stale path patterns in scripts ----------------------------
+    scan_scripts_for_stale_paths()
 
     # --- report -----------------------------------------------------------
     failed = [c for c in CHECKS if not c[1]]

@@ -41,5 +41,6 @@ Thumbs.db
 # experiment was not modified after the fact.
 outputs/manifests/source_aef_central_input.csv
 outputs/manifests/kaihua_fewshot_spatial_folds.csv
+outputs/manifests/kaihua_fewshot_label_draws.csv
 outputs/manifests/aef_development_subset_75.csv
 outputs/manifests/aef_development_common_manifest.csv

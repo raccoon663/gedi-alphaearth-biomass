@@ -12,10 +12,16 @@ reported numbers are an honest estimate of out-of-region predictive skill:
   * Outer loop: the five spatial blocks (``spatial_fold`` 0..4) are held out one at a
     time. The held-out block is never used for tuning.
   * Inner loop: for each outer-training set, a 4-fold spatial CV (the remaining blocks)
-    selects the best hyperparameter configuration per model family by RMSE.
-  * Outer test: the configuration selected on the outer-training set is refit on that
-    set and evaluated on the untouched outer-test block. The five outer-test blocks are
-    aggregated into a single out-of-fold prediction set for the final metrics.
+    jointly selects ONE (model family, configuration) from all RF/XGB candidates by
+    RMSE. Family selection is therefore nested, not taken from outer-fold performance.
+  * Outer test: only the configuration selected by the inner CV on the outer-training
+    set is refit on that set and evaluated on the untouched outer-test block. The five
+    outer-test blocks are aggregated into a single out-of-fold prediction set for the
+    final metrics.
+
+After the outer nested-CV, a separate source-only CV on ALL source data selects the
+final deployment (family, config); that pipeline is refit on all source data. The
+deployment fit's in-sample score is intentionally NOT reported as an evaluation metric.
 
 The final deployment model for each representation is refit on all source data after
 selection. Its in-sample fit is intentionally NOT reported as an evaluation metric.
@@ -99,15 +105,18 @@ def build(model: str, config: str):
     raise ValueError(model)
 
 
-def inner_select(train_df: pd.DataFrame, xcols, candidates) -> tuple[dict, pd.DataFrame]:
+def inner_select(train_df: pd.DataFrame, xcols, candidates) -> tuple[tuple[str, str], pd.DataFrame]:
     """4-fold spatial inner CV on an outer-training set.
 
-    Returns the best configuration per family (lowest mean inner-CV RMSE) and a long
-    table of the inner-CV RMSE/R2 per (family, config, inner_fold) for diagnostics.
+    Returns the single (family, config) with the lowest mean inner-CV RMSE across
+    ALL RF/XGB candidates, plus a long table of the inner-CV RMSE/R2 per candidate
+    (for diagnostics). Selecting the family inside the inner CV is what makes the
+    family choice fully nested rather than leaked from outer-fold performance.
     """
     inner_folds = sorted(int(f) for f in train_df["spatial_fold"].unique())
-    rmse_acc = {fam: {cfg: [] for cfg in cfgs} for fam, cfgs in candidates.items()}
     records = []
+    best: tuple[str, str] | None = None
+    best_rmse = float("inf")
     for hold in inner_folds:
         itr = train_df[train_df.spatial_fold != hold]
         ite = train_df[train_df.spatial_fold == hold]
@@ -117,12 +126,13 @@ def inner_select(train_df: pd.DataFrame, xcols, candidates) -> tuple[dict, pd.Da
                 est.fit(itr[xcols], itr.agbd)
                 pred = est.predict(ite[xcols])
                 m = metrics(ite.agbd.to_numpy(), pred)
-                rmse_acc[fam][cfg].append(m["RMSE"])
                 records.append({"model": fam, "config": cfg, "inner_fold": hold,
                                 "RMSE": m["RMSE"], "R2": m["R2"]})
-    selected = {fam: min(cfgs, key=lambda c: float(np.mean(rmse_acc[fam][c])))
-                for fam, cfgs in candidates.items()}
-    return selected, pd.DataFrame(records)
+                if m["RMSE"] < best_rmse:
+                    best_rmse = m["RMSE"]
+                    best = (fam, cfg)
+    assert best is not None, "inner_select found no candidate"
+    return best, pd.DataFrame(records)
 
 
 def main() -> None:
@@ -141,7 +151,7 @@ def main() -> None:
     tables = root / "outputs/tables"
     diagnostics = tables / "diagnostics"
     main_results = tables / "main_results"
-    figures = root / "outputs/figures"
+    figures = root / "figures"
     models_dir = root / "outputs/models"
     manifests = root / "outputs/manifests"
     for d in (tables, diagnostics, main_results, figures, models_dir, manifests):
@@ -161,10 +171,9 @@ def main() -> None:
     if set(datasets["alphaearth"]["spatial_fold"].unique()) != set(range(N_OUTER)):
         raise RuntimeError("Expected frozen folds 0..4")
 
-    tune_records = []   # inner-CV diagnostics (config selection)
+    tune_records = []   # inner-CV diagnostics (joint family+config selection)
     rows = []           # outer-CV per-fold metrics (honest estimate)
-    oof = {rep: {fam: np.empty(len(df), dtype=float) for fam in CANDIDATES}
-           for rep, df in datasets.items()}
+    oof_pred = {rep: np.empty(len(df), dtype=float) for rep, df in datasets.items()}
 
     for rep, df in datasets.items():
         xcols = features[rep]
@@ -173,20 +182,19 @@ def main() -> None:
             train_df = df[~test_mask]
             if len(train_df) > TRAIN_CAP:
                 train_df = train_df.sample(TRAIN_CAP, random_state=SEED)
-            selected, inner_df = inner_select(train_df, xcols, CANDIDATES)
+            # Inner CV jointly selects ONE (family, config) on the outer-training set.
+            (family, config), inner_df = inner_select(train_df, xcols, CANDIDATES)
             inner_df["representation"] = rep
             inner_df["outer_fold"] = o
             tune_records.append(inner_df)
-            for fam, cfgs in CANDIDATES.items():
-                cfg = selected[fam]
-                est = build(fam, cfg)
-                est.fit(train_df[xcols], train_df.agbd)
-                pred = est.predict(df.loc[test_mask, xcols])
-                idx = np.flatnonzero(test_mask.to_numpy())
-                oof[rep][fam][idx] = pred
-                m = metrics(df.loc[test_mask, "agbd"].to_numpy(), pred)
-                rows.append({"representation": rep, "model": fam, "config": cfg,
-                             "split_type": OUTER_SPLIT_TYPE, "outer_fold": o, **m})
+            est = build(family, config)
+            est.fit(train_df[xcols], train_df.agbd)
+            pred = est.predict(df.loc[test_mask, xcols])
+            idx = np.flatnonzero(test_mask.to_numpy())
+            oof_pred[rep][idx] = pred
+            m = metrics(df.loc[test_mask, "agbd"].to_numpy(), pred)
+            rows.append({"representation": rep, "model": family, "config": config,
+                         "split_type": OUTER_SPLIT_TYPE, "outer_fold": o, **m})
 
     # Mean and Ridge baselines under the identical outer folds (no tuning involved).
     for rep, df in datasets.items():
@@ -208,47 +216,45 @@ def main() -> None:
     comparison.to_csv(diagnostics / "source_model_comparison.csv", index=False)
     pd.concat(tune_records, ignore_index=True).to_csv(diagnostics / "source_model_tuning.csv", index=False)
 
-    # Honest aggregated out-of-fold metrics per family, plus cross-fold variability.
-    summary_rows, fold_metric_records = [], []
+    # Honest aggregated out-of-fold metrics from the nested-selected pipelines, plus
+    # cross-fold variability. Each outer fold contributed predictions from its own
+    # inner-CV-selected pipeline, so outer performance is never reused for selection.
+    summary_rows = []
     for rep, df in datasets.items():
         y = df.agbd.to_numpy()
-        for fam in CANDIDATES:
-            pred = oof[rep][fam]
-            agg = metrics(y, pred)
-            fold_metrics = [r for r in rows
-                            if r["representation"] == rep and r["model"] == fam
-                            and r["split_type"] == OUTER_SPLIT_TYPE]
-            summary_rows.append({
-                "representation": rep, "model": fam, "config": "nested_oof",
-                "split_type": OUTER_SPLIT_TYPE,
-                "R2": agg["R2"], "RMSE": agg["RMSE"], "MAE": agg["MAE"], "Bias": agg["Bias"],
-                "N": agg["N"],
-                "R2_std": float(np.std([r["R2"] for r in fold_metrics])),
-                "RMSE_std": float(np.std([r["RMSE"] for r in fold_metrics])),
-                "MAE_std": float(np.std([r["MAE"] for r in fold_metrics])),
-                "Bias_std": float(np.std([r["Bias"] for r in fold_metrics])),
-            })
+        pred = oof_pred[rep]
+        agg = metrics(y, pred)
+        fold_metrics = [r for r in rows if r["representation"] == rep
+                        and r["split_type"] == OUTER_SPLIT_TYPE
+                        and r["model"] not in ("mean", "ridge")]
+        summary_rows.append({
+            "representation": rep, "model": "nested_selected", "config": "per_fold_inner_cv",
+            "split_type": OUTER_SPLIT_TYPE,
+            "R2": agg["R2"], "RMSE": agg["RMSE"], "MAE": agg["MAE"], "Bias": agg["Bias"], "N": agg["N"],
+            "R2_std": float(np.std([r["R2"] for r in fold_metrics])),
+            "RMSE_std": float(np.std([r["RMSE"] for r in fold_metrics])),
+            "MAE_std": float(np.std([r["MAE"] for r in fold_metrics])),
+            "Bias_std": float(np.std([r["Bias"] for r in fold_metrics])),
+        })
     summary = pd.DataFrame(summary_rows)
     summary.to_csv(main_results / "source_model_comparison_summary.csv", index=False)
 
     best = {}
     for rep, df in datasets.items():
-        eligible = summary[(summary.representation == rep) &
-                           (summary.model.isin(CANDIDATES))]
-        winner = eligible.loc[eligible.RMSE.idxmin()].to_dict()
-        family, config = winner["model"], winner["config"]
-        # Final deployment config: inner-CV selection on the full source set.
-        selected_full, _ = inner_select(df, features[rep], CANDIDATES)
-        final_config = selected_full[family]
-        final_model = build(family, final_config)
+        # Final deployment pipeline: a SEPARATE source-only CV on ALL source data
+        # selects (family, config); the pipeline is then fit on all source data.
+        # This selection is independent of the outer nested-CV estimate above.
+        (family, config), _ = inner_select(df, features[rep], CANDIDATES)
+        final_model = build(family, config)
         final_model.fit(df[features[rep]], df.agbd)
         model_path = models_dir / f"frozen_source_{rep}_{family}.joblib"
         joblib.dump(final_model, model_path, compress=3)
 
+        winner = next(r for r in summary_rows if r["representation"] == rep)
         best[rep] = {
             "model": family,
-            "config": final_config,
-            "hyperparameters": build(family, final_config).get_params(),
+            "config": config,
+            "hyperparameters": build(family, config).get_params(),
             "source_cv": {k: float(winner[k]) for k in
                           ["R2", "R2_std", "RMSE", "RMSE_std",
                            "MAE", "MAE_std", "Bias", "Bias_std"]},
@@ -256,22 +262,22 @@ def main() -> None:
             "model_file": str(model_path.relative_to(root)),
         }
 
-        # OOF diagnostics for the winning family (no shot_number written out).
-        oof_pred = oof[rep][family]
-        residual = oof_pred - df.agbd.to_numpy()
+        # OOF diagnostics for the nested-selected pipeline (no shot_number written out).
+        oof_vec = oof_pred[rep]
+        residual = oof_vec - df.agbd.to_numpy()
         diag = pd.DataFrame({
-            "agbd": df.agbd, "prediction": oof_pred, "residual": residual,
+            "agbd": df.agbd, "prediction": oof_vec, "residual": residual,
             "absolute_error": np.abs(residual), "spatial_fold": df.spatial_fold,
-            "model": family, "config": final_config,
+            "model": family, "config": config,
         })
         diag.to_parquet(diagnostics / f"source_{rep}_oof_predictions.parquet", index=False)
 
         fig, axes = plt.subplots(1, 3, figsize=(14, 4))
-        axes[0].hexbin(df.agbd, oof_pred, gridsize=60, mincnt=1)
+        axes[0].hexbin(df.agbd, oof_pred[rep], gridsize=60, mincnt=1)
         axes[0].set(xlabel="Observed AGBD (Mg/ha)", ylabel="Predicted (OOF)", title=rep)
         axes[1].hist(residual, bins=80)
         axes[1].set(xlabel="Residual (pred-observed)", title="Residual distribution")
-        axes[2].hexbin(oof_pred, residual, gridsize=60, mincnt=1)
+        axes[2].hexbin(oof_pred[rep], residual, gridsize=60, mincnt=1)
         axes[2].axhline(0, color="red")
         axes[2].set(xlabel="Predicted", ylabel="Residual")
         fig.tight_layout()

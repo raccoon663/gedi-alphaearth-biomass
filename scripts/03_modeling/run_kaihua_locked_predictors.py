@@ -227,7 +227,7 @@ def main() -> None:
     manifest_dir = root / "data" / "manifests"
     manifest_dir.mkdir(parents=True, exist_ok=True)
     shot_path = manifest_dir / "kaihua_target_shots_locked.csv"
-    count_path = root / "outputs" / "tables" / "kaihua_target_shot_counts_locked.csv"
+    count_path = root / "outputs" / "tables" / "diagnostics" / "kaihua_target_shot_counts_locked.csv"
     count_path.parent.mkdir(parents=True, exist_ok=True)
     if not shot_path.exists():
         all_years, counts = [], []

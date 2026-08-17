@@ -69,7 +69,7 @@ def main() -> None:
         previous = n
     by_year = granules.groupby("year", as_index=False)[STAGE_NAMES].sum()
 
-    tables = root / "outputs" / "tables"
+    tables = root / "outputs" / "tables" / "diagnostics"
     logs = root / "outputs" / "logs"
     tables.mkdir(parents=True, exist_ok=True)
     logs.mkdir(parents=True, exist_ok=True)
