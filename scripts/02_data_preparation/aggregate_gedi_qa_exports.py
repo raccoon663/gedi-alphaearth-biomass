@@ -42,7 +42,7 @@ def main() -> None:
         })
         previous = n
 
-    tables = root / "outputs" / "tables"
+    tables = root / "outputs" / "tables" / "diagnostics"
     logs = root / "outputs" / "logs"
     tables.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(rows).to_csv(tables / "gedi_qa.csv", index=False)

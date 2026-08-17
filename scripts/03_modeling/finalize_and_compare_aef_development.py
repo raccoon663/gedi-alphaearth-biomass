@@ -37,8 +37,8 @@ def main() -> None:
                                              "spatial_block_id": "string"})
     expected_shots = set(common["shot_number"].astype(str))
     processed = root / "data" / "processed"
-    tables = root / "outputs" / "tables"
-    reports = root / "reports"
+    tables = root / "outputs" / "tables" / "diagnostics"
+    reports = root / "outputs" / "tables" / "diagnostics"
     processed.mkdir(parents=True, exist_ok=True)
     tables.mkdir(parents=True, exist_ok=True)
     finalized = {}

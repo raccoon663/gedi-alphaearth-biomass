@@ -39,7 +39,9 @@ def model(protocol: dict, seed: int) -> XGBRegressor:
 
 def main() -> None:
     root = Path(__file__).resolve().parents[2]
-    manifests, tables, figures = root / "outputs/manifests", root / "outputs/tables", root / "figures"
+    manifests = root / "outputs" / "manifests"
+    tables = root / "outputs" / "tables" / "main_results"
+    figures = root / "figures"
     figures.mkdir(parents=True, exist_ok=True)
     design_path = manifests / "kaihua_fewshot_design_freeze.json"
     design = json.loads(design_path.read_text())

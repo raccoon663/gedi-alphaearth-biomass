@@ -96,7 +96,7 @@ def main() -> None:
     raw_dir = root / "data" / "raw" / "source_sampling_exports_200"
     archive = root / "archive" / "legacy_sampling_cap_500"
     processed = root / "data" / "processed"
-    tables = root / "outputs" / "tables"
+    tables = root / "outputs" / "tables" / "diagnostics"
     logs = root / "outputs" / "logs"
     manifests_dir = root / "outputs" / "manifests"
     for directory in [raw_dir, archive, processed, tables, logs, manifests_dir]:

@@ -44,7 +44,7 @@ def main() -> None:
     root = Path(__file__).resolve().parents[2]
     raw_dir = root / "data" / "raw" / "source_sampling_exports"
     processed = root / "data" / "processed"
-    tables = root / "outputs" / "tables"
+    tables = root / "outputs" / "tables" / "diagnostics"
     logs = root / "outputs" / "logs"
     manifests_dir = root / "outputs" / "manifests"
     for directory in [raw_dir, processed, tables, logs, manifests_dir]:

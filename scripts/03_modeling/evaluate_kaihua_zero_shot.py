@@ -30,7 +30,11 @@ def metrics(y: np.ndarray, p: np.ndarray) -> dict:
 def main() -> None:
     root = Path(__file__).resolve().parents[2]
     manifests, processed = root / "outputs/manifests", root / "data/processed"
-    tables, figures, reports = root / "outputs/tables", root / "outputs/figures", root / "reports"
+    tables = root / "outputs/tables"
+    main_results, diagnostics = tables / "main_results", tables / "diagnostics"
+    figures = root / "figures"
+    for d in (main_results, diagnostics, figures):
+        d.mkdir(parents=True, exist_ok=True)
     freeze_path = manifests / "kaihua_zero_shot_freeze.json"
     if not freeze_path.exists():
         raise RuntimeError("HARD STOP: zero-shot predictions are not frozen; labels remain locked")
@@ -105,15 +109,16 @@ def main() -> None:
     for b in ["alphaearth", "conventional"]:
         src = source["selected_models"][b]["source_cv"]
         m = result[b]
-    rows.append({"representation": "AlphaEarth" if b == "alphaearth" else "Conventional",
-                 "source_R2": src["R2"], "target_R2": m["R2"],
-                 "R2_drop": src["R2"]-m["R2"], "source_RMSE": src["RMSE"],
-                 "target_RMSE": m["RMSE"], "RMSE_increase": m["RMSE"]-src["RMSE"],
-                 "RMSE_increase_percent": 100*(m["RMSE"]/src["RMSE"]-1),
-                 "target_RMSE_over_source_RMSE": m["RMSE"]/src["RMSE"],
+        rows.append({"representation": "AlphaEarth" if b == "alphaearth" else "Conventional",
+                     "source_R2": src["R2"], "target_R2": m["R2"],
+                     "R2_drop": src["R2"]-m["R2"], "source_RMSE": src["RMSE"],
+                     "target_RMSE": m["RMSE"], "RMSE_increase": m["RMSE"]-src["RMSE"],
+                     "RMSE_increase_percent": 100*(m["RMSE"]/src["RMSE"]-1),
+                     "target_RMSE_over_source_RMSE": m["RMSE"]/src["RMSE"],
                      "target_MAE": m["MAE"], "target_Bias": m["Bias"], "N": m["N"]})
     summary = pd.DataFrame(rows)
-    summary.to_csv(tables / "representation_transfer_summary.csv", index=False)
+    assert len(summary) == 2, f"expected 2 rows (AlphaEarth, Conventional), got {len(summary)}"
+    summary.to_csv(main_results / "representation_transfer_summary.csv", index=False)
 
     year_rows = []
     for year, group in evaluation.groupby("year"):
@@ -122,9 +127,9 @@ def main() -> None:
         for b in ["alphaearth", "conventional"]:
             year_rows.append({"year": year, "representation": b,
                               **metrics(group.agbd.to_numpy(), group[f"prediction_{b}"].to_numpy())})
-    pd.DataFrame(year_rows).to_csv(tables / "kaihua_zero_shot_metrics_by_year.csv", index=False)
+    pd.DataFrame(year_rows).to_csv(diagnostics / "kaihua_zero_shot_metrics_by_year.csv", index=False)
 
-    distance = pd.read_parquet(tables / "kaihua_aef_nearest_source_distance.parquet")
+    distance = pd.read_parquet(diagnostics / "kaihua_aef_nearest_source_distance.parquet")
     evaluation = evaluation.merge(distance, on="shot_number", validate="one_to_one")
     evaluation["aef_absolute_error"] = abs(evaluation.prediction_alphaearth-evaluation.agbd)
     rho = spearmanr(evaluation.nearest_source_aef_euclidean_distance,
@@ -139,7 +144,7 @@ def main() -> None:
         include_groups=False).reset_index()
     deciles["spearman_rho_all"] = rho.statistic
     deciles["spearman_pvalue_all"] = rho.pvalue
-    deciles.to_csv(tables / "kaihua_aef_distance_vs_error.csv", index=False)
+    deciles.to_csv(diagnostics / "kaihua_aef_distance_vs_error.csv", index=False)
 
     diag_rows = []
     evaluation["observed_decile"] = pd.qcut(evaluation.agbd, 10, labels=False, duplicates="drop") + 1
@@ -150,7 +155,7 @@ def main() -> None:
                               "prediction_mean": g[f"prediction_{b}"].mean(),
                               "bias": (g[f"prediction_{b}"]-g.agbd).mean(),
                               "MAE": mean_absolute_error(g.agbd, g[f"prediction_{b}"])})
-    pd.DataFrame(diag_rows).to_csv(tables / "kaihua_error_by_observed_biomass_decile.csv", index=False)
+    pd.DataFrame(diag_rows).to_csv(diagnostics / "kaihua_error_by_observed_biomass_decile.csv", index=False)
 
     for b, title in [("alphaearth", "AlphaEarth"), ("conventional", "Conventional")]:
         pred = evaluation[f"prediction_{b}"]
@@ -198,7 +203,7 @@ Predictor-only diagnostics include conventional KS/Wasserstein statistics, sourc
 
 ## AEF distance versus error
 
-Spearman rho = {rho.statistic:.4f} (p = {rho.pvalue:.3g}). Decile-level N, MAE, and RMSE are saved in `outputs/tables/kaihua_aef_distance_vs_error.csv`.
+Spearman rho = {rho.statistic:.4f} (p = {rho.pvalue:.3g}). Decile-level N, MAE, and RMSE are saved in `outputs/tables/diagnostics/kaihua_aef_distance_vs_error.csv`.
 
 ## Limitations
 
@@ -206,7 +211,7 @@ This is footprint-level zero-shot evaluation, not wall-to-wall mapping. No Zheji
 
 Wall-to-wall map exports remain stopped pending human review.
 """
-    (reports / "kaihua_zero_shot_transfer.md").write_text(report, encoding="utf-8")
+    (diagnostics / "kaihua_zero_shot_transfer.md").write_text(report, encoding="utf-8")
     print(summary.to_string(index=False)); print(interpretation)
 
 
