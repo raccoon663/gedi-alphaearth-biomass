@@ -1,7 +1,7 @@
 # Validation
 
 This page documents how the results were validated and the limits of that
-validation. It accompanies [`research_report.md`](research_report.md) and
+validation. It accompanies [`technical_report.md`](technical_report.md) and
 [`experiments.md`](experiments.md).
 
 ## Validation design
@@ -19,8 +19,8 @@ validation. It accompanies [`research_report.md`](research_report.md) and
 Source GEDI footprints passed a frozen QA gate (`config.yaml`: `gedi_qa`):
 `algorithm_run_flag = 1`, `degrade_flag = 0`, finite AGBD standard error
 required, and physically invalid negative AGBD rejected. The QA pass rates and
-per-year breakdowns are in `outputs/tables/gedi_qa.csv` and
-`outputs/tables/gedi_qa_by_year.csv`.
+per-year breakdowns are in `outputs/tables/audits/gedi_qa.csv` and
+`outputs/tables/audits/gedi_qa_by_year.csv`.
 
 ## Domain diagnostics (not model selection)
 

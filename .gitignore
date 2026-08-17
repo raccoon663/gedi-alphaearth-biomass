@@ -34,3 +34,12 @@ work/
 Thumbs.db
 .vscode/
 .idea/
+
+# Per-sample manifests with GEDI shot IDs / coordinates (excluded from the repo;
+# regenerate locally from the frozen Earth Engine exports). The frozen designs,
+# folds, seeds, and SHA-256 checksums remain in outputs/manifests/ as proof the
+# experiment was not modified after the fact.
+outputs/manifests/source_aef_central_input.csv
+outputs/manifests/kaihua_fewshot_spatial_folds.csv
+outputs/manifests/aef_development_subset_75.csv
+outputs/manifests/aef_development_common_manifest.csv
