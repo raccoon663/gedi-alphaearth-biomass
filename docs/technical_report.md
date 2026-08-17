@@ -44,20 +44,20 @@ A source-only development subset compared the central 10 m pixel with a 25 m com
 
 ## 7. Source-domain results
 
-The final comparison used identical source footprints and five 50 km block folds. Both selected models were XGBoost depth-6 configurations chosen under the same restricted source-only tuning budget.
+The final comparison used identical source footprints and five 50 km block folds. Model selection used an identical restricted source-only tuning budget for both representations; the winning configuration per representation was chosen by nested spatial cross-validation.
 
 | Representation | R² | RMSE (Mg/ha) | MAE (Mg/ha) | Bias (Mg/ha) |
 |---|---:|---:|---:|---:|
-| AlphaEarth + DEM | 0.5810 | 68.70 | 41.46 | +0.31 |
-| Conventional + DEM | 0.4336 | 79.88 | 52.70 | -0.01 |
+| AlphaEarth + DEM | 0.5768 | 69.05 | 41.79 | +0.60 |
+| Conventional + DEM | 0.4273 | 80.33 | 53.07 | +0.21 |
 
-AlphaEarth improved source R² by 0.147 and reduced RMSE by approximately 14% relative to conventional predictors.
+AlphaEarth improved source R² by 0.150 and reduced RMSE by approximately 14% relative to conventional predictors.
 
 ![Source representation comparison](../figures/source_representation_comparison.png)
 
 ## 8. Zero-shot transfer
 
-Target labels remained locked during Kaihua predictor construction and model prediction. DEM, AlphaEarth and conventional variables were extracted for the exact same 130,195 target footprints. The two frozen prediction files were hashed before AGBD and AGBD-SE were unlocked and joined by the pre-existing shot-number manifest.
+Target labels remained locked during Kaihua predictor construction and model prediction. DEM, AlphaEarth and conventional variables were extracted for the exact same 130,195 target footprints. The two frozen prediction files were hashed before AGBD and AGBD-SE were unlocked and joined by shot number.
 
 | Representation | R² | RMSE (Mg/ha) | MAE (Mg/ha) | Bias (Mg/ha) |
 |---|---:|---:|---:|---:|
@@ -80,13 +80,13 @@ This separability is descriptive, not a target-model selection rule. It also doe
 
 ## 10. Few-shot adaptation
 
-Kaihua footprints were assigned to fixed 5 km blocks in EPSG:32650. Five whole-block folds contained approximately 26,000 evaluation samples each. Label budgets were 25, 50, 100, 250, 500, 1,000 and 2,500, with seeds 42–44. Every fold × budget × seed used the identical target shot-number draw for both representations, without AGBD stratification or active learning.
+Kaihua footprints were first assigned to 117 fixed 5 km × 5 km grid cells in EPSG:32650, and entire cells were then assigned to five sample-balanced spatial folds (~26,000 evaluation footprints each) so that no cell crosses a train/test partition. Label budgets were 25, 50, 100, 250, 500, 1,000 and 2,500, with seeds 42–44. Every fold × budget × seed used the identical target shot-number draw for both representations, without AGBD stratification or active learning.
 
 Three adaptation methods were tested: an intercept-only bias correction, two-parameter affine calibration and a shared conservative local XGBoost configuration frozen before representation results. Bias-only calibration remained negative at every budget, demonstrating that failure was not a simple offset. Affine calibration became slightly positive with 50 labels but plateaued near R² 0.05, indicating both offset and scale mismatch.
 
 Local AlphaEarth models first achieved positive mean spatial-holdout R² with 250 labels; conventional models required 500. At 2,500 labels, AlphaEarth reached R² 0.1306 ± 0.0168 and RMSE 81.90 Mg/ha, compared with R² 0.0594 ± 0.0105 and RMSE 85.19 Mg/ha for conventional features. No method reached mean R² 0.2.
 
-![Kaihua label efficiency](../figures/kaihua_label_efficiency_final.png)
+![Kaihua label efficiency](../figures/kaihua_label_efficiency.png)
 
 ![Calibration and local adaptation](../figures/calibration_vs_local_adaptation.png)
 

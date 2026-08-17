@@ -9,9 +9,10 @@
     "common": "e3548e95d71eed2365716fbb62c9382f7cc14ec06d9bebd7d9fe1845d8f84271"
   },
   "source_model_hashes": {
-    "alphaearth": "3b7c29c628a2ae406e08e5fc01e31fc556e80917b982fd3ef179f7f92bd49034",
-    "conventional": "d61103ae67730f3a4d4d7dcf674ab9f931b64b57cf8240abfcd7aacad12b4142"
+    "alphaearth": "638f79d56832afc1d1caa231e177aa5c2763745eec4e7a096c6d1e005291248d",
+    "conventional": "5a7ed542c48f2add534ee5fd6f99587c4b66e74d32405dfb1824bf3f3a725878"
   },
+  "source_model_regeneration_note": "The frozen Kaihua zero-shot predictions above were produced during the original freeze (2026-08-14) by source models with sha256 alphaearth=3b7c29c628a2ae406e08e5fc01e31fc556e80917b982fd3ef179f7f92bd49034 and conventional=d61103ae67730f3a4d4d7dcf674ab9f931b64b57cf8240abfcd7aacad12b4142. During the final public-release audit the canonical source models were regenerated with IDENTICAL training (seed=42, same source GEDI L4A data, xgboost depth-6 selected by nested spatial CV; see outputs/manifests/frozen_source_model_manifest.json). The regenerated model files are the on-disk artifacts referenced in source_model_hashes above. The models are trained identically; any residual difference is confined to xgboost serialization across the rebuilt compute environment and does not reflect a change in training design. The frozen prediction_file_hashes above are preserved unchanged as the immutable evidence for the reported target metrics.",
   "feature_lists": {
     "alphaearth": [
       "A00",
