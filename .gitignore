@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# Secrets / credentials (never commit)
+.env
+.env.*
+credentials/
+secrets/
+*.pem
+*service*account*.json
+
+# Large or local data products (not distributed through GitHub)
+data/raw/
+data/processed/
+data/interim/
+data/manifests/
+data/china_field_biomass/
+data/boundaries/
+outputs/cache/
+outputs/logs/
+outputs/models/
+outputs/predictions/
+archive/
+work/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

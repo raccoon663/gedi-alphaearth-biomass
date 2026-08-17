@@ -1,0 +1,54 @@
+{
+  "status": "KAIHUA_FEWSHOT_DESIGN_FROZEN_BEFORE_REPRESENTATION_RESULTS",
+  "frozen_at": "2026-08-14T14:27:21.727966+08:00",
+  "input_evaluation_sha256": "02c8a3cb4568a60b991eb67939788f7a33884ff1fbfc6e9b9409454bf353d94f",
+  "input_n": 130195,
+  "target_block_crs": "EPSG:32650",
+  "target_block_size_m": 5000,
+  "target_block_n": 117,
+  "folds": 5,
+  "fold_seed": 42,
+  "fold_sample_n": {
+    "0": 26033,
+    "1": 26059,
+    "2": 26037,
+    "3": 26033,
+    "4": 26033
+  },
+  "fold_assignment_uses_labels_or_errors": false,
+  "budgets": [
+    25,
+    50,
+    100,
+    250,
+    500,
+    1000,
+    2500
+  ],
+  "label_draw_seeds": [
+    42,
+    43,
+    44
+  ],
+  "draws_are_nested_within_fold_seed": true,
+  "draws_use_agbd_stratification_or_errors": false,
+  "common_model_protocol": {
+    "model": "XGBRegressor",
+    "n_estimators": 300,
+    "learning_rate": 0.03,
+    "max_depth": 3,
+    "min_child_weight": 5,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "reg_lambda": 10.0,
+    "objective": "reg:squarederror",
+    "tree_method": "hist",
+    "n_jobs": 6,
+    "random_state": "label_draw_seed",
+    "decision_basis": "Conservative fixed configuration frozen before representation results; chosen for 25/50-label stability, with no target hyperparameter tuning."
+  },
+  "block_manifest_sha256": "b0babf9a1888508672cdeb68fdba9355d24ea968c6148011be7e3dcb2e3af38e",
+  "fold_manifest_sha256": "89db7de20e71178d8242a4854b90e8505cfac7692d2396f46c90bf73d04a321d",
+  "label_draw_manifest_sha256": "d70ec0b840c889222a57036078453e9b6443f2ce6691c70a1c15aa65c5c1f1a0",
+  "zero_shot_prediction_hashes_verified": true
+}

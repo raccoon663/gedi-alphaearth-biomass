@@ -1,0 +1,2 @@
+method,features,train_n,test_n,AUROC,purpose
+standardized_logistic_regression,A00-A63,75000,25000,1.0,descriptive_domain_shift_only_not_model_selection

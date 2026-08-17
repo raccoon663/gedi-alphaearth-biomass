@@ -1,0 +1,114 @@
+project:
+  name: gedi_alphaearth_biomass_transfer
+  seed: 42
+  target_label_locked: true
+  crs_geographic: EPSG:4326
+
+datasets:
+  alphaearth: GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL
+  gedi_l4a_monthly: LARSE/GEDI/GEDI04_A_002_MONTHLY
+  sentinel1: COPERNICUS/S1_GRD
+  sentinel2: COPERNICUS/S2_SR_HARMONIZED
+  dem: COPERNICUS/DEM/GLO30
+
+years:
+  start: 2019
+  end: 2024
+
+areas:
+  source_states: [Georgia, South Carolina]
+  target_name: Kaihua County, western Zhejiang
+  target_aoi_file: data/boundaries/kaihua_target_aoi.geojson
+  target_admin_code: "330824"
+  target_boundary_status: user_supplied_vetted
+  target_subset_optional: Qianjiangyuan forest/protected region
+
+gedi_qa:
+  algorithm_run_flag: 1
+  degrade_flag: 0
+  agbd_min_mg_ha: 0
+  agbd_max_mg_ha: null
+  require_finite_agbd_se: true
+  # Negative AGBD is physically invalid. No arbitrary global upper or uncertainty cutoff is imposed in v1.
+
+alphaearth:
+  bands: A00:A63
+  year_match: exact
+  extraction_method: central_pixel
+  scale_m: 10
+  aggregation_enabled: false
+  selected_using_target_data: false
+  selection_domain: source_only
+
+conventional:
+  temporal_mode: annual_median
+  per_footprint_window_enabled: false
+  year_match: exact
+  sentinel2_dataset: COPERNICUS/S2_SR_HARMONIZED
+  sentinel2_composite: annual_median
+  sentinel2_scale_factor: 0.0001
+  sentinel2_mask_scl_classes: [1, 3, 8, 9, 10, 11]
+  sentinel2_mask_qa60_cloud_bits: [10, 11]
+  sentinel2_bands: [B2, B3, B4, B5, B6, B7, B8, B8A, B11, B12]
+  indices: [NDVI, EVI, NDMI, NBR, NDRE]
+  sentinel1_dataset: COPERNICUS/S1_GRD
+  sentinel1_composite: annual_median
+  sentinel1_units: dB
+  sentinel1_instrument_mode: IW
+  sentinel1_orbits: [ASCENDING, DESCENDING]
+  sentinel1_polarizations: [VV, VH]
+  sentinel1_features: [VV, VH, VV_minus_VH]
+  topography: [elevation, slope, aspect_sin, aspect_cos]
+
+validation:
+  spatial_block_km: 50
+  spatial_block_crs: EPSG:5070
+  random_test_fraction: 0.2
+  spatial_folds: 5
+
+source_sampling:
+  status: revised_pre_model_training
+  block_size_km: 50
+  strata: [spatial_block_id, year]
+  max_per_block_year: 200
+  deterministic_seed: 42
+  seed: 42
+  random_row_key: shot_number
+  agbd_stratification: false
+  stratify_by_target: false
+  oversampling: false
+  inverse_probability_weighting: false
+  target_data_allowed: false
+
+models:
+  families: [random_forest, xgboost]
+  selection_metric: spatial_cv_rmse
+  target_domain_model_selection_forbidden: true
+
+aef_method_selection:
+  max_per_block_year: 75
+  selection_model: random_forest
+  candidates: [central_10m, footprint_mean_25m_l2_renormalized]
+  domain: source_only
+
+conventional_temporal:
+  mode: annual_median
+  year_match: exact
+  per_footprint_window_enabled: false
+  selected_using_target_performance: false
+
+modeling:
+  models: [random_forest, xgboost]
+  extensive_hyperparameter_search: false
+
+spatial_sensitivity_analysis:
+  enabled: false
+
+target:
+  aoi: kaihua_county
+  labels_locked_until_zero_shot_freeze: true
+
+wall_to_wall:
+  source_map: false
+  target_map: true
+  preferred_resolution_m: 30

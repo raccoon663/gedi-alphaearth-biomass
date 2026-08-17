@@ -1,0 +1,8 @@
+stage,filter_stage,n_after,removed_at_stage,retained_from_raw_percent
+0,all_intersecting_shots,61489287,,100.0
+1,algorithm_run_flag_eq_1,34738449,26750838.0,56.49512410186184
+2,required_fields_nonnull,34738449,0.0,56.49512410186184
+3,l4_quality_flag_eq_1,9919945,24818504.0,16.132802125352338
+4,degrade_flag_eq_0,7087126,2832819.0,11.525789850189676
+5,agbd_nonnegative,7087126,0.0,11.525789850189676
+6,agbd_se_nonnegative,7087126,0.0,11.525789850189676

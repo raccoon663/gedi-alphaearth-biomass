@@ -1,0 +1,15 @@
+check,value,status
+expected_shot_set,124303.0,PASS
+global_unique_shot_number,124303.0,PASS
+complete_A00_A63,1.0,PASS
+all_zero_vectors,0.0,PASS
+year_consistency,1.0,PASS
+block_fold_consistency,1.0,PASS
+norm_abs_deviation_gt_0.02,0.0,PASS
+l2_norm_mean,1.0000940650419048,DESCRIPTIVE
+l2_norm_sd,0.001982550832138498,DESCRIPTIVE
+l2_norm_min,0.991746974285619,DESCRIPTIVE
+l2_norm_p01,0.9955174167834122,DESCRIPTIVE
+l2_norm_median,1.0000906189102001,DESCRIPTIVE
+l2_norm_p99,1.0047193359663333,DESCRIPTIVE
+l2_norm_max,1.0083943325572113,DESCRIPTIVE

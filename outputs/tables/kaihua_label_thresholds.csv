@@ -1,0 +1,25 @@
+representation,method,R2_threshold,labels_required,criterion
+alphaearth,bias_only,0.0,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+alphaearth,bias_only,0.2,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+alphaearth,bias_only,0.4,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+alphaearth,bias_only,0.5,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+alphaearth,affine,0.0,50,mean spatial-holdout R2 across 5 folds x 3 seeds
+alphaearth,affine,0.2,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+alphaearth,affine,0.4,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+alphaearth,affine,0.5,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+alphaearth,local_xgboost,0.0,250,mean spatial-holdout R2 across 5 folds x 3 seeds
+alphaearth,local_xgboost,0.2,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+alphaearth,local_xgboost,0.4,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+alphaearth,local_xgboost,0.5,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,bias_only,0.0,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,bias_only,0.2,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,bias_only,0.4,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,bias_only,0.5,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,affine,0.0,50,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,affine,0.2,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,affine,0.4,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,affine,0.5,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,local_xgboost,0.0,500,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,local_xgboost,0.2,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,local_xgboost,0.4,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
+conventional,local_xgboost,0.5,not reached,mean spatial-holdout R2 across 5 folds x 3 seeds
