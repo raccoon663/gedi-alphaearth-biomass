@@ -180,6 +180,7 @@ def main() -> None:
 
     tune_records = []   # inner-CV diagnostics (joint family+config selection)
     rows = []           # outer-CV per-fold metrics (honest estimate)
+    n_train_records = {rep: [] for rep in datasets}  # actual training size per outer fold
     oof_pred = {rep: np.empty(len(df), dtype=float) for rep, df in datasets.items()}
     # Per-OOF-prediction provenance. Different outer folds can select different
     # (family, config) pipelines; we record the one that actually produced each
@@ -197,6 +198,7 @@ def main() -> None:
             train_df = df[~test_mask]
             if len(train_df) > TRAIN_CAP:
                 train_df = train_df.sample(TRAIN_CAP, random_state=SEED)
+            n_train_records[rep].append(len(train_df))
             # Inner CV jointly selects ONE (family, config) on the outer-training set.
             (family, config), inner_df = inner_select(train_df, xcols, CANDIDATES)
             inner_df["representation"] = rep
@@ -278,6 +280,21 @@ def main() -> None:
                            "MAE", "MAE_std", "Bias", "Bias_std"]},
             "model_sha256": sha256(model_path),
             "model_file": model_path.relative_to(root).as_posix(),
+            "source_evaluation": {
+                "model": "nested_selected",
+                "config": "per_fold_inner_cv",
+                "description": ("Performance estimate of the nested model-selection "
+                                "procedure. Outer folds may select different model "
+                                "families/configurations; these are NOT the CV scores "
+                                "of the final deployment model below."),
+            },
+            "final_deployment_model": {
+                "model": family,
+                "config": config,
+                "description": ("Single pipeline chosen by a separate source-only CV on "
+                                "all source data and refit on all source data for "
+                                "cross-region deployment."),
+            },
         }
 
         # OOF diagnostics for the nested-selected pipeline (no shot_number written out).
@@ -336,7 +353,12 @@ def main() -> None:
                              "holdouts; 4-fold spatial inner CV on each outer-training "
                              "set jointly selects one model-family/configuration pair "
                              "using mean RMSE across the inner spatial folds. Outer "
-                             "test blocks are never used for tuning."),
+                             "test blocks are never used for tuning. The reported "
+                             "source_cv is the performance of this nested selection "
+                             "procedure (outer folds may pick different families); it "
+                             "is distinct from the final XGBoost depth-6 deployment "
+                             "model, which is selected by a separate source-only CV on "
+                             "all source data."),
         "frozen_at": datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(),
         "source_sample_sha256": source_sample_sha256,
         "common_sample_sha256": common_sample_sha256,
@@ -346,6 +368,9 @@ def main() -> None:
         "features": features, "spatial_block_km": 50, "spatial_block_crs": "EPSG:5070",
         "folds": N_OUTER, "fold_field": "spatial_fold", "random_seed": SEED,
         "train_cap": TRAIN_CAP,
+        "nested_cv_n_train": {rep: float(np.mean(n_train_records[rep])) for rep in datasets},
+        "nested_cv_n_train_per_fold": {rep: [int(x) for x in n_train_records[rep]]
+                                       for rep in datasets},
         "selected_models": best, "package_versions": packages,
         "target_label_locked": True, "zhejiang_labels_used": False,
         "zhejiang_performance_used": False,

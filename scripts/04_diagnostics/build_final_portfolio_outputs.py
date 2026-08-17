@@ -52,6 +52,14 @@ def master_table(root: Path, source: dict) -> pd.DataFrame:
                             columns=["spatial_fold"])
     fold_n = folds.spatial_fold.value_counts().sort_index().to_numpy()
     source_n = len(folds)
+    # Actual outer-training size used by the nested evaluation. Each outer fold
+    # trains on the remaining spatial blocks, capped at ``train_cap`` (recorded in
+    # the manifest). N_train is the capped per-fold training size derived from the
+    # recorded per-fold (test) provenance -- NOT the uncapped total. When every
+    # outer fold reaches the cap, N_train equals train_cap.
+    train_cap = int(source.get("train_cap", 60000))
+    n_train_per_fold = np.minimum(np.maximum(source_n - fold_n, 0), train_cap)
+    n_train = float(n_train_per_fold.mean())
     rows = []
     for rep, label in [("alphaearth", "AlphaEarth"), ("conventional", "Conventional")]:
         cv = source["selected_models"][rep]["source_cv"]
@@ -59,8 +67,8 @@ def master_table(root: Path, source: dict) -> pd.DataFrame:
                      "labels": source_n, "R2": cv["R2"], "RMSE": cv["RMSE"],
                      "MAE": cv["MAE"], "Bias": cv["Bias"],
                      "evaluation_design": "USA 50-km block 5-fold spatial CV",
-                     "N_train": float(np.mean(source_n-fold_n)), "N_test": float(np.mean(fold_n)),
-                     "notes": "Formal five-fold mean; not a random split"})
+                     "N_train": n_train, "N_test": float(np.mean(fold_n)),
+                     "notes": "Pooled nested out-of-fold estimate across five spatial outer folds; fold-level variability reported separately."})
         z = zero[zero.representation == label].iloc[0]
         rows.append({"stage": "kaihua_zero_shot", "representation": label,
                      "labels": 0, "R2": z.target_R2, "RMSE": z.target_RMSE,
