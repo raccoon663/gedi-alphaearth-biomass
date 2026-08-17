@@ -33,8 +33,8 @@ should not be compared as if they were the same experiment.
 
 | Evaluation setting | AlphaEarth + DEM | Conventional + DEM |
 |---|---:|---:|
-| USA source spatial-CV R² | 0.577 | 0.427 |
-| USA source spatial-CV RMSE (Mg/ha) | 69.05 | 80.33 |
+| USA source spatial-CV R² | 0.576 | 0.425 |
+| USA source spatial-CV RMSE (Mg/ha) | 69.11 | 80.49 |
 | Kaihua zero-shot R² (labels locked) | −0.556 | −1.117 |
 | Labels to first positive local-model R² | 250 | 500 |
 | Kaihua local-model R² at 2,500 labels | 0.131 ± 0.017 | 0.059 ± 0.011 |

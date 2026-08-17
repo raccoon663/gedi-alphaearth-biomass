@@ -18,10 +18,10 @@ configuration chosen by nested spatial cross-validation.
 
 | Representation | R² | RMSE (Mg/ha) | MAE (Mg/ha) | Bias (Mg/ha) |
 |---|---:|---:|---:|---:|
-| AlphaEarth + DEM | 0.5768 | 69.05 | 41.79 | +0.60 |
-| Conventional + DEM | 0.4273 | 80.33 | 53.07 | +0.21 |
+| AlphaEarth + DEM | 0.5761 | 69.11 | 42.23 | +1.08 |
+| Conventional + DEM | 0.4251 | 80.49 | 53.48 | +1.09 |
 
-AlphaEarth improved source R² by 0.150 and reduced RMSE by ~14%.
+AlphaEarth improved source R² by 0.151 and reduced RMSE by ~14%.
 
 ![Source representation comparison](../figures/source_representation_comparison.png)
 

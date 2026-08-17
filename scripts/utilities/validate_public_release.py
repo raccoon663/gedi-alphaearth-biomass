@@ -19,6 +19,7 @@ Run from anywhere; the repository root is derived from this file's location
 """
 from __future__ import annotations
 
+import csv
 import json
 import re
 import sys
@@ -86,6 +87,73 @@ def scan_scripts_for_stale_paths() -> None:
             break
     check("all outputs/tables paths use main_results/diagnostics/audits/",
           len(bare) == 0, str(bare))
+
+
+def check_source_manifest_summary_consistency() -> None:
+    """The source nested-CV metrics recorded in the manifest must match the
+    committed ``source_model_comparison_summary.csv``. Both are derived from the same
+    out-of-fold predictions and are the single authoritative source estimate; if they
+    disagree the release is internally inconsistent.
+    """
+    mpath = ROOT / "outputs/manifests/frozen_source_model_manifest.json"
+    spath = ROOT / "outputs/tables/main_results/source_model_comparison_summary.csv"
+    if not mpath.exists() or not spath.exists():
+        check("source manifest & summary agree (source_cv)", False,
+              "missing manifest or summary CSV")
+        return
+    manifest = json.loads(mpath.read_text(encoding="utf-8"))
+    sm = manifest.get("selected_models", {})
+    tol = 1e-6
+    mism = []
+    with spath.open(encoding="utf-8", newline="") as fh:
+        rows = {r["representation"]: r for r in csv.DictReader(fh)}
+    for rep in ("alphaearth", "conventional"):
+        if rep not in sm:
+            mism.append(f"{rep}: missing from manifest")
+            continue
+        if rep not in rows:
+            mism.append(f"{rep}: missing from summary")
+            continue
+        cv = sm[rep].get("source_cv", {})
+        srow = rows[rep]
+        for key in ("R2", "RMSE", "MAE", "Bias"):
+            mv = cv.get(key)
+            try:
+                sv = float(srow[key])
+            except (KeyError, ValueError):
+                mism.append(f"{rep}.{key}: absent from summary")
+                continue
+            if mv is None or abs(float(mv) - sv) > tol:
+                mism.append(f"{rep}.{key}: manifest={mv} summary={sv}")
+    check("source manifest & summary agree (source_cv)", len(mism) == 0, str(mism))
+
+
+def check_manifest_paths_posix() -> None:
+    """Manifest path strings (e.g. ``model_file``) must use POSIX ``/`` separators so
+    the JSON is portable across Windows/macOS/Linux and does not embed backslashes.
+    """
+    mpath = ROOT / "outputs/manifests/frozen_source_model_manifest.json"
+    if not mpath.exists():
+        check("manifest paths use / not \\", True)
+        return
+    manifest = json.loads(mpath.read_text(encoding="utf-8"))
+
+    PATH_TOKENS = ("outputs", "data", "figures", "models",
+                   "manifests", "tables")
+    bad = []
+
+    def _walk(o: object) -> None:
+        if isinstance(o, str):
+            if "\\" in o and any(tok in o for tok in PATH_TOKENS):
+                bad.append(o)
+        elif isinstance(o, dict):
+            for v in o.values():
+                _walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                _walk(v)
+    _walk(manifest)
+    check("manifest paths use / not \\", len(bad) == 0, str(bad))
 
 
 def main() -> int:
@@ -175,6 +243,12 @@ def main() -> int:
 
     # --- 11. no stale path patterns in scripts ----------------------------
     scan_scripts_for_stale_paths()
+
+    # --- 12. source manifest vs summary consistency -----------------------
+    check_source_manifest_summary_consistency()
+
+    # --- 13. manifest paths are POSIX (no backslashes) --------------------
+    check_manifest_paths_posix()
 
     # --- report -----------------------------------------------------------
     failed = [c for c in CHECKS if not c[1]]
