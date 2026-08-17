@@ -12,16 +12,16 @@ different evaluation settings are not directly compared against one another.
 
 ## 1. Source-domain spatial cross-validation
 
-Identical source footprints and five 50 km block folds; both selected models were
-XGBoost depth-6 configurations chosen under the same restricted source-only
-tuning budget.
+Identical source footprints and five 50 km block folds; model selection used an
+identical restricted source-only tuning budget for both representations, with the
+configuration chosen by nested spatial cross-validation.
 
 | Representation | R² | RMSE (Mg/ha) | MAE (Mg/ha) | Bias (Mg/ha) |
 |---|---:|---:|---:|---:|
-| AlphaEarth + DEM | 0.5810 | 68.70 | 41.46 | +0.31 |
-| Conventional + DEM | 0.4336 | 79.88 | 52.70 | −0.01 |
+| AlphaEarth + DEM | 0.5768 | 69.05 | 41.79 | +0.60 |
+| Conventional + DEM | 0.4273 | 80.33 | 53.07 | +0.21 |
 
-AlphaEarth improved source R² by 0.147 and reduced RMSE by ~14%.
+AlphaEarth improved source R² by 0.150 and reduced RMSE by ~14%.
 
 ![Source representation comparison](../figures/source_representation_comparison.png)
 
@@ -60,8 +60,10 @@ absolute zero-shot error (Spearman ρ = 0.022).
 
 ## 4. Few-shot adaptation (label efficiency)
 
-Kaihua footprints were assigned to fixed 5 km blocks in EPSG:32650. Five
-whole-block folds contained ~26,000 evaluation samples each. Label budgets were
+Kaihua footprints were first assigned to 117 fixed 5 km × 5 km grid cells in
+EPSG:32650, and entire cells were then assigned to five sample-balanced spatial
+folds (~26,000 evaluation footprints each) so that no cell crosses a train/test
+partition. Label budgets were
 25, 50, 100, 250, 500, 1,000 and 2,500, with seeds 42–44. Every fold × budget ×
 seed used the identical target shot-number draw for both representations, without
 AGBD stratification or active learning.
@@ -77,7 +79,7 @@ labels**; conventional models required **500**. At 2,500 labels, AlphaEarth
 reached **R² 0.1306 ± 0.0168** and RMSE 81.90 Mg/ha, versus R² 0.0594 ± 0.0105
 and RMSE 85.19 Mg/ha for conventional features. **No method reached mean R² 0.2.**
 
-![Kaihua label efficiency](../figures/kaihua_label_efficiency_final.png)
+![Kaihua label efficiency](../figures/kaihua_label_efficiency.png)
 ![Calibration and local adaptation](../figures/calibration_vs_local_adaptation.png)
 
 ## Negative result (reported, not hidden)
