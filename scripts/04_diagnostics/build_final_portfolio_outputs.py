@@ -35,7 +35,6 @@ def verify(root: Path) -> tuple[dict, dict, dict]:
         (root / "data/processed/kaihua_zero_shot_evaluation.parquet", design["input_evaluation_sha256"]),
         (root / "outputs/manifests/kaihua_target_spatial_blocks.csv", design["block_manifest_sha256"]),
         (root / "outputs/manifests/kaihua_fewshot_spatial_folds.csv", design["fold_manifest_sha256"]),
-        (root / "outputs/manifests/kaihua_fewshot_label_draws.csv", design["label_draw_manifest_sha256"]),
         (root / "outputs/tables/kaihua_fewshot_label_efficiency.csv", few["detailed_results_sha256"]),
         (root / "outputs/tables/kaihua_fewshot_summary.csv", few["summary_sha256"]),
         (root / "outputs/tables/kaihua_label_thresholds.csv", few["thresholds_sha256"]),
@@ -57,8 +56,8 @@ def master_table(root: Path, source: dict) -> pd.DataFrame:
     for rep, label in [("alphaearth", "AlphaEarth"), ("conventional", "Conventional")]:
         cv = source["selected_models"][rep]["source_cv"]
         rows.append({"stage": "source_spatial_cv", "representation": label,
-                     "labels": source_n, "R2": cv["R2_mean"], "RMSE": cv["RMSE_mean"],
-                     "MAE": cv["MAE_mean"], "Bias": cv["Bias_mean"],
+                     "labels": source_n, "R2": cv["R2"], "RMSE": cv["RMSE"],
+                     "MAE": cv["MAE"], "Bias": cv["Bias"],
                      "evaluation_design": "USA 50-km block 5-fold spatial CV",
                      "N_train": float(np.mean(source_n-fold_n)), "N_test": float(np.mean(fold_n)),
                      "notes": "Formal five-fold mean; not a random split"})
@@ -119,11 +118,18 @@ def workflow(root: Path) -> None:
 
 
 def source_comparison(root: Path) -> None:
-    df = pd.read_csv(root / "outputs/tables/source_model_comparison.csv")
-    df = df[(df.split_type == "block_5fold") & (df.model == "xgboost") & (df.config == "xgb_depth6")]
+    manifests = root / "outputs/manifests"
+    source = json.loads((manifests / "frozen_source_model_manifest.json").read_text())
+    df = pd.read_csv(root / "outputs/tables/diagnostics/source_model_comparison.csv")
+    df = df[df.split_type == "nested_spatial_cv"]
     order = ["alphaearth", "conventional"]
-    summary = df.groupby("representation").agg(R2=("R2", "mean"), R2_sd=("R2", "std"),
-                                                 RMSE=("RMSE", "mean"), RMSE_sd=("RMSE", "std")).loc[order]
+    records = []
+    for rep in order:
+        cfg = source["selected_models"][rep]["config"]
+        sub = df[(df.representation == rep) & (df.model == "xgboost") & (df.config == cfg)]
+        records.append({"representation": rep, "R2": sub.R2.mean(), "R2_sd": sub.R2.std(),
+                        "RMSE": sub.RMSE.mean(), "RMSE_sd": sub.RMSE.std()})
+    summary = pd.DataFrame(records).set_index("representation").loc[order]
     colors = [BLUE, ORANGE]; labels = ["AlphaEarth + DEM", "Conventional + DEM"]
     fig, axes = plt.subplots(1, 2, figsize=(10, 4.5))
     for ax, metric, ylabel in [(axes[0], "R2", "R²"), (axes[1], "RMSE", "RMSE (Mg/ha)")]:
@@ -172,7 +178,7 @@ def label_efficiency(root: Path) -> None:
     ax.set_xticks(ticks, [str(x) for x in ticks]); ax.set_xlabel("Number of Kaihua labels")
     ax.set_ylabel("Mean spatial-holdout R²"); ax.set_title("Kaihua target-domain label efficiency")
     ax.grid(alpha=.2); ax.legend(frameon=False); fig.tight_layout()
-    fig.savefig(root / "figures/kaihua_label_efficiency_final.png", dpi=280); plt.close(fig)
+    fig.savefig(root / "figures/kaihua_label_efficiency.png", dpi=280); plt.close(fig)
 
 
 def calibration(root: Path) -> None:

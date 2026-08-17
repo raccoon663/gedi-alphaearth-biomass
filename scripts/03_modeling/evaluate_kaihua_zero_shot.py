@@ -105,12 +105,12 @@ def main() -> None:
     for b in ["alphaearth", "conventional"]:
         src = source["selected_models"][b]["source_cv"]
         m = result[b]
-        rows.append({"representation": "AlphaEarth" if b == "alphaearth" else "Conventional",
-                     "source_R2": src["R2_mean"], "target_R2": m["R2"],
-                     "R2_drop": src["R2_mean"]-m["R2"], "source_RMSE": src["RMSE_mean"],
-                     "target_RMSE": m["RMSE"], "RMSE_increase": m["RMSE"]-src["RMSE_mean"],
-                     "RMSE_increase_percent": 100*(m["RMSE"]/src["RMSE_mean"]-1),
-                     "target_RMSE_over_source_RMSE": m["RMSE"]/src["RMSE_mean"],
+    rows.append({"representation": "AlphaEarth" if b == "alphaearth" else "Conventional",
+                 "source_R2": src["R2"], "target_R2": m["R2"],
+                 "R2_drop": src["R2"]-m["R2"], "source_RMSE": src["RMSE"],
+                 "target_RMSE": m["RMSE"], "RMSE_increase": m["RMSE"]-src["RMSE"],
+                 "RMSE_increase_percent": 100*(m["RMSE"]/src["RMSE"]-1),
+                 "target_RMSE_over_source_RMSE": m["RMSE"]/src["RMSE"],
                      "target_MAE": m["MAE"], "target_Bias": m["Bias"], "N": m["N"]})
     summary = pd.DataFrame(rows)
     summary.to_csv(tables / "representation_transfer_summary.csv", index=False)
