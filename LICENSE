@@ -19,17 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-## Data licensing notice
-
-The MIT License above applies **only to the source code** in this repository.
-
-The remote-sensing datasets used by the project — GEDI L4A Aboveground Biomass
-Density (NASA ORNL DAAC), AlphaEarth Foundations annual embeddings (Google
-DeepMind), Sentinel-1 and Sentinel-2 (Copernicus, ESA), and Copernicus DEM GLO-30
-(ESA) — are distributed by their respective providers under separate terms and are
-**not** included in this repository. Nothing in this repository should be read as
-granting rights to those datasets. See `data/README.md` for sources and licensing
-posture.

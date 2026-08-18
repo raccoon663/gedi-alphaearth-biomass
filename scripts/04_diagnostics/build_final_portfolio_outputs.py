@@ -35,10 +35,9 @@ def verify(root: Path) -> tuple[dict, dict, dict]:
         (root / "data/processed/kaihua_zero_shot_evaluation.parquet", design["input_evaluation_sha256"]),
         (root / "outputs/manifests/kaihua_target_spatial_blocks.csv", design["block_manifest_sha256"]),
         (root / "outputs/manifests/kaihua_fewshot_spatial_folds.csv", design["fold_manifest_sha256"]),
-        (root / "outputs/manifests/kaihua_fewshot_label_draws.csv", design["label_draw_manifest_sha256"]),
-        (root / "outputs/tables/kaihua_fewshot_label_efficiency.csv", few["detailed_results_sha256"]),
-        (root / "outputs/tables/kaihua_fewshot_summary.csv", few["summary_sha256"]),
-        (root / "outputs/tables/kaihua_label_thresholds.csv", few["thresholds_sha256"]),
+        (root / "outputs/tables/main_results/kaihua_fewshot_label_efficiency.csv", few["detailed_results_sha256"]),
+        (root / "outputs/tables/main_results/kaihua_fewshot_summary.csv", few["summary_sha256"]),
+        (root / "outputs/tables/main_results/kaihua_label_thresholds.csv", few["thresholds_sha256"]),
     ]
     for path, expected in checks:
         if sha256(path) != expected:
@@ -47,21 +46,29 @@ def verify(root: Path) -> tuple[dict, dict, dict]:
 
 
 def master_table(root: Path, source: dict) -> pd.DataFrame:
-    zero = pd.read_csv(root / "outputs/tables/representation_transfer_summary.csv")
-    few = pd.read_csv(root / "outputs/tables/kaihua_fewshot_summary.csv")
+    zero = pd.read_csv(root / "outputs/tables/main_results/representation_transfer_summary.csv")
+    few = pd.read_csv(root / "outputs/tables/main_results/kaihua_fewshot_summary.csv")
     folds = pd.read_parquet(root / "data/processed/source_common_representation.parquet",
                             columns=["spatial_fold"])
     fold_n = folds.spatial_fold.value_counts().sort_index().to_numpy()
     source_n = len(folds)
+    # Actual outer-training size used by the nested evaluation. Each outer fold
+    # trains on the remaining spatial blocks, capped at ``train_cap`` (recorded in
+    # the manifest). N_train is the capped per-fold training size derived from the
+    # recorded per-fold (test) provenance -- NOT the uncapped total. When every
+    # outer fold reaches the cap, N_train equals train_cap.
+    train_cap = int(source.get("train_cap", 60000))
+    n_train_per_fold = np.minimum(np.maximum(source_n - fold_n, 0), train_cap)
+    n_train = float(n_train_per_fold.mean())
     rows = []
     for rep, label in [("alphaearth", "AlphaEarth"), ("conventional", "Conventional")]:
         cv = source["selected_models"][rep]["source_cv"]
         rows.append({"stage": "source_spatial_cv", "representation": label,
-                     "labels": source_n, "R2": cv["R2_mean"], "RMSE": cv["RMSE_mean"],
-                     "MAE": cv["MAE_mean"], "Bias": cv["Bias_mean"],
+                     "labels": source_n, "R2": cv["R2"], "RMSE": cv["RMSE"],
+                     "MAE": cv["MAE"], "Bias": cv["Bias"],
                      "evaluation_design": "USA 50-km block 5-fold spatial CV",
-                     "N_train": float(np.mean(source_n-fold_n)), "N_test": float(np.mean(fold_n)),
-                     "notes": "Formal five-fold mean; not a random split"})
+                     "N_train": n_train, "N_test": float(np.mean(fold_n)),
+                     "notes": "Pooled nested out-of-fold estimate across five spatial outer folds; fold-level variability reported separately."})
         z = zero[zero.representation == label].iloc[0]
         rows.append({"stage": "kaihua_zero_shot", "representation": label,
                      "labels": 0, "R2": z.target_R2, "RMSE": z.target_RMSE,
@@ -78,7 +85,7 @@ def master_table(root: Path, source: dict) -> pd.DataFrame:
                          "N_train": int(r.N_train), "N_test": r.N_test_mean,
                          "notes": f"Mean across {int(r.runs)} fold-seed runs; fixed shared XGBoost"})
     out = pd.DataFrame(rows)
-    out.to_csv(root / "outputs/tables/final_project_summary.csv", index=False)
+    out.to_csv(root / "outputs/tables/main_results/final_project_summary.csv", index=False)
     return out
 
 
@@ -119,11 +126,15 @@ def workflow(root: Path) -> None:
 
 
 def source_comparison(root: Path) -> None:
-    df = pd.read_csv(root / "outputs/tables/source_model_comparison.csv")
-    df = df[(df.split_type == "block_5fold") & (df.model == "xgboost") & (df.config == "xgb_depth6")]
+    manifests = root / "outputs/manifests"
+    source = json.loads((manifests / "frozen_source_model_manifest.json").read_text())
     order = ["alphaearth", "conventional"]
-    summary = df.groupby("representation").agg(R2=("R2", "mean"), R2_sd=("R2", "std"),
-                                                 RMSE=("RMSE", "mean"), RMSE_sd=("RMSE", "std")).loc[order]
+    records = []
+    for rep in order:
+        cv = source["selected_models"][rep]["source_cv"]
+        records.append({"representation": rep, "R2": cv["R2"], "R2_sd": cv.get("R2_std", 0.0),
+                        "RMSE": cv["RMSE"], "RMSE_sd": cv.get("RMSE_std", 0.0)})
+    summary = pd.DataFrame(records).set_index("representation").loc[order]
     colors = [BLUE, ORANGE]; labels = ["AlphaEarth + DEM", "Conventional + DEM"]
     fig, axes = plt.subplots(1, 2, figsize=(10, 4.5))
     for ax, metric, ylabel in [(axes[0], "R2", "R²"), (axes[1], "RMSE", "RMSE (Mg/ha)")]:
@@ -132,12 +143,12 @@ def source_comparison(root: Path) -> None:
         ax.set_ylabel(ylabel); ax.grid(axis="y", alpha=.2)
         ax.tick_params(axis="x", rotation=10)
         for b, v in zip(bars, vals): ax.text(b.get_x()+b.get_width()/2, v, f"{v:.3f}" if metric=="R2" else f"{v:.1f}", ha="center", va="bottom")
-    fig.suptitle("USA source-domain spatial CV", fontsize=14, weight="bold")
+    fig.suptitle("USA source-domain spatial CV (nested)", fontsize=14, weight="bold")
     fig.tight_layout(); fig.savefig(root / "figures/source_representation_comparison.png", dpi=260); plt.close(fig)
 
 
 def zero_transfer(root: Path) -> None:
-    df = pd.read_csv(root / "outputs/tables/representation_transfer_summary.csv")
+    df = pd.read_csv(root / "outputs/tables/main_results/representation_transfer_summary.csv")
     fig, axes = plt.subplots(1, 2, figsize=(10, 4.8))
     x = [0, 1]
     for _, r in df.iterrows():
@@ -154,8 +165,8 @@ def zero_transfer(root: Path) -> None:
 
 
 def label_efficiency(root: Path) -> None:
-    few = pd.read_csv(root / "outputs/tables/kaihua_fewshot_summary.csv")
-    zero = pd.read_csv(root / "outputs/tables/representation_transfer_summary.csv")
+    few = pd.read_csv(root / "outputs/tables/main_results/kaihua_fewshot_summary.csv")
+    zero = pd.read_csv(root / "outputs/tables/main_results/representation_transfer_summary.csv")
     fig, ax = plt.subplots(figsize=(8.8, 5.7))
     for rep, label, color, zlabel in [("alphaearth", "AlphaEarth local model", BLUE, "AlphaEarth"),
                                       ("conventional", "Conventional local model", ORANGE, "Conventional")]:
@@ -172,12 +183,12 @@ def label_efficiency(root: Path) -> None:
     ax.set_xticks(ticks, [str(x) for x in ticks]); ax.set_xlabel("Number of Kaihua labels")
     ax.set_ylabel("Mean spatial-holdout R²"); ax.set_title("Kaihua target-domain label efficiency")
     ax.grid(alpha=.2); ax.legend(frameon=False); fig.tight_layout()
-    fig.savefig(root / "figures/kaihua_label_efficiency_final.png", dpi=280); plt.close(fig)
+    fig.savefig(root / "figures/kaihua_label_efficiency.png", dpi=280); plt.close(fig)
 
 
 def calibration(root: Path) -> None:
-    few = pd.read_csv(root / "outputs/tables/kaihua_fewshot_summary.csv")
-    zero = pd.read_csv(root / "outputs/tables/representation_transfer_summary.csv")
+    few = pd.read_csv(root / "outputs/tables/main_results/kaihua_fewshot_summary.csv")
+    zero = pd.read_csv(root / "outputs/tables/main_results/representation_transfer_summary.csv")
     methods = [("bias_only", "Bias-only", ":"), ("affine", "Affine", "--"),
                ("local_xgboost", "Local XGBoost", "-")]
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.8), sharey=True)
@@ -198,8 +209,8 @@ def calibration(root: Path) -> None:
 
 
 def domain_shift(root: Path) -> None:
-    pca = pd.read_parquet(root / "outputs/tables/kaihua_aef_domain_pca.parquet")
-    clf = pd.read_csv(root / "outputs/tables/kaihua_aef_domain_classifier.csv").iloc[0]
+    pca = pd.read_parquet(root / "outputs/tables/diagnostics/kaihua_aef_domain_pca.parquet")
+    clf = pd.read_csv(root / "outputs/tables/diagnostics/kaihua_aef_domain_classifier.csv").iloc[0]
     fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.8), gridspec_kw={"width_ratios":[3,1]})
     for domain, color in [("USA_source",BLUE),("Kaihua",ORANGE)]:
         d=pca[pca.domain==domain].sample(min(15000,(pca.domain==domain).sum()),random_state=42)
@@ -214,7 +225,7 @@ def domain_shift(root: Path) -> None:
 
 
 def distance_error(root: Path) -> None:
-    d = pd.read_csv(root / "outputs/tables/kaihua_aef_distance_vs_error.csv")
+    d = pd.read_csv(root / "outputs/tables/diagnostics/kaihua_aef_distance_vs_error.csv")
     rho=d.spearman_rho_all.iloc[0]
     fig,ax=plt.subplots(figsize=(7.5,4.8))
     ax.plot(d.distance_decile,d.MAE,marker="o",lw=2.2,color=BLUE,label="MAE")

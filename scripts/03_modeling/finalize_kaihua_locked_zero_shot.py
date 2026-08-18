@@ -47,8 +47,8 @@ def read_chunks(directory: Path, expected: list[str]) -> pd.DataFrame:
 def main() -> None:
     root = Path(__file__).resolve().parents[2]
     processed = root / "data" / "processed"
-    tables = root / "outputs" / "tables"
-    figures = root / "outputs" / "figures"
+    tables = root / "outputs" / "tables" / "diagnostics"
+    figures = root / "figures"
     predictions = root / "outputs" / "predictions"
     manifests = root / "outputs" / "manifests"
     for d in [processed, tables, figures, predictions, manifests]:

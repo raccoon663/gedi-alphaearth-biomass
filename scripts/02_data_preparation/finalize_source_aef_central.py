@@ -88,8 +88,8 @@ def main() -> None:
     # Norm deviations are audited and retained, never silently deleted.
     data = data.sort_values("shot_number").reset_index(drop=True)
     processed = root / "data" / "processed"
-    tables = root / "outputs" / "tables"
-    reports = root / "reports"
+    tables = root / "outputs" / "tables" / "diagnostics"
+    reports = root / "outputs" / "tables" / "diagnostics"
     csv_path = processed / "source_aef_central.csv"
     parquet_path = processed / "source_aef_central.parquet"
     data.to_csv(csv_path, index=False)

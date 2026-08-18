@@ -26,8 +26,8 @@ def main() -> None:
     root = Path(__file__).resolve().parents[2]
     manifests = root / "outputs" / "manifests"
     processed = root / "data" / "processed"
-    tables = root / "outputs" / "tables"
-    reports = root / "reports"
+    tables = root / "outputs" / "tables" / "diagnostics"
+    reports = root / "outputs" / "tables" / "diagnostics"
     source_path = manifests / "source_aef_central_input.csv"
     source_meta = json.loads((manifests / "source_aef_central_input.json").read_text())
     if sha256(source_path) != source_meta["csv_sha256"]:

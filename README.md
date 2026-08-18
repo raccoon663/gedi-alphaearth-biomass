@@ -33,8 +33,8 @@ should not be compared as if they were the same experiment.
 
 | Evaluation setting | AlphaEarth + DEM | Conventional + DEM |
 |---|---:|---:|
-| USA source 50 km block-CV R² | 0.581 | 0.434 |
-| USA source 50 km block-CV RMSE (Mg/ha) | 68.70 | 79.88 |
+| USA source spatial-CV R² | 0.576 | 0.425 |
+| USA source spatial-CV RMSE (Mg/ha) | 69.11 | 80.49 |
 | Kaihua zero-shot R² (labels locked) | −0.556 | −1.117 |
 | Labels to first positive local-model R² | 250 | 500 |
 | Kaihua local-model R² at 2,500 labels | 0.131 ± 0.017 | 0.059 ± 0.011 |
@@ -46,7 +46,7 @@ required fewer target labels to recover positive spatial-holdout performance, bu
 
 ![Source representation comparison](figures/source_representation_comparison.png)
 ![Zero-shot transfer](figures/zero_shot_transfer.png)
-![Kaihua label efficiency](figures/kaihua_label_efficiency_final.png)
+![Kaihua label efficiency](figures/kaihua_label_efficiency.png)
 
 ## Method summary
 
@@ -62,9 +62,10 @@ required fewer target labels to recover positive spatial-holdout performance, bu
 - **Sampling & validation.** Source: 50 km spatial blocks, block × year strata,
   deterministic seed 42, cap 200 per stratum, no AGBD balancing, no
   target-informed sampling → 124,303 common samples after DEM masking. Target:
-  five 5 km spatial folds, shared label draws, seeds 42–44.
-- **Models.** Identical restricted source-only XGBoost depth-6 tuning budget for
-  both representations; target model selection forbidden.
+  117 fixed 5 km × 5 km grid cells in EPSG:32650 assigned whole to five sample-balanced spatial folds (~26,000 footprints each); shared label draws, seeds 42–44.
+- **Models.** Identical restricted source-only tuning budget for both
+  representations, with the configuration chosen by nested spatial cross-validation;
+  target model selection forbidden.
 - **Evaluation metrics.** R², RMSE, MAE, Bias (Mg/ha); domain diagnostics (PCA,
   logistic classifier AUROC, nearest-embedding distance vs error).
 
@@ -90,7 +91,6 @@ gedi-alphaearth-biomass/
 │   ├── 03_modeling/            # train, zero-shot, few-shot
 │   ├── 04_diagnostics/         # domain shift + figures
 │   ├── utilities/              # leakage guards
-│   ├── archive/                # internal scaffolding (not the main workflow)
 │   └── README.md               # script → stage map
 ├── figures/                   # publication-style result figures
 ├── outputs/

@@ -63,7 +63,6 @@ conventional:
 validation:
   spatial_block_km: 50
   spatial_block_crs: EPSG:5070
-  random_test_fraction: 0.2
   spatial_folds: 5
 
 source_sampling:
@@ -110,5 +109,5 @@ target:
 
 wall_to_wall:
   source_map: false
-  target_map: true
+  target_map: false
   preferred_resolution_m: 30
