@@ -26,6 +26,7 @@ def main() -> None:
     paths += [ROOT / "scripts/utilities/radar_benchmark.py",
               ROOT / "scripts/utilities/radar_extractors.py",
               ROOT / "scripts/03_modeling/run_radar_representation_benchmark.py",
+              ROOT / "scripts/04_diagnostics/build_summary_outputs.py",
               ROOT / "scripts/04_diagnostics/analyze_radar_biomass_sensitivity.py",
               ROOT / "scripts/04_diagnostics/analyze_radar_domain_shift.py"]
     optional = [ROOT / "outputs/manifests/palsar_availability_freeze.json",
@@ -54,6 +55,7 @@ def main() -> None:
         ROOT / "outputs/tables/diagnostics/radar_domain_shift.csv",
         ROOT / "outputs/tables/diagnostics/radar_paired_fold_contrasts.csv",
         ROOT / "outputs/tables/audits/palsar_acquisition_timing.csv",
+        ROOT / "figures/source_representation_comparison.png",
         ROOT / "figures/radar_representation_source_comparison.png",
         ROOT / "figures/radar_zero_shot_comparison.png",
         ROOT / "figures/radar_fewshot_label_efficiency.png",
