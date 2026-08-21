@@ -63,10 +63,11 @@ from linear power. Angle, epoch/acquisition date and QA are retained only for QC
 **Completed benchmark (2026-08-21):** a direct authenticated audit found raw QA
 classes 1–4 in the asset. JAXA v2.4 defines `qa=1` as ScanSAR land, although the
 Earth Engine catalog omits classes 1–4. It also showed that one-image `mosaic()`
-discarded the native 25 m default projection, so extraction now uses the sole
-exact-year image directly. Common years are 2019–2024 with no nearest-year
-substitution; the identical-row benchmark contains 109,830 source and 107,809
-target footprints.
+discarded the native 25 m default projection, so extraction now requires exactly
+one exact-year image and selects it with `.first()`. This is a preprocessing and
+reproducibility correction, not a scientific result. Common years are 2019–2024
+with no nearest-year substitution; the identical-row benchmark contains 109,830
+source and 107,809 target footprints.
 
 | Representation | Source CV R² | Source RMSE | Kaihua zero-shot R² | Zero-shot RMSE |
 |---|---:|---:|---:|---:|
@@ -86,6 +87,8 @@ zero-shot representation. Holding S2+DEM approximately constant, source performa
 was effectively tied. All zero-shot R² values remained negative. In few-shot spatial
 holdout, AlphaEarth first became positive at 50 labels; S1+S2, PALSAR+S2 and full
 fusion at 500; S1, PALSAR and C+L at 1,000; and DEM at 2,500.
+After the QA/extraction correction, PALSAR's first-positive milestone improved
+from the earlier 2,500-label result to 1,000 labels.
 No representation reached mean R² 0.20, so wall-to-wall mapping was withheld.
 
 ![Source representation comparison](figures/source_representation_comparison.png)
