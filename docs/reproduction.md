@@ -14,6 +14,34 @@ Two reproduction levels are supported:
   Kaihua AOI input. Some stages submit Earth Engine exports that incur compute
   costs and can run for hours.
 
+### Version-2 PALSAR sequence
+
+The existing private GEDI/Sentinel/AlphaEarth inputs may be supplied from another
+verified checkout; hashes must match the public legacy freeze. Then run:
+
+```bash
+python scripts/01_data_extraction/audit_palsar_availability.py \
+  --source-manifest <FROZEN_SOURCE_PRIVATE_CSV> \
+  --target-manifest <KAIHUA_LOCKED_PREDICTORS> \
+  --target-folds <KAIHUA_PRIVATE_FOLDS> --project <EE_PROJECT>
+python scripts/01_data_extraction/download_source_palsar_direct.py
+python scripts/01_data_extraction/download_kaihua_palsar_direct.py
+python scripts/02_data_preparation/finalize_source_palsar.py
+python scripts/02_data_preparation/finalize_kaihua_palsar.py
+# Build source and locked-target common samples with build_palsar_common_sample.py.
+python scripts/03_modeling/run_radar_representation_benchmark.py
+python scripts/03_modeling/run_palsar_zero_shot.py predict
+# Only after prediction freeze:
+python scripts/03_modeling/run_palsar_zero_shot.py evaluate --labels <TARGET_LABEL_FILE>
+python scripts/03_modeling/run_palsar_fewshot_adaptation.py --labels <TARGET_LABEL_FILE>
+python scripts/04_diagnostics/analyze_radar_biomass_sensitivity.py
+python scripts/04_diagnostics/analyze_radar_domain_shift.py --labels <TARGET_LABEL_FILE>
+python scripts/04_diagnostics/build_palsar_benchmark_outputs.py
+```
+
+Direct downloads maintain ignored restart ledgers under `outputs/logs/`. Public
+freezes contain aggregate counts and hashes, never private shot IDs/coordinates.
+
 Deterministic seeds (`config.yaml`: `seed: 42`, few-shot seeds 42–44) and the
   frozen manifests in `outputs/manifests/` reproduce the exact sample draws and
   folds. Target labels are unlocked only after zero-shot predictions are frozen

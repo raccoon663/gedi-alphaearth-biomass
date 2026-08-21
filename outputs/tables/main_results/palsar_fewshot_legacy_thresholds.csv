@@ -1,0 +1,8 @@
+representation,legacy_reference,fewest_labels_to_exceed
+dem,sentinel1_sentinel2,25
+sentinel1_c,sentinel1_sentinel2,25
+palsar_l,sentinel1_sentinel2,25
+sentinel1_c_palsar_l,sentinel1_sentinel2,25
+palsar_sentinel2,sentinel1_sentinel2,25
+sentinel1_palsar_sentinel2,sentinel1_sentinel2,25
+alphaearth,sentinel1_sentinel2,25

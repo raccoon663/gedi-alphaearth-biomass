@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "status": "LEGACY_PRIVATE_INPUTS_LOCATED_AND_HASH_VERIFIED",
+  "verified_at": "2026-08-21T11:15:00Z",
+  "source_thread_title": "GEDI",
+  "privacy": {
+    "absolute_source_path_committed": false,
+    "private_files_copied_into_git": false,
+    "shot_ids_or_coordinates_committed": false
+  },
+  "artifacts": [
+    {"role": "source_alphaearth_common", "rows": 124303, "bytes": 11599774, "sha256": "0085b3f0b4a293f90c67693adbda507a709b449e568029294199aeaa6c2c95da"},
+    {"role": "source_conventional_common", "rows": 124303, "bytes": 16552411, "sha256": "58254790c541bd67c5ff4593ce8be7809b8c10fc7ba6d1990b97d12c90ac3888"},
+    {"role": "kaihua_locked_common_predictors", "rows": 130195, "bytes": 23925778, "sha256": "e3548e95d71eed2365716fbb62c9382f7cc14ec06d9bebd7d9fe1845d8f84271", "matches_public_freeze": true},
+    {"role": "kaihua_unlocked_zero_shot_evaluation", "rows": 130195, "bytes": 27905771, "sha256": "02c8a3cb4568a60b991eb67939788f7a33884ff1fbfc6e9b9409454bf353d94f", "matches_public_freeze": true},
+    {"role": "frozen_source_private_manifest", "rows": 127622, "bytes": 23788562, "sha256": "28d98c52976a5a8bc87cc6d0b0574aa09fc4735a335a20a439f04f71519df9a2", "matches_public_freeze": true},
+    {"role": "kaihua_private_spatial_folds", "bytes": 9593483, "sha256": "89db7de20e71178d8242a4854b90e8505cfac7692d2396f46c90bf73d04a321d", "matches_public_freeze": true},
+    {"role": "kaihua_private_label_draws", "bytes": 2280756, "sha256": "d70ec0b840c889222a57036078453e9b6443f2ce6691c70a1c15aa65c5c1f1a0", "matches_public_freeze": true}
+  ],
+  "conclusion": "Legacy GEDI, Sentinel, DEM, AlphaEarth, blocks, folds and target labels can be reused without re-downloading. Only PALSAR extraction is new."
+}

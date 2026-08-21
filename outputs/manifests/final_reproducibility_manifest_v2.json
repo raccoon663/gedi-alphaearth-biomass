@@ -1,0 +1,78 @@
+{
+  "schema_version": 2,
+  "status": "complete",
+  "created_at": "2026-08-21T12:30:03.489975+00:00",
+  "legacy_experiment": {
+    "name": "legacy_frozen_experiment",
+    "manifest": "outputs/manifests/final_reproducibility_manifest.json",
+    "canonical_git_blob_sha1": "20a60ae50b7943795efcf8ad103a1f7f303750e6",
+    "local_materialization_sha256": "4576df80e6386d84bc133b56f323aae6657b0374dc121db23f917471b31cb3cb",
+    "modified_on_remote_branch": false
+  },
+  "extension": {
+    "name": "palsar_common_paired_benchmark",
+    "dataset": "JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH",
+    "exact_year_only": true,
+    "nearest_year_substitution": false,
+    "target_model_selection_forbidden": true,
+    "future_nisar": "2026 prospective NISAR L-band experiment"
+  },
+  "implementation_hashes": {
+    "config.yaml": "6aa1e777a56e335fd045bf2f216a4f767971b23ef07fbf8ffeec18c43e0e46f0",
+    "outputs/manifests/legacy_frozen_experiment_audit.json": "dc2e2a55585b2487d90a2fb2df100c964dcfd60adac4628177effee7eb7af102",
+    "outputs/manifests/legacy_private_input_reuse_audit.json": "6ee8c35aab75aa91863877cf5471c34c6727cecb8460fc4398269932bb5af9f1",
+    "scripts/01_data_extraction/audit_palsar_availability.py": "982b2d0ed1f8834d1bfbadc1ed6f9ff19e41502d132c3bce684c73b461161264",
+    "scripts/01_data_extraction/download_kaihua_palsar_direct.py": "13fcee4a6a5e3706060be309dcd60fca8e75f50f5efc515b673bb6265af29f5a",
+    "scripts/01_data_extraction/download_source_palsar_direct.py": "a4a3ebc45a19428145c52f70ebe8c65df383288d2ef12372d960ad059fae5190",
+    "scripts/02_data_preparation/build_palsar_common_sample.py": "363b33498032470d29249880f3faee8318fe057e669589756e91f4582a34d9a5",
+    "scripts/02_data_preparation/finalize_kaihua_palsar.py": "df0b83d669bc341d02324ce14267d1b325166269d5312dee953f1e20c0ed6e59",
+    "scripts/02_data_preparation/finalize_source_palsar.py": "12dffb73114c61fb6667799134cec45ac5d11b298ea866b3eb3d81f6c0331575",
+    "scripts/03_modeling/run_palsar_fewshot_adaptation.py": "9d0f005be4960b4fc0bc6f9a79ccd21813c5e5cd0a40461c34a35405476904b9",
+    "scripts/03_modeling/run_palsar_zero_shot.py": "e7c84e74af9027fb713b64bd670f426cfe38446a43a95ebebf08a7dbb0913ac9",
+    "scripts/04_diagnostics/analyze_palsar_acquisition_timing.py": "6316f1a1cdc271338f2e90646ebd3148aab4a8e74397222ef60b1bc78f666b11",
+    "scripts/04_diagnostics/build_palsar_benchmark_outputs.py": "0a8220bd67089a9fef21b5ce3c6eedfe5dada5cf5eda73d42b33a2bc351fe61f",
+    "scripts/utilities/radar_benchmark.py": "5c67d006f6c7e7659484b75f47c59d7e2254228be77a5f09e377b47588f0d87b",
+    "scripts/utilities/radar_extractors.py": "727b8319ae583af75d4492d591c81b551f12a0b39ef49c931aa9fe1cbc9e618b",
+    "scripts/03_modeling/run_radar_representation_benchmark.py": "84ae6e360bb655f91729eab4a4310d5b8180d0e8a6c887847b19bb3089f27ccc",
+    "scripts/04_diagnostics/analyze_radar_biomass_sensitivity.py": "356b1b30f1198096c3ea89c2547a75cb09861cf88f4f05642f83ffaf6e354802",
+    "scripts/04_diagnostics/analyze_radar_domain_shift.py": "1f29a60a6300ce08c740fe85fb9a42f5d40fa306a81a3b8323f544a8fc507b96"
+  },
+  "stage_manifests": {
+    "outputs/manifests/palsar_availability_freeze.json": "2837f333c482d1fe4e6b772cac3865c55f4a51f34a24340e3214ea5697a9b86a",
+    "outputs/logs/source_palsar_finalize.json": "38fa629934eb6387b8256817daf5c52a2e27b5a8bcf3a45661390704b95b86f7",
+    "outputs/logs/kaihua_palsar_finalize.json": "39a04b43238805b17fd78af10283581c901b8fbb552d75f624cb16a1bdf8ebc6",
+    "outputs/manifests/palsar_common_sample_freeze.json": "c353f29020e4e5d373d3d436766801fd8333d722ca77c71049e9f38305ed2616",
+    "outputs/manifests/palsar_source_model_freeze.json": "f819393de06b66906dd4908a3a50227640ffe77bd35a471c7404e707212aca20",
+    "outputs/manifests/palsar_zero_shot_freeze.json": "19e5e99368861c6c40cdc00f8a7419be08b9960098609ed4f9402e834c482dfd",
+    "outputs/manifests/palsar_zero_shot_evaluation.json": "9a4ae1307d899b1eec3720430bd3b80fc10cb94fb48f34df03063b07560247b9",
+    "outputs/manifests/palsar_fewshot_results_manifest.json": "b202c0e55f988d8034b180b5d704db57d86a456027c4ae1b5163199388b633a7",
+    "outputs/manifests/palsar_benchmark_outputs_manifest.json": "7f7823d4d7188506af1e847d3796fdfa826742a19860652df633109aed44ec4d",
+    "outputs/manifests/palsar_wall_to_wall_decision_gate.json": "88d8b65852e7b989d8eb2293a4795c7a6a62a1060076547248576b4c58add874"
+  },
+  "missing_stage_manifests": [],
+  "result_artifact_hashes": {
+    "outputs/tables/audits/palsar_availability_audit.csv": "2e57034d9931b773936626e07c5a8d10e927391eceaeb88c9730dfa54ee6f058",
+    "outputs/tables/main_results/palsar_source_spatial_cv.csv": "3b992a2f1cd18b149b793e7ceba0e4fb5ed080bc2ad6481e66ed262ad1cffc83",
+    "outputs/tables/main_results/palsar_zero_shot.csv": "4bf420e54476b24daa10ac11017a12bb311d5bc8c6386589f9f225e0b3e47c49",
+    "outputs/tables/main_results/palsar_fewshot_label_efficiency.csv": "1cd9cea4726368e9c2c95536f5e0b537a0c8cca0162bfd3fef3d7f1378e85c74",
+    "outputs/tables/main_results/radar_representation_comparison.csv": "bb0b93f97b815dbb6c3596a53a0e70fa3d49680b107e2c62aa3fa87b7108852d",
+    "outputs/tables/diagnostics/radar_biomass_bin_performance.csv": "e134f772f6028317a075a8405743376577465c4ac80986378eefcc36916c946d",
+    "outputs/tables/diagnostics/radar_feature_importance.csv": "494558072001417364e923d1c9add74d4fae7741d4b6a340949374195bf77846",
+    "outputs/tables/diagnostics/radar_domain_shift.csv": "a90683a0352bb4806c78a1c57f1e51c1b8ca631101613597c6a97b3d1e011d50",
+    "outputs/tables/diagnostics/radar_paired_fold_contrasts.csv": "a444771cf6ccdeb3d564d99f5c872a6daf2ff16be3a0ae762482444e9b5082d8",
+    "outputs/tables/audits/palsar_acquisition_timing.csv": "cc2bb57ab6b6c090798ea343b4be1982346575fd3409b01e00d59dc7a6d55cae",
+    "figures/radar_representation_source_comparison.png": "3d4892d70fe73b639bc7b7cc3641183254cd7734177d87e69c25b72dc75df73e",
+    "figures/radar_zero_shot_comparison.png": "b805d120f3a8758b07d8f53b18cd6969713a48e9e07e98bce8e589cca1d6020c",
+    "figures/radar_fewshot_label_efficiency.png": "212f75a46a4f660ea6339dfc5c487ab8c6215919b3af42e0e54180190bf61e6c",
+    "figures/radar_biomass_range_sensitivity.png": "828a366e99685f34148a118b883d3303d27533d893eb43d12bbd2c05e67eebd7",
+    "figures/radar_feature_importance.png": "938c0fb4ed2eca5743587fbe637aed504a95b5b452008b85fe51cb3486354db5",
+    "figures/radar_domain_shift.png": "cd7963da6d6f91bb288b0b36c6f6b7c8682177c54908af6730719d67b190682b",
+    "figures/final_workflow_v2.png": "ab8c6d8be1ee15cfe5511a65b65b0d8970f9c24504b8f40ecbf0f8c8f3618781"
+  },
+  "missing_result_artifacts": [],
+  "software": {
+    "python": "3.12.4",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "private_per_sample_data_committed": false
+}

@@ -1,0 +1,10 @@
+{
+  "evaluated_at": "2026-08-21T12:26:05.436560+00:00",
+  "best_representation": "palsar_l",
+  "best_target_R2": -0.3876311578280165,
+  "best_target_Bias": 47.804757562477455,
+  "minimum_R2_preference": 0.2,
+  "positive_R2": false,
+  "wall_to_wall_map_authorized": false,
+  "withheld_statement": "Wall-to-wall mapping was withheld because target-domain validation remained insufficient."
+}

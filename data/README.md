@@ -16,6 +16,7 @@ required to re-run the pipeline.
 | Representation B | Sentinel-1 GRD | `COPERNICUS/S1_GRD` (annual-median VV/VH, dB) | 2019–2024 |
 | Representation B | Sentinel-2 SR Harmonized | `COPERNICUS/S2_SR_HARMONIZED` (10 bands + 5 indices) | 2019–2024 |
 | Topography | Copernicus GLO-30 DEM | `COPERNICUS/DEM/GLO30` (elevation, slope, aspect) | static |
+| Representation C | ALOS-2 PALSAR-2 yearly mosaic | `JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH` (HH/HV, angle, epoch, QA) | exact-year audited intersection |
 
 ## Why the raw data are not in this repository
 
@@ -40,6 +41,14 @@ required to re-run the pipeline.
   provider. Confirm acceptance before any derivative product or publication.
   This repository does not bundle AlphaEarth data and only points at the public
   asset ID.
+- ALOS/PALSAR/PALSAR-2 yearly mosaic: JAXA retains ownership and requires clear
+  acknowledgement in published results. This repository does not redistribute
+  footprint tables or rasters.
+
+The PALSAR audit precedes extraction and records image counts, source/target
+coverage, valid fractions, missingness by year/block, QA classes and HH/HV counts.
+Only `qa=255`, positive HH/HV DN and exact shot year enter the primary sample;
+year t±1 is never substituted.
 
 ## Obtaining the data and reproducing local inputs
 
