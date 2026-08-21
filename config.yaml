@@ -117,7 +117,8 @@ palsar:
   dataset: JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH
   year_match: exact
   scale_m: 25
-  qa_land_value: 255
+  # JAXA v2.4: 1=ScanSAR land and 255=land; both are valid.
+  qa_land_values: [1, 255]
   raw_bands: [HH, HV]
   metadata_bands: [angle, epoch, qa]
   conversion:

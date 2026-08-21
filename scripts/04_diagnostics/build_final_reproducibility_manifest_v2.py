@@ -29,6 +29,8 @@ def main() -> None:
               ROOT / "scripts/04_diagnostics/analyze_radar_biomass_sensitivity.py",
               ROOT / "scripts/04_diagnostics/analyze_radar_domain_shift.py"]
     optional = [ROOT / "outputs/manifests/palsar_availability_freeze.json",
+                ROOT / "outputs/manifests/palsar_asset_metadata_audit.json",
+                ROOT / "outputs/manifests/palsar_point_forensic_audit.json",
                 ROOT / "outputs/logs/source_palsar_finalize.json",
                 ROOT / "outputs/logs/kaihua_palsar_finalize.json",
                 ROOT / "outputs/manifests/palsar_common_sample_freeze.json",
@@ -40,6 +42,9 @@ def main() -> None:
                 ROOT / "outputs/manifests/palsar_wall_to_wall_decision_gate.json"]
     result_paths = [
         ROOT / "outputs/tables/audits/palsar_availability_audit.csv",
+        ROOT / "outputs/tables/audits/palsar_asset_metadata_2022_2024.csv",
+        ROOT / "outputs/tables/audits/palsar_raw_qa_histograms.csv",
+        ROOT / "outputs/tables/audits/palsar_common_sample_selection_bias.csv",
         ROOT / "outputs/tables/main_results/palsar_source_spatial_cv.csv",
         ROOT / "outputs/tables/main_results/palsar_zero_shot.csv",
         ROOT / "outputs/tables/main_results/palsar_fewshot_label_efficiency.csv",
@@ -57,6 +62,9 @@ def main() -> None:
         ROOT / "figures/radar_domain_shift.png",
         ROOT / "figures/final_workflow_v2.png",
     ]
+    availability = json.loads((ROOT / "outputs/manifests/palsar_availability_freeze.json").read_text())
+    common = json.loads((ROOT / "outputs/manifests/palsar_common_sample_freeze.json").read_text())
+    qa_audit = json.loads((ROOT / "outputs/manifests/palsar_asset_metadata_audit.json").read_text())
     manifest = {
         "schema_version": 2,
         "status": "complete" if all(p.exists() for p in optional) else "pipeline_implemented_execution_in_progress",
@@ -70,7 +78,14 @@ def main() -> None:
                       "dataset": "JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH",
                       "exact_year_only": True, "nearest_year_substitution": False,
                       "target_model_selection_forbidden": True,
-                      "future_nisar": "2026 prospective NISAR L-band experiment"},
+                      "future_nisar": "2026 prospective NISAR L-band experiment",
+                      "resolved_2023_qa_status": qa_audit["resolved_2023_qa_status"],
+                      "valid_qa_values": qa_audit["valid_land_qa_classes"],
+                      "final_common_years": availability["palsar_common_years"],
+                      "final_sample_n": {
+                          domain: int(summary["n_after_masking"])
+                          for domain, summary in common["domains"].items()
+                      }},
         "implementation_hashes": {p.relative_to(ROOT).as_posix(): sha256(p)
                                   for p in dict.fromkeys(paths) if p.exists()},
         "stage_manifests": {p.relative_to(ROOT).as_posix(): sha256(p)

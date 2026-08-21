@@ -1,6 +1,6 @@
 {
   "status": "PALSAR_COMMON_SOURCE_MODELS_FROZEN",
-  "frozen_at": "2026-08-21T12:16:00.293016+00:00",
+  "frozen_at": "2026-08-21T15:17:37.554168+00:00",
   "quick_smoke": false,
   "selection_metric": "source_spatial_cv_RMSE",
   "target_labels_loaded": false,
@@ -37,7 +37,7 @@
       "model": "xgboost",
       "config": "xgb_depth6",
       "model_file": "outputs/models/palsar_benchmark/dem_xgboost.joblib",
-      "model_sha256": "2e0b255fa4503509d5177404365df483e18e7c28efabeafd8d934768134f98fa",
+      "model_sha256": "46003e132af1181e44f6d004f0cc5e5765b84d4d8919e9c79d268eacbedcd86c",
       "features": [
         "elevation",
         "slope",
@@ -51,7 +51,7 @@
       "model": "xgboost",
       "config": "xgb_depth6",
       "model_file": "outputs/models/palsar_benchmark/sentinel1_c_xgboost.joblib",
-      "model_sha256": "403fcc6bbc7d58a08d70a74f5e2b9acbc6a373346cf5cb81454873292ec5f725",
+      "model_sha256": "e1e199ebfeca9eec71fe0ea6a2f9dc1836386090c77f368ee070aea17a1a589a",
       "features": [
         "VV",
         "VH",
@@ -65,10 +65,10 @@
       "selection_fold_rows": 20
     },
     "palsar_l": {
-      "model": "random_forest",
-      "config": "rf_sqrt",
-      "model_file": "outputs/models/palsar_benchmark/palsar_l_random_forest.joblib",
-      "model_sha256": "4fc9d1beeffad02f1a9f9505ddbc2fdf48309b072e3869739729b6f90412d7a3",
+      "model": "xgboost",
+      "config": "xgb_depth6",
+      "model_file": "outputs/models/palsar_benchmark/palsar_l_xgboost.joblib",
+      "model_sha256": "27c2d901a49648d2c1ce1b3c6e65570d8d23262ed785bb1e9906b687dbf2b585",
       "features": [
         "palsar_hh_db",
         "palsar_hv_db",
@@ -86,7 +86,7 @@
       "model": "random_forest",
       "config": "rf_sqrt",
       "model_file": "outputs/models/palsar_benchmark/sentinel1_c_palsar_l_random_forest.joblib",
-      "model_sha256": "c354ad6e2998204b7da48c6263c54a2574dc4073afc3a8f81570a1c45cb39471",
+      "model_sha256": "e1d9432945388a221793671840e4103502ac2875cf97f22e9289b83ee31fa018",
       "features": [
         "VV",
         "VH",
@@ -107,7 +107,7 @@
       "model": "xgboost",
       "config": "xgb_depth6",
       "model_file": "outputs/models/palsar_benchmark/sentinel1_sentinel2_xgboost.joblib",
-      "model_sha256": "f3efc17be3462d10d5908bc70172327e533ca60adc322f90880ac7a1c59ad1c3",
+      "model_sha256": "5f2721fc436241ecd16ff51ae3403cb2d520aba556787b24109eb4c347925882",
       "features": [
         "VV",
         "VH",
@@ -139,7 +139,7 @@
       "model": "xgboost",
       "config": "xgb_depth6",
       "model_file": "outputs/models/palsar_benchmark/palsar_sentinel2_xgboost.joblib",
-      "model_sha256": "072405cc48fc46a274f9caf26834fe8c1f001a26c74d68090543dfd74d8cef8d",
+      "model_sha256": "46d79851890831d7adafed61a7ad6681c29ed9cc029e8e74970d2f55ae862433",
       "features": [
         "palsar_hh_db",
         "palsar_hv_db",
@@ -172,7 +172,7 @@
       "model": "xgboost",
       "config": "xgb_depth6",
       "model_file": "outputs/models/palsar_benchmark/sentinel1_palsar_sentinel2_xgboost.joblib",
-      "model_sha256": "dc3b80719f5c6645d69df64e7c8a27b4512a960e76c3c7259bb5f356d8007b58",
+      "model_sha256": "3d880b5d0b9227ad28569070c44994d913d1aa414c12ec3b38807e787fb8cce9",
       "features": [
         "VV",
         "VH",
@@ -208,7 +208,7 @@
       "model": "xgboost",
       "config": "xgb_depth6",
       "model_file": "outputs/models/palsar_benchmark/alphaearth_xgboost.joblib",
-      "model_sha256": "a40c8600b44ea200b1d0a8c343410c315f76d2577dc880760cf35415496e613c",
+      "model_sha256": "70ee31be182ee8417c53b03f547fec0a0f9048dda4ae227693b594fe5a5b36eb",
       "features": [
         "A00",
         "A01",
@@ -283,7 +283,7 @@
       "selection_fold_rows": 20
     }
   },
-  "source_table_sha256": "3b992a2f1cd18b149b793e7ceba0e4fb5ed080bc2ad6481e66ed262ad1cffc83",
+  "source_table_sha256": "12674924e0add5a99b99ebc6cac0a4cdc90d0d147b46cbe3b302c4de67c73ea4",
   "software": {
     "python": "3.12.10",
     "platform": "Windows-11-10.0.26200-SP0"

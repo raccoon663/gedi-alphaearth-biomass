@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import unittest
 import tempfile
+import json
 from pathlib import Path
 
 import numpy as np
@@ -12,12 +13,29 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from utilities.guards import assert_safe_predictors, assert_target_not_used
+from utilities.radar_extractors import Palsar2FeatureExtractor
 from utilities.radar_benchmark import (PALSAR, REPRESENTATIONS, add_palsar_features,
                                        dn_to_gamma0_db, rfdi_from_dn,
                                        validate_feature_schema, validate_paired_frames)
 
 
 class PalsarPhysicsTests(unittest.TestCase):
+    def test_valid_mask_accepts_exact_documented_land_classes(self):
+        accepted = {value for value in range(256)
+                    if Palsar2FeatureExtractor.qa_is_valid(value)}
+        self.assertEqual(accepted, {1, 255})
+
+    def test_undocumented_qa_triggers_audit(self):
+        self.assertEqual(Palsar2FeatureExtractor.unexpected_qa_values([1, 2, 3]), set())
+        self.assertEqual(Palsar2FeatureExtractor.unexpected_qa_values([1, 42, 255]), {42})
+
+    def test_feature_property_names_do_not_include_image_bands(self):
+        safe_properties = {"shot_number", "year", "spatial_block_id", "target_block_id"}
+        self.assertTrue(safe_properties.isdisjoint(Palsar2FeatureExtractor.raw_bands))
+
+    def test_exact_year_contract_forbids_nearest_year(self):
+        self.assertEqual(Palsar2FeatureExtractor.spec.year_match, "exact")
+
     def test_gamma0_formula(self):
         dn = np.array([1000.0, 10000.0])
         np.testing.assert_allclose(dn_to_gamma0_db(dn), 20*np.log10(dn)-83)
@@ -41,6 +59,24 @@ class PalsarPhysicsTests(unittest.TestCase):
 
 
 class IntegrityTests(unittest.TestCase):
+    def test_all_common_years_have_source_and_target_valid_samples(self):
+        freeze = json.loads((ROOT / "outputs/manifests/palsar_availability_freeze.json").read_text())
+        audit = pd.read_csv(ROOT / "outputs/tables/audits/palsar_availability_audit.csv")
+        years = set(freeze["palsar_common_years"])
+        yearly = audit[audit.scope == "year"]
+        for year in years:
+            for domain in ("source", "target"):
+                row = yearly[(yearly.year == year) & (yearly.domain == domain)]
+                self.assertEqual(len(row), 1)
+                self.assertGreater(int(row.iloc[0].valid_palsar_n), 0)
+
+    def test_2023_inclusion_reproduced_from_raw_availability(self):
+        freeze = json.loads((ROOT / "outputs/manifests/palsar_availability_freeze.json").read_text())
+        audit = pd.read_csv(ROOT / "outputs/tables/audits/palsar_availability_audit.csv")
+        yearly = audit[(audit.scope == "year") & (audit.year == 2023)]
+        expected = set(yearly.loc[yearly.valid_palsar_n > 0, "domain"]) == {"source", "target"}
+        self.assertEqual(2023 in freeze["palsar_common_years"], expected)
+
     def frame(self, name: str) -> pd.DataFrame:
         data = pd.DataFrame({"shot_number": pd.Series(["1", "2"], dtype="string"),
                              "year": [2020, 2021], "agbd": [10., 20.],

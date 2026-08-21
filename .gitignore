@@ -44,3 +44,6 @@ outputs/manifests/kaihua_fewshot_spatial_folds.csv
 outputs/manifests/kaihua_fewshot_label_draws.csv
 outputs/manifests/aef_development_subset_75.csv
 outputs/manifests/aef_development_common_manifest.csv
+# Row-level diagnostic intermediates (repository keeps aggregate tables/figures).
+outputs/tables/diagnostics/palsar_source_oof_predictions.parquet
+outputs/tables/diagnostics/radar_domain_pca_points.csv
