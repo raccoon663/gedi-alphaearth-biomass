@@ -56,3 +56,22 @@ SHA-256 checksums of frozen AOI, sample manifests, model freezes, and prediction
 files are recorded in `outputs/manifests/*.sha256` and consolidated in
 `outputs/manifests/final_reproducibility_manifest.json`. Re-running the frozen
 scripts with `seed: 42` reproduces the exact sample draws and folds.
+
+## Radar wavelength benchmark
+
+The extension adds four gates: an authenticated availability/QA freeze; an
+identical-row common-sample freeze; fold-paired source effect sizes; and a target
+ordered-row/prediction hash frozen before AGBD unlock. PALSAR missingness and fold
+imbalance are reported, never repaired with target-dependent resampling.
+
+Few-shot runs reuse budgets 25–2,500, seeds 42–44, whole-block folds and one fixed
+XGBoost protocol. Source-only AGBD quantiles define biomass bins. Domain AUROC is
+descriptive and is not equated with biomass prediction quality.
+
+The completed radar benchmark passed identical-row, unique-key, response, feature
+schema, whole-block fold, PALSAR physics and pre-label prediction-hash guards.
+All six tested radar/optical/embedding domain classifiers produced AUROC
+0.999695–1.000000. PALSAR therefore did not materially reduce separability even
+though its zero-shot MAE was lower than S1_C. Source fold contrasts are reported
+as effect sizes and consistency counts; five folds are not presented as a strong
+significance test.

@@ -1,4 +1,7 @@
-# AlphaEarth versus Conventional Earth Observation for Cross-Region Forest Biomass Transfer from the Southeastern United States to Eastern China
+# GEDI Biomass Transfer across Foundation, C-band and L-band Representations
+
+> Version-2 adds a PALSAR-common paired benchmark. Numerical conclusions below
+> remain the legacy frozen experiment unless explicitly labelled PALSAR.
 
 ## 1. Motivation
 
@@ -117,3 +120,34 @@ However, absolute Kaihua performance remained modest, and the tested models do n
 ## 13. Conclusion
 
 AlphaEarth provides a better representation for source-domain biomass prediction and a measurable target-domain label-efficiency advantage under severe geographic shift. The experiment also shows why source accuracy must not be equated with geographic transfer: both frozen source models failed zero-shot, and even 2,500 local labels recovered only modest spatial-holdout performance. The project therefore answers its representation-transfer question without presenting itself as a successful operational mapping system. Formal Kaihua wall-to-wall biomass mapping was not pursued.
+
+## 14. Radar wavelength benchmark extension
+
+The extension asks whether PALSAR-2 L-band, Sentinel-1 C-band, fusion and optical
+counterparts differ in source prediction, USA→Kaihua transfer and target label
+efficiency. Exact-year matching and one identical PALSAR-common sample prevent
+legacy full-sample metrics from entering the paired table. A wall-to-wall product
+remains gated on stable positive target spatial-holdout performance—preferably
+R² ≥ 0.20 without catastrophic bias—and would be described only as a
+GEDI-calibrated biomass prediction.
+
+### 14.1 Completed radar results
+
+The PALSAR-common set contains 91,526 source and 102,315 target footprints from
+2019, 2020, 2021, 2022 and 2024. PALSAR_L modestly outperformed S1_C in source
+CV (R² 0.299 versus 0.278), and C+L fusion improved to 0.346. AlphaEarth remained
+the strongest source representation at 0.571. The optical-controlled comparison
+was effectively tied in source CV (PALSAR+S2 0.416; S1+S2 0.415).
+
+No source model achieved positive Kaihua zero-shot R². PALSAR_L was least poor
+(−0.388; RMSE 102.79 Mg/ha), while S1_C reached −0.713. This is evidence that
+the L-band representation reduced error in this transfer, not evidence of
+successful transfer. Domain classifiers remained essentially saturated for every
+representation (AUROC 0.9997–1.0000), so PALSAR did not materially erase the
+USA–China predictor shift.
+
+At the highest local-label budget, AlphaEarth remained best (R² 0.140 ± 0.019),
+followed by full conventional fusion (0.065 ± 0.016) and S1+S2 (0.063 ± 0.018).
+PALSAR_L reached only 0.020 ± 0.016. High-biomass-bin RMSE was 159.25 for S1_C,
+158.43 for PALSAR_L and 153.96 Mg/ha for C+L; this small PALSAR advantage does
+not establish a formal saturation threshold. Wall-to-wall mapping was withheld.
