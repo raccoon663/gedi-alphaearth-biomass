@@ -30,7 +30,13 @@ def finalize(input_dir: Path, output: Path, manifest: Path, domain: str) -> dict
     if not set(PRIMARY + QC) <= set(data):
         raise RuntimeError("Final PALSAR chunks lack primary or QC bands")
     data = data.replace([np.inf, -np.inf], np.nan)
-    valid = ((data.palsar_qa == 255) & data[PRIMARY].notna().all(axis=1) &
+    valid_qa_values = {1, 255}
+    unexpected = set(pd.to_numeric(data.palsar_qa, errors="coerce").dropna().astype(int)) - {
+        0, 1, 2, 3, 4, 50, 100, 150, 255
+    }
+    if unexpected:
+        raise RuntimeError(f"Undocumented PALSAR QA classes: {sorted(unexpected)}")
+    valid = (data.palsar_qa.isin(valid_qa_values) & data[PRIMARY].notna().all(axis=1) &
              data.palsar_hh_db.between(-60, 20) & data.palsar_hv_db.between(-60, 20) &
              data.palsar_rfdi.between(-1, 1))
     data["palsar_valid"] = valid
@@ -47,6 +53,7 @@ def finalize(input_dir: Path, output: Path, manifest: Path, domain: str) -> dict
                "input_chunks": len(paths), "input_rows": len(data),
                "valid_rows": int(valid.sum()), "invalid_rows": int((~valid).sum()),
                "valid_fraction": float(valid.mean()), "years": sorted(map(int, data.year.unique())),
+               "valid_qa_values": sorted(valid_qa_values),
                "feature_columns": PRIMARY, "qc_columns": QC + ["palsar_acquisition_date",
                                                                   "palsar_acquisition_month"],
                "epoch_units": "milliseconds since 1970-01-01",

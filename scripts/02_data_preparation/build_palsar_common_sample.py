@@ -57,7 +57,9 @@ def build(domain: str, conventional_path: Path, alphaearth_path: Path, palsar_pa
     if domain == "target" and RESPONSE not in conventional:
         metadata.remove(RESPONSE)
     required_conv = KEYS + metadata + S1 + S2 + S2_INDICES + DEM
-    required_aef = KEYS + ALPHAEARTH + DEM
+    # DEM is supplied by the conventional frame and shared by every representation;
+    # the locked target AlphaEarth file therefore need not duplicate it.
+    required_aef = KEYS + ALPHAEARTH
     required_palsar = KEYS + PALSAR + ["palsar_valid"]
     for label, frame, required in [("conventional", conventional, required_conv),
                                     ("alphaearth", alphaearth, required_aef),
@@ -71,16 +73,17 @@ def build(domain: str, conventional_path: Path, alphaearth_path: Path, palsar_pa
     common = merge_one_to_one(common, palsar, PALSAR + ["palsar_valid", "palsar_angle",
                                                         "palsar_epoch", "palsar_acquisition_date",
                                                         "palsar_acquisition_month", "palsar_qa"])
+    palsar_valid = common.palsar_valid.fillna(False).astype(bool)
     reasons = {
         "not_in_palsar_common_years": int((~common.year.isin(palsar.year.unique())).sum()),
-        "invalid_or_missing_palsar": int((~common.palsar_valid.fillna(False)).sum()),
+        "invalid_or_missing_palsar": int((~palsar_valid).sum()),
         "missing_s1": int(common[S1].isna().any(axis=1).sum()),
         "missing_s2": int(common[S2 + S2_INDICES].isna().any(axis=1).sum()),
         "missing_dem": int(common[DEM].isna().any(axis=1).sum()),
         "missing_alphaearth": int(common[ALPHAEARTH].isna().any(axis=1).sum()),
     }
     required_all = S1 + S2 + S2_INDICES + DEM + ALPHAEARTH + PALSAR
-    keep = common.palsar_valid.fillna(False) & common[required_all].replace(
+    keep = palsar_valid & common[required_all].replace(
         [np.inf, -np.inf], np.nan).notna().all(axis=1)
     common = common.loc[keep].sort_values(KEYS).reset_index(drop=True)
     if not len(common):

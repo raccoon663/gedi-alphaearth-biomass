@@ -45,7 +45,9 @@ def main() -> None:
                          "R2": float(r2_score(group.agbd, group.prediction)) if len(group) >= 20 else np.nan,
                          "residual_q25": float(residual.quantile(.25)),
                          "residual_median": float(residual.median()),
-                         "residual_q75": float(residual.quantile(.75))})
+                         "residual_q75": float(residual.quantile(.75)),
+                         "residual_iqr": float(residual.quantile(.75) - residual.quantile(.25)),
+                         "R2_interpretation": "secondary; unstable under deliberately restricted response variance"})
     table = pd.DataFrame(rows)
     out = ROOT / "outputs/tables/diagnostics/radar_biomass_bin_performance.csv"
     out.parent.mkdir(parents=True, exist_ok=True)

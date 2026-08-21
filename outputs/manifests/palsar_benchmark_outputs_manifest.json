@@ -1,7 +1,7 @@
 {
   "status": "PALSAR_BENCHMARK_OUTPUTS_BUILT",
   "legacy_results_overwritten": false,
-  "comparison_sha256": "bb0b93f97b815dbb6c3596a53a0e70fa3d49680b107e2c62aa3fa87b7108852d",
+  "comparison_sha256": "d7426804e89b6f78ba8647b115a2c0867abb4a1cdc180bdb7f50d1c3e197e9fd",
   "figures": [
     "radar_representation_source_comparison.png",
     "radar_zero_shot_comparison.png",

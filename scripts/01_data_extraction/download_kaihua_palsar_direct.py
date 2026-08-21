@@ -19,9 +19,12 @@ def main() -> None:
     parser.add_argument("--chunk-size", type=int, default=500)
     parser.add_argument("--retries", type=int, default=4)
     parser.add_argument("--project")
+    parser.add_argument("--years", type=int, nargs="+",
+                        help="Optional exact subset of frozen common years to extract")
     args = parser.parse_args()
     download(ROOT, args.manifest, args.availability, args.output_dir, args.ledger,
-             args.chunk_size, args.retries, args.project)
+             args.chunk_size, args.retries, args.project,
+             set(args.years) if args.years else None)
 
 
 if __name__ == "__main__":

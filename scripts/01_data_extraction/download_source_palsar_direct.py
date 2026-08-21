@@ -39,11 +39,17 @@ def validate(path: Path, expected: pd.DataFrame, metadata: list[str]) -> dict:
 
 
 def download(root: Path, manifest: Path, availability: Path, out_dir: Path,
-             ledger_path: Path, chunk_size: int, retries: int, project: str | None) -> None:
+             ledger_path: Path, chunk_size: int, retries: int, project: str | None,
+             requested_years: set[int] | None = None) -> None:
     import ee
     ee.Initialize(project=project) if project else ee.Initialize()
     freeze = json.loads(availability.read_text())
     years = {int(x) for x in freeze["palsar_common_years"]}
+    if requested_years is not None:
+        unavailable = requested_years - years
+        if unavailable:
+            raise RuntimeError(f"Requested years are not common-valid: {sorted(unavailable)}")
+        years &= requested_years
     if manifest.suffix.lower() == ".parquet":
         source = pd.read_parquet(manifest)
         source["shot_number"] = source.shot_number.astype("string")
@@ -108,9 +114,12 @@ def main() -> None:
     parser.add_argument("--chunk-size", type=int, default=500)
     parser.add_argument("--retries", type=int, default=4)
     parser.add_argument("--project")
+    parser.add_argument("--years", type=int, nargs="+",
+                        help="Optional exact subset of frozen common years to extract")
     args = parser.parse_args()
     download(ROOT, args.manifest, args.availability, args.output_dir, args.ledger,
-             args.chunk_size, args.retries, args.project)
+             args.chunk_size, args.retries, args.project,
+             set(args.years) if args.years else None)
 
 
 if __name__ == "__main__":

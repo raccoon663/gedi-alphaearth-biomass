@@ -1,7 +1,7 @@
 {
   "status": "PALSAR_ZERO_SHOT_EVALUATED_AFTER_LABEL_UNLOCK",
-  "evaluated_at": "2026-08-21T12:16:34.373526+00:00",
-  "prediction_freeze_sha256": "19e5e99368861c6c40cdc00f8a7419be08b9960098609ed4f9402e834c482dfd",
-  "label_file_sha256": "02c8a3cb4568a60b991eb67939788f7a33884ff1fbfc6e9b9409454bf353d94f",
-  "result_sha256": "4bf420e54476b24daa10ac11017a12bb311d5bc8c6386589f9f225e0b3e47c49"
+  "evaluated_at": "2026-08-21T15:18:22.865447+00:00",
+  "prediction_freeze_sha256": "07d2120c0aeafabe99b30479bb863f8e1e27c253857e8d8f12f28b24dc8eb39c",
+  "label_file_sha256": "be72533125bc6e18e7b530e558680ac15f64ea8ad3eaa7dce061ca1a2c632231",
+  "result_sha256": "e9bc46e9180adcffc8804d500651db0db562c34907da6b8e91b74851c1397a22"
 }

@@ -108,20 +108,19 @@ mapping system. Formal Kaihua wall-to-wall biomass mapping was not pursued.
 
 ## 5. PALSAR-common paired benchmark
 
-The exact-year common set uses 2019, 2020, 2021, 2022 and 2024, with 91,526
-source and 102,315 target footprints. Source spatial-CV R² values were 0.099
-(DEM), 0.278 (S1_C), 0.299 (PALSAR_L), 0.346 (C+L), 0.415 (S1+S2), 0.416
-(PALSAR+S2), 0.426 (S1+PALSAR+S2) and 0.571 (AlphaEarth). PALSAR_L exceeded
-S1_C in all five folds (mean ΔR² +0.021; mean ΔRMSE −1.38 Mg/ha); C+L exceeded
+The exact-year common set uses all years 2019–2024, with 109,830 source and
+107,809 target footprints. Source spatial-CV R² values were 0.097
+(DEM), 0.283 (S1_C), 0.296 (PALSAR_L), 0.347 (C+L), 0.421 (S1+S2), 0.419
+(PALSAR+S2), 0.430 (S1+PALSAR+S2) and 0.574 (AlphaEarth). PALSAR_L exceeded
+S1_C in all five folds (mean ΔR² +0.0128; mean ΔRMSE −0.81 Mg/ha); C+L exceeded
 both single-radar branches in all five folds.
 
-All frozen zero-shot R² values were negative. PALSAR_L was least poor at −0.388
-(RMSE 102.79 Mg/ha), compared with S1_C at −0.713 (114.22). C+L degraded to
-−0.515, so source fusion gain did not transfer directly. PALSAR+S2 (−0.413)
-outperformed S1+S2 (−0.876), but full fusion was worst (−1.187).
+All frozen zero-shot R² values were negative. PALSAR+S2 was least poor at −0.297
+(RMSE 99.15 Mg/ha). PALSAR_L (−0.596) remained less poor than S1_C (−0.718),
+and C+L reached −0.513, but full fusion was worst at −1.104.
 
 Under the shared-draw local XGBoost protocol, AlphaEarth first achieved positive
-mean holdout R² at 100 labels; S1+S2 and full fusion at 500; S1_C, C+L and
-PALSAR+S2 at 1,000; DEM and PALSAR_L at 2,500. At 2,500 labels AlphaEarth was
-best (0.140 ± 0.019), and no representation reached 0.20. The predeclared mapping
+mean holdout R² at 50 labels; S1+S2, PALSAR+S2 and full fusion at 500; S1_C,
+C+L and PALSAR_L at 1,000; DEM at 2,500. At 2,500 labels AlphaEarth was
+best (0.142 ± 0.020), and no representation reached 0.20. The predeclared mapping
 gate therefore withheld a Kaihua wall-to-wall product.

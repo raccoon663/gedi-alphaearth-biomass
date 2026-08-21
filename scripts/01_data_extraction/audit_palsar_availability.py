@@ -66,7 +66,14 @@ def audit_domain(ee, extractor, name: str, manifest: Path, years: list[int],
                 parts.append(sample_points(ee, image, subset.iloc[start:start+chunk_size],
                                            extractor.spec.scale_m))
         sampled = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame()
-        valid = sampled[(pd.to_numeric(sampled.get("qa"), errors="coerce") == 255) &
+        qa = pd.to_numeric(sampled.get("qa"), errors="coerce")
+        unexpected = extractor.unexpected_qa_values(qa.dropna().unique()) if len(sampled) else set()
+        if unexpected:
+            raise RuntimeError(
+                f"Undocumented PALSAR QA classes for {name} {year}: {sorted(unexpected)}"
+            )
+        land = qa.isin(extractor.valid_qa_values) if len(sampled) else pd.Series(dtype=bool)
+        valid = sampled[land &
                         (pd.to_numeric(sampled.get("HH"), errors="coerce") > 0) &
                         (pd.to_numeric(sampled.get("HV"), errors="coerce") > 0)] if len(sampled) else sampled
         if len(valid):
@@ -75,7 +82,7 @@ def audit_domain(ee, extractor, name: str, manifest: Path, years: list[int],
                         "image_count": image_count, "frozen_sample_n": len(subset),
                         "sampled_n": len(sampled), "valid_hh_n": int((pd.to_numeric(sampled.get("HH"), errors="coerce") > 0).sum()) if len(sampled) else 0,
                         "valid_hv_n": int((pd.to_numeric(sampled.get("HV"), errors="coerce") > 0).sum()) if len(sampled) else 0,
-                        "qa_land_n": int((pd.to_numeric(sampled.get("qa"), errors="coerce") == 255).sum()) if len(sampled) else 0,
+                        "qa_land_n": int(land.sum()) if len(sampled) else 0,
                         "valid_palsar_n": len(valid),
                         "missing_fraction": float(1-len(valid)/len(subset)) if len(subset) else np.nan})
         block = "spatial_block_id" if name == "source" else "target_block_id"
@@ -92,6 +99,7 @@ def audit_domain(ee, extractor, name: str, manifest: Path, years: list[int],
             for qa, count in sampled.qa.value_counts(dropna=False).items():
                 records.append({"scope": "qa_class", "domain": name, "year": year,
                                 "qa_class": qa, "qa_count": int(count)})
+        print(f"audited {name} {year}: {len(valid)}/{len(subset)} valid", flush=True)
     return records, valid_years
 
 
@@ -133,6 +141,8 @@ def main() -> None:
     pd.DataFrame(source_rows + target_rows).to_csv(out, index=False)
     freeze = {"status": "PALSAR_AVAILABILITY_FROZEN", "frozen_at": datetime.now(timezone.utc).isoformat(),
               "dataset": extractor.spec.dataset, "year_match": "exact",
+              "valid_qa_values": sorted(extractor.valid_qa_values),
+              "qa_semantics_source": "JAXA PALSAR-2 ScanSAR/stripmap mosaic v2.4 product description",
               "nearest_year_substitution": False, "audited_years": years,
               "palsar_common_years": common,
               "source_manifest_sha256": sha256(args.source_manifest),

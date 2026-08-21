@@ -14,11 +14,13 @@ Earth-observation predictors can extend relationships learned at GEDI footprints
 yet it is unclear whether those relationships remain valid across major geographic
 and ecological shifts.
 
-This project asks a single, narrow question:
+The project addresses two linked questions:
 
-> Do AlphaEarth embeddings transfer GEDI biomass relationships from the
-> southeastern United States to Kaihua County, China, better—and with fewer
-> local labels—than conventional Sentinel-1/Sentinel-2 features?
+> 1. Can AlphaEarth improve geographic transfer and target label efficiency
+> relative to conventional Sentinel predictors?
+>
+> 2. How do Sentinel-1 C-band, PALSAR-2 L-band, and C+L radar fusion differ for
+> GEDI-calibrated biomass prediction and transfer?
 
 The work separates three questions that are often conflated: **source-domain
 prediction**, **direct geographic transfer**, and **target-domain label
@@ -54,33 +56,36 @@ The extension is an additional benchmark layer; it does not replace or silently
 recompute the table above. It compares DEM, Sentinel-1 C-band, PALSAR-2 L-band,
 C+L fusion, S1+S2, PALSAR+S2, S1+PALSAR+S2 and AlphaEarth on identical rows.
 
-PALSAR uses `JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH`, the central 25 m pixel, land QA
-(`qa=255`), and `20*log10(DN)-83` after masking nonpositive DN. RFDI is computed
+PALSAR uses `JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH`, the central 25 m pixel, JAXA v2.4
+land QA (`qa in {1,255}`; 1 is ScanSAR land), and `20*log10(DN)-83` after masking nonpositive DN. RFDI is computed
 from linear power. Angle, epoch/acquisition date and QA are retained only for QC.
 
-**Completed benchmark (2026-08-21):** the availability audit froze common years
-2019, 2020, 2021, 2022 and 2024. Kaihua had no `qa=255` footprint in the 2023
-mosaic, so 2023 was excluded without nearest-year substitution. The identical-row
-benchmark contains 91,526 source and 102,315 target footprints.
+**Completed benchmark (2026-08-21):** a direct authenticated audit found raw QA
+classes 1–4 in the asset. JAXA v2.4 defines `qa=1` as ScanSAR land, although the
+Earth Engine catalog omits classes 1–4. It also showed that one-image `mosaic()`
+discarded the native 25 m default projection, so extraction now uses the sole
+exact-year image directly. Common years are 2019–2024 with no nearest-year
+substitution; the identical-row benchmark contains 109,830 source and 107,809
+target footprints.
 
 | Representation | Source CV R² | Source RMSE | Kaihua zero-shot R² | Zero-shot RMSE |
 |---|---:|---:|---:|---:|
-| DEM | 0.099 | 103.35 | −0.684 | 113.25 |
-| S1_C | 0.278 | 92.52 | −0.713 | 114.22 |
-| PALSAR_L | 0.299 | 91.14 | **−0.388** | **102.79** |
-| S1_C + PALSAR_L | 0.346 | 88.05 | −0.515 | 107.42 |
-| S1 + S2 | 0.415 | 83.23 | −0.876 | 119.53 |
-| PALSAR + S2 | 0.416 | 83.17 | −0.413 | 103.73 |
-| S1 + PALSAR + S2 | 0.426 | 82.44 | −1.187 | 129.06 |
-| AlphaEarth | **0.571** | **71.31** | −0.661 | 112.45 |
+| DEM | 0.097 | 100.91 | −0.665 | 112.33 |
+| S1_C | 0.283 | 89.88 | −0.718 | 114.12 |
+| PALSAR_L | 0.296 | 89.07 | −0.596 | 110.00 |
+| S1_C + PALSAR_L | 0.347 | 85.82 | −0.513 | 107.07 |
+| S1 + S2 | 0.421 | 80.79 | −0.723 | 114.28 |
+| PALSAR + S2 | 0.419 | 80.92 | **−0.297** | **99.15** |
+| S1 + PALSAR + S2 | 0.430 | 80.18 | −1.104 | 126.28 |
+| AlphaEarth | **0.574** | **69.28** | −0.645 | 111.65 |
 
-PALSAR improved on S1 in every source fold (mean ΔR² +0.021; ΔRMSE
-−1.38 Mg/ha). C+L fusion improved source prediction over either radar alone, but
-did not improve zero-shot transfer over PALSAR alone. Holding S2+DEM approximately
-constant, source performance was effectively tied, while PALSAR+S2 transferred
-less poorly. All zero-shot R² values remained negative. In few-shot spatial
-holdout, AlphaEarth first became positive at 100 labels; the full conventional
-branches at 500; S1, PALSAR+S2 and C+L at 1,000; and PALSAR alone at 2,500.
+PALSAR improved on S1 in every source fold (mean ΔR² +0.0128; ΔRMSE
+−0.81 Mg/ha). C+L fusion improved source prediction over either radar alone.
+PALSAR alone transferred less poorly than S1, while PALSAR+S2 was the least-poor
+zero-shot representation. Holding S2+DEM approximately constant, source performance
+was effectively tied. All zero-shot R² values remained negative. In few-shot spatial
+holdout, AlphaEarth first became positive at 50 labels; S1+S2, PALSAR+S2 and full
+fusion at 500; S1, PALSAR and C+L at 1,000; and DEM at 2,500.
 No representation reached mean R² 0.20, so wall-to-wall mapping was withheld.
 
 ![Source representation comparison](figures/source_representation_comparison.png)
@@ -115,7 +120,7 @@ No representation reached mean R² 0.20, so wall-to-wall mapping was withheld.
   on one frozen PALSAR-common sample with shared folds/model budgets. Kaihua labels
   remain inaccessible until zero-shot prediction hashes are frozen.
 
-![Cross-region GEDI biomass workflow](figures/final_workflow.png)
+![Current cross-region GEDI biomass workflow](figures/final_workflow_v2.png)
 
 Full detail: [`docs/methodology.md`](docs/methodology.md),
 [`docs/experiments.md`](docs/experiments.md),
@@ -201,3 +206,6 @@ SHA-256 checksums remain so the experiment can be verified without them.
   representation benchmark, not a perfectly controlled wavelength experiment.
 - PALSAR yearly mosaics are not temporally equivalent to Sentinel-1 annual medians;
   epoch timing is audited but excluded from primary predictors.
+- PALSAR validity masking reduced 124,303 source rows to 109,830 and 130,195
+  target rows to 107,809. The selection audit found small AGBD and year/block
+  distribution shifts, so the frozen sample was not rebalanced.

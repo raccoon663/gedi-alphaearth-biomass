@@ -1,0 +1,542 @@
+{
+  "status": "PALSAR_ASSET_METADATA_QA_FORENSIC_COMPLETE",
+  "created_at": "2026-08-21T13:35:41.921404+00:00",
+  "dataset": "JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH",
+  "years": [
+    2022,
+    2023,
+    2024
+  ],
+  "earth_engine_catalog_qa_classes": [
+    0,
+    50,
+    100,
+    150,
+    255
+  ],
+  "authoritative_jaxa_v24_qa_classes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    50,
+    100,
+    150,
+    255
+  ],
+  "authoritative_jaxa_v24_qa_meanings": {
+    "0": "no_data",
+    "1": "scansar_land",
+    "2": "scansar_layover",
+    "3": "scansar_shadow",
+    "4": "scansar_ocean_water",
+    "50": "water",
+    "100": "layover",
+    "150": "shadow",
+    "255": "land"
+  },
+  "valid_land_qa_classes": [
+    1,
+    255
+  ],
+  "qa_semantics_url": "https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription_PALSAR2_Mosaic_ver240.pdf",
+  "raw_qa_values_observed": [
+    1,
+    2,
+    3,
+    4,
+    50,
+    100,
+    150,
+    255
+  ],
+  "earth_engine_catalog_omitted_values_observed": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "authoritatively_undocumented_raw_qa_values": [],
+  "resolved_2023_qa_status": "OUTCOME_C_DOCUMENTATION_ASSET_VERSION_DISCREPANCY",
+  "root_cause": "Earth Engine catalog omits ScanSAR QA classes 1-4; JAXA v2.4 defines class 1 as land.",
+  "existing_benchmark_valid": false,
+  "rerun_required": true,
+  "target_2023_land_pixel_count_at_audit_scale": 3723500,
+  "histogram_scales_m": {
+    "source": 250,
+    "target": 25
+  },
+  "asset_metadata_csv_sha256": "2e16d63bcf182a69dbc3197ffb5cdf741400d941f9e08c58b2314b5b7df63be9",
+  "raw_qa_histogram_csv_sha256": "1a397c96883e6425ee79b8176c15016e85e4d73c6ff5c32b3b29bd6ba4359e71",
+  "point_forensic_manifest_sha256": "5b38fb2d8d37d6f91cacf3b27a3d7e22a5c12f1862d34900b4c5c8de1ddb47f6",
+  "images": [
+    {
+      "year": 2022,
+      "image_id": "2022",
+      "system_index": "2022",
+      "system_time_start": 1640995200000,
+      "band_names": [
+        "HH",
+        "HV",
+        "angle",
+        "epoch",
+        "qa"
+      ],
+      "band_types": {
+        "HH": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 65535
+        },
+        "HV": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 65535
+        },
+        "angle": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 255
+        },
+        "epoch": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 1138060800000,
+          "max": 6800284800000
+        },
+        "qa": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 255
+        }
+      },
+      "projections": {
+        "HH": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "HV": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "angle": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "epoch": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "qa": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        }
+      },
+      "properties": {
+        "system:asset_size": 1819989852496,
+        "system:footprint": {
+          "type": "LinearRing",
+          "coordinates": [
+            [
+              -180,
+              -90
+            ],
+            [
+              180,
+              -90
+            ],
+            [
+              180,
+              90
+            ],
+            [
+              -180,
+              90
+            ],
+            [
+              -180,
+              -90
+            ]
+          ]
+        },
+        "system:id": "JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH/2022",
+        "system:index": "2022",
+        "system:time_end": 1672531200000,
+        "system:time_start": 1640995200000,
+        "system:version": 1758003760681174,
+        "version": "2.0.2"
+      }
+    },
+    {
+      "year": 2023,
+      "image_id": "2023",
+      "system_index": "2023",
+      "system_time_start": 1672531200000,
+      "band_names": [
+        "HH",
+        "HV",
+        "angle",
+        "epoch",
+        "qa"
+      ],
+      "band_types": {
+        "HH": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 65535
+        },
+        "HV": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 65535
+        },
+        "angle": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 255
+        },
+        "epoch": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 1138060800000,
+          "max": 6800284800000
+        },
+        "qa": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 255
+        }
+      },
+      "projections": {
+        "HH": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "HV": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "angle": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "epoch": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "qa": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        }
+      },
+      "properties": {
+        "system:asset_size": 1852427659864,
+        "system:footprint": {
+          "type": "LinearRing",
+          "coordinates": [
+            [
+              -180,
+              -90
+            ],
+            [
+              180,
+              -90
+            ],
+            [
+              180,
+              90
+            ],
+            [
+              -180,
+              90
+            ],
+            [
+              -180,
+              -90
+            ]
+          ]
+        },
+        "system:id": "JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH/2023",
+        "system:index": "2023",
+        "system:time_end": 1704067200000,
+        "system:time_start": 1672531200000,
+        "system:version": 1758003760681174
+      }
+    },
+    {
+      "year": 2024,
+      "image_id": "2024",
+      "system_index": "2024",
+      "system_time_start": 1704067200000,
+      "band_names": [
+        "HH",
+        "HV",
+        "angle",
+        "epoch",
+        "qa"
+      ],
+      "band_types": {
+        "HH": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 65535
+        },
+        "HV": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 65535
+        },
+        "angle": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 255
+        },
+        "epoch": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 1138060800000,
+          "max": 6800284800000
+        },
+        "qa": {
+          "type": "PixelType",
+          "precision": "int",
+          "min": 0,
+          "max": 255
+        }
+      },
+      "projections": {
+        "HH": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "HV": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "angle": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "epoch": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        },
+        "qa": {
+          "projection": {
+            "type": "Projection",
+            "crs": "EPSG:4326",
+            "transform": [
+              0.00022222222222222223,
+              0,
+              -180,
+              0,
+              -0.00022222222222222223,
+              84
+            ]
+          },
+          "nominal_scale": 24.73766462072746
+        }
+      },
+      "properties": {
+        "system:asset_size": 1801765854325,
+        "system:footprint": {
+          "type": "LinearRing",
+          "coordinates": [
+            [
+              -180,
+              -90
+            ],
+            [
+              180,
+              -90
+            ],
+            [
+              180,
+              90
+            ],
+            [
+              -180,
+              90
+            ],
+            [
+              -180,
+              -90
+            ]
+          ]
+        },
+        "system:id": "JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH/2024",
+        "system:index": "2024",
+        "system:time_end": 1735689600000,
+        "system:time_start": 1704067200000,
+        "system:version": 1758003760681174
+      }
+    }
+  ],
+  "single_image_per_year": true
+}
