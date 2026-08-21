@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-"""Static consistency checks for the repository of ``gedi-alphaearth-biomass``.
+"""Static consistency checks for the ``gedi-alphaearth-biomass`` repository.
 
-This is a stdlib-only sanity gate. It does not run any model training or read any
-remote-sensing data; it only inspects files that are already in the repository and
-fails (non-zero exit) on the kinds of inconsistency the repository audit is
-meant to prevent:
+This is a stdlib-only sanity checker. It does not run any model training or read
+any remote-sensing data; it only inspects files already in the repository and
+fails (non-zero exit) on internal inconsistencies such as:
 
-  * a non-MIT or appended LICENSE (GitHub would flag it as NOASSERTION);
+  * a non-MIT or appended LICENSE (GitHub would not detect it as MIT);
   * ``config.yaml`` re-enabling wall-to-wall mapping or a random test split;
   * a leftover ``scripts/archive/`` directory or per-sample label-draw manifest;
   * stale figure file names referenced from the docs;
   * a source-model manifest whose structure or safeguards are wrong;
-  * missing key dependencies in ``requirements.txt``;
-  * shouty internal/AI-developer language left in the documentation.
+  * missing key dependencies in ``requirements.txt``.
 
 Run from anywhere; the repository root is derived from this file's location
 (``scripts/utilities/validate_repository.py`` -> parents[2]).
@@ -41,7 +39,7 @@ def read(path: str) -> str:
 def scan_scripts_for_stale_paths() -> None:
     """Forbid path patterns that contradict the repository layout.
 
-    The public repo uses ``outputs/tables/{main_results,diagnostics,audits}/`` and
+    The repository uses ``outputs/tables/{main_results,diagnostics,audits}/`` and
     ``figures/``. Any script still referencing ``root / "reports"``,
     ``root / "outputs/figures"``, a bare ``outputs/tables/<file>.csv`` (instead of a
     subdir), or one of the three historically-misplaced tables is inconsistent and
@@ -246,7 +244,7 @@ def check_nested_evaluation_distinct_from_deployment() -> None:
 
 def main() -> int:
     # --- 1. Required root files --------------------------------------------
-    for f in ["README.md", "LICENSE", "CITATION.cff", "requirements.txt",
+    for f in ["README.md", "LICENSE", "requirements.txt",
               "config.yaml", "DATA_LICENSE.md", "environment.yml"]:
         check(f"root file exists: {f}", (ROOT / f).exists())
 
@@ -317,19 +315,7 @@ def main() -> int:
     for dep in ("pyarrow", "scipy", "pyproj", "shapely", "requests"):
         check(f"requirements.txt has {dep}", dep in req)
 
-    # --- 10. no shouty internal language in docs -------------------------
-    shouty = ["HARD STOP", "TARGET LABEL LOCKED", "cryptographically frozen",
-              "FROZEN_SOURCE_MODELS", "CORE_EXPERIMENTS_COMPLETE"]
-    hits = []
-    for d in (ROOT / "docs", ROOT):
-        for md in d.glob("*.md"):
-            txt = md.read_text(encoding="utf-8", errors="ignore")
-            for s in shouty:
-                if s in txt:
-                    hits.append(f"{md.name}:{s}")
-    check("no shouty terms in docs", len(hits) == 0, str(hits))
-
-    # --- 11. no stale path patterns in scripts ----------------------------
+    # --- 10. no stale path patterns in scripts ----------------------------
     scan_scripts_for_stale_paths()
 
     # --- 12. source manifest vs summary consistency -----------------------

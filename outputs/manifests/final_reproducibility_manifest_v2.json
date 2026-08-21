@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "status": "complete",
-  "created_at": "2026-08-21T15:24:00.556533+00:00",
+  "created_at": "2026-08-21T16:40:16.933071+00:00",
   "legacy_experiment": {
     "name": "legacy_frozen_experiment",
     "manifest": "outputs/manifests/final_reproducibility_manifest.json",
@@ -49,10 +49,11 @@
     "scripts/03_modeling/run_palsar_fewshot_adaptation.py": "9d0f005be4960b4fc0bc6f9a79ccd21813c5e5cd0a40461c34a35405476904b9",
     "scripts/03_modeling/run_palsar_zero_shot.py": "e7c84e74af9027fb713b64bd670f426cfe38446a43a95ebebf08a7dbb0913ac9",
     "scripts/04_diagnostics/analyze_palsar_acquisition_timing.py": "6316f1a1cdc271338f2e90646ebd3148aab4a8e74397222ef60b1bc78f666b11",
-    "scripts/04_diagnostics/build_palsar_benchmark_outputs.py": "636d13db663390b728b780a356ac780de63b7d484b0b3fe388e08322cd9dceca",
+    "scripts/04_diagnostics/build_palsar_benchmark_outputs.py": "28ba4644b908dd903d546641577f7f2c0e189dd9abd977ff5f1adc5f4e297944",
     "scripts/utilities/radar_benchmark.py": "5c67d006f6c7e7659484b75f47c59d7e2254228be77a5f09e377b47588f0d87b",
     "scripts/utilities/radar_extractors.py": "80b880f3e448f9b7856df3a773e8652025892034890605e97b9e343b85ad4212",
     "scripts/03_modeling/run_radar_representation_benchmark.py": "84ae6e360bb655f91729eab4a4310d5b8180d0e8a6c887847b19bb3089f27ccc",
+    "scripts/04_diagnostics/build_summary_outputs.py": "009804c91a4e6b658b2eafa7dded75e8b6dc7c4f3525549de91e352e5682e3c2",
     "scripts/04_diagnostics/analyze_radar_biomass_sensitivity.py": "2c78492da734d48d066ba1ab662442c2069334149fd5c17dec9c8fde366d2f22",
     "scripts/04_diagnostics/analyze_radar_domain_shift.py": "1f29a60a6300ce08c740fe85fb9a42f5d40fa306a81a3b8323f544a8fc507b96"
   },
@@ -85,9 +86,10 @@
     "outputs/tables/diagnostics/radar_domain_shift.csv": "1034441969f82fbf51b8fd4fd32f28b0afa0422f76c39e756e11e2bdc6a66ca9",
     "outputs/tables/diagnostics/radar_paired_fold_contrasts.csv": "400b265a6b57316649266ed1f73d1a425c699ad2a8ed79efabb452c325a011ed",
     "outputs/tables/audits/palsar_acquisition_timing.csv": "2600724a2044c6e49e1c53da89b1d5862470d12d807db3d79c94da2893aa07ff",
+    "figures/source_representation_comparison.png": "ecb0726892f80f82b1c879f21a91e10de6100b7eee4f8f7541e18bcd1552b9d7",
     "figures/radar_representation_source_comparison.png": "32bd327c6abb4fe4ed5cc264f8e8a04590cb910244d03947db5b1393013aa91a",
     "figures/radar_zero_shot_comparison.png": "a34091be96cf9e154fea84262fc8545e173c59d4d7b526d055d2d826c9a49684",
-    "figures/radar_fewshot_label_efficiency.png": "fb5bfb899c0ace7da227b349854e8945e6cd148c88f5e6aae7b513cd6bc5010a",
+    "figures/radar_fewshot_label_efficiency.png": "b6d20058f8215da8d6952ab38dd776f0b98c7fbe395bc4180ee41fa48d8dd234",
     "figures/radar_biomass_range_sensitivity.png": "35b8c30c8076de70ed3cb1ef68313e0f34262931e6a14382843777a2b3b73349",
     "figures/radar_feature_importance.png": "3ea018343a7d48d6670bd999881cebc91f4f9a173c505dd543111f368d05e8af",
     "figures/radar_domain_shift.png": "f7e23ea22369d4a41cc47d6e797984f5ed05a0109c717ee42ed9843fa6e6fdd0",
@@ -95,7 +97,7 @@
   },
   "missing_result_artifacts": [],
   "software": {
-    "python": "3.12.10",
+    "python": "3.12.4",
     "platform": "Windows-11-10.0.26200-SP0"
   },
   "private_per_sample_data_committed": false

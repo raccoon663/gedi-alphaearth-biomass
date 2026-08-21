@@ -105,7 +105,7 @@ This is **GEDI-derived structural provenance overlap, not direct downstream AGBD
 label leakage**: the AlphaEarth features used here are the public annual
 embeddings, and no AGBD labels entered representation selection.
 
-## Data products and citations
+## Data sources and references
 
 - GEDI L4A Aboveground Biomass Density — NASA GEDI, distributed by the ORNL DAAC
   (Earth Engine asset `LARSE/GEDI/GEDI04_A_002_MONTHLY`).

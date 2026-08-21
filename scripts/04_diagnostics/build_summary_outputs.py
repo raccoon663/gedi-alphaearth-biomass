@@ -142,7 +142,11 @@ def source_comparison(root: Path) -> None:
         bars = ax.bar(labels, vals, yerr=errs, capsize=5, color=colors, width=.62)
         ax.set_ylabel(ylabel); ax.grid(axis="y", alpha=.2)
         ax.tick_params(axis="x", rotation=10)
-        for b, v in zip(bars, vals): ax.text(b.get_x()+b.get_width()/2, v, f"{v:.3f}" if metric=="R2" else f"{v:.1f}", ha="center", va="bottom")
+        label_pad = .008 if metric == "R2" else .6
+        for b, v, err in zip(bars, vals, errs):
+            ax.text(b.get_x() + b.get_width()/2, v + err + label_pad,
+                    f"{v:.3f}" if metric == "R2" else f"{v:.1f}",
+                    ha="center", va="bottom")
     fig.suptitle("USA source-domain spatial CV (nested)", fontsize=14, weight="bold")
     fig.tight_layout(); fig.savefig(root / "figures/source_representation_comparison.png", dpi=260); plt.close(fig)
 

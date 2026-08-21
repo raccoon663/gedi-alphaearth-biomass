@@ -86,6 +86,7 @@ def fewshot_figure() -> None:
                         color=color, alpha=.10)
     ax.axhline(0, color="black", lw=1); ax.set_xscale("symlog", linthresh=25)
     ax.set_xticks([25, 50, 100, 250, 500, 1000, 2500], ["25", "50", "100", "250", "500", "1000", "2500"])
+    ax.set_xlim(24.5, 2500)  # Keep 25 leftmost without clipping its markers.
     ax.set(xlabel="Kaihua labels", ylabel="Mean spatial-holdout R²",
            title="PALSAR-common Kaihua label efficiency (mean ± SD; shared draws)")
     ax.legend(ncol=2, fontsize=8, frameon=False); ax.grid(alpha=.2)

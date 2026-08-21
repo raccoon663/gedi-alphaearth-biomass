@@ -33,7 +33,7 @@ restricted positive result rather than an operational map.
 ### Original experiment — `legacy_frozen_experiment`
 
 R² = coefficient of determination; RMSE = root-mean-square error (Mg/ha); AGBD =
-aboveground biomass density. All values are frozen and reproduced from
+aboveground biomass density. All values are reproduced from
 `outputs/tables/main_results/`. Different rows use different evaluation settings and
 should not be compared as if they were the same experiment.
 
@@ -60,12 +60,12 @@ PALSAR uses `JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH`, the central 25 m pixel, JAXA v2
 land QA (`qa in {1,255}`; 1 is ScanSAR land), and `20*log10(DN)-83` after masking nonpositive DN. RFDI is computed
 from linear power. Angle, epoch/acquisition date and QA are retained only for QC.
 
-**Completed benchmark (2026-08-21):** a direct authenticated audit found raw QA
-classes 1–4 in the asset. JAXA v2.4 defines `qa=1` as ScanSAR land, although the
+**Completed benchmark (2026-08-21):** a direct inspection of the raw QA classes
+1–4 in the asset found that JAXA v2.4 defines `qa=1` as ScanSAR land, although the
 Earth Engine catalog omits classes 1–4. It also showed that one-image `mosaic()`
 discarded the native 25 m default projection, so extraction now requires exactly
-one exact-year image and selects it with `.first()`. This is a preprocessing and
-reproducibility correction, not a scientific result. Common years are 2019–2024
+one exact-year image and selects it with `.first()`. This is a preprocessing
+correction, not a change to the scientific conclusions. Common years are 2019–2024
 with no nearest-year substitution; the identical-row benchmark contains 109,830
 source and 107,809 target footprints.
 
@@ -89,7 +89,7 @@ holdout, AlphaEarth first became positive at 50 labels; S1+S2, PALSAR+S2 and ful
 fusion at 500; S1, PALSAR and C+L at 1,000; and DEM at 2,500.
 After the QA/extraction correction, PALSAR's first-positive milestone improved
 from the earlier 2,500-label result to 1,000 labels.
-No representation reached mean R² 0.20, so wall-to-wall mapping was withheld.
+No representation reached mean R² 0.20, so wall-to-wall mapping was not pursued.
 
 ![Source representation comparison](figures/source_representation_comparison.png)
 ![Zero-shot transfer](figures/zero_shot_transfer.png)
@@ -121,7 +121,7 @@ No representation reached mean R² 0.20, so wall-to-wall mapping was withheld.
   logistic classifier AUROC, nearest-embedding distance vs error).
 - **Radar extension.** Availability is audited first; all representations are rerun
   on one frozen PALSAR-common sample with shared folds/model budgets. Kaihua labels
-  remain inaccessible until zero-shot prediction hashes are frozen.
+  were not used until after the zero-shot predictions were recorded.
 
 ![Current cross-region GEDI biomass workflow](figures/final_workflow_v2.png)
 
@@ -136,7 +136,6 @@ Full detail: [`docs/methodology.md`](docs/methodology.md),
 gedi-alphaearth-biomass/
 ├── README.md
 ├── LICENSE
-├── CITATION.cff
 ├── requirements.txt / environment.yml
 ├── config.yaml                 # frozen experiment configuration
 ├── scripts/
@@ -146,7 +145,7 @@ gedi-alphaearth-biomass/
 │   ├── 04_diagnostics/         # domain shift + figures
 │   ├── utilities/              # leakage guards
 │   └── README.md               # script → stage map
-├── figures/                   # publication-style result figures
+├── figures/                   # result figures
 ├── outputs/
 │   ├── tables/
 │   │   ├── main_results/       # the four headline tables

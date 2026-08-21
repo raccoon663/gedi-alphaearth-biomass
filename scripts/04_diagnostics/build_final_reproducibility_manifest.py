@@ -101,7 +101,6 @@ def main() -> None:
     main_artifacts = [
         "README.md",
         "LICENSE",
-        "CITATION.cff",
         "environment.yml",
         "config.yaml",
         "docs/methodology.md",
