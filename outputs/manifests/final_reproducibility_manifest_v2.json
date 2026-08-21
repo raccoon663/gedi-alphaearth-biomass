@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
   "status": "complete",
-  "created_at": "2026-08-21T12:30:03.489975+00:00",
+  "created_at": "2026-08-21T12:31:59.994975+00:00",
   "legacy_experiment": {
     "name": "legacy_frozen_experiment",
     "manifest": "outputs/manifests/final_reproducibility_manifest.json",
     "canonical_git_blob_sha1": "20a60ae50b7943795efcf8ad103a1f7f303750e6",
-    "local_materialization_sha256": "4576df80e6386d84bc133b56f323aae6657b0374dc121db23f917471b31cb3cb",
+    "local_materialization_sha256": "81cce05195951fd62dc77ad624e6eb88b1bcd899e6c8e127afe8109246e8d051",
     "modified_on_remote_branch": false
   },
   "extension": {
