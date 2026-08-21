@@ -1,8 +1,10 @@
-# Cross-Region Forest Biomass Transfer with GEDI and AlphaEarth
+# Cross-Region Forest Biomass Estimation with GEDI, AlphaEarth, C-band and L-band SAR
 
 Can annual **AlphaEarth** embeddings transfer GEDI L4A biomass relationships from the
 southeastern United States to eastern China **better, and with fewer local labels**,
-than conventional Sentinel-1 / Sentinel-2 features?
+than conventional Sentinel-1 / Sentinel-2 features? The version-2 extension also
+tests a paired **C-band vs L-band radar representation benchmark** using Sentinel-1
+and ALOS-2 PALSAR-2.
 
 ## Overview
 
@@ -12,11 +14,13 @@ Earth-observation predictors can extend relationships learned at GEDI footprints
 yet it is unclear whether those relationships remain valid across major geographic
 and ecological shifts.
 
-This project asks a single, narrow question:
+The project addresses two linked questions:
 
-> Do AlphaEarth embeddings transfer GEDI biomass relationships from the
-> southeastern United States to Kaihua County, China, better—and with fewer
-> local labels—than conventional Sentinel-1/Sentinel-2 features?
+> 1. Can AlphaEarth improve geographic transfer and target label efficiency
+> relative to conventional Sentinel predictors?
+>
+> 2. How do Sentinel-1 C-band, PALSAR-2 L-band, and C+L radar fusion differ for
+> GEDI-calibrated biomass prediction and transfer?
 
 The work separates three questions that are often conflated: **source-domain
 prediction**, **direct geographic transfer**, and **target-domain label
@@ -25,6 +29,8 @@ domain shift prevented reliable zero-shot prediction, so the project reports a
 restricted positive result rather than an operational map.
 
 ## Key results
+
+### Original experiment — `legacy_frozen_experiment`
 
 R² = coefficient of determination; RMSE = root-mean-square error (Mg/ha); AGBD =
 aboveground biomass density. All values are frozen and reproduced from
@@ -44,9 +50,54 @@ absolute terms on the target. AlphaEarth kept a consistent relative advantage an
 required fewer target labels to recover positive spatial-holdout performance, but
 **no method reached mean R² = 0.20**, so this is not an operational biomass map.
 
+### Radar wavelength/sensor extension — `palsar_common_paired_benchmark`
+
+The extension is an additional benchmark layer; it does not replace or silently
+recompute the table above. It compares DEM, Sentinel-1 C-band, PALSAR-2 L-band,
+C+L fusion, S1+S2, PALSAR+S2, S1+PALSAR+S2 and AlphaEarth on identical rows.
+
+PALSAR uses `JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH`, the central 25 m pixel, JAXA v2.4
+land QA (`qa in {1,255}`; 1 is ScanSAR land), and `20*log10(DN)-83` after masking nonpositive DN. RFDI is computed
+from linear power. Angle, epoch/acquisition date and QA are retained only for QC.
+
+**Completed benchmark (2026-08-21):** a direct authenticated audit found raw QA
+classes 1–4 in the asset. JAXA v2.4 defines `qa=1` as ScanSAR land, although the
+Earth Engine catalog omits classes 1–4. It also showed that one-image `mosaic()`
+discarded the native 25 m default projection, so extraction now requires exactly
+one exact-year image and selects it with `.first()`. This is a preprocessing and
+reproducibility correction, not a scientific result. Common years are 2019–2024
+with no nearest-year substitution; the identical-row benchmark contains 109,830
+source and 107,809 target footprints.
+
+| Representation | Source CV R² | Source RMSE | Kaihua zero-shot R² | Zero-shot RMSE |
+|---|---:|---:|---:|---:|
+| DEM | 0.097 | 100.91 | −0.665 | 112.33 |
+| S1_C | 0.283 | 89.88 | −0.718 | 114.12 |
+| PALSAR_L | 0.296 | 89.07 | −0.596 | 110.00 |
+| S1_C + PALSAR_L | 0.347 | 85.82 | −0.513 | 107.07 |
+| S1 + S2 | 0.421 | 80.79 | −0.723 | 114.28 |
+| PALSAR + S2 | 0.419 | 80.92 | **−0.297** | **99.15** |
+| S1 + PALSAR + S2 | 0.430 | 80.18 | −1.104 | 126.28 |
+| AlphaEarth | **0.574** | **69.28** | −0.645 | 111.65 |
+
+PALSAR improved on S1 in every source fold (mean ΔR² +0.0128; ΔRMSE
+−0.81 Mg/ha). C+L fusion improved source prediction over either radar alone.
+PALSAR alone transferred less poorly than S1, while PALSAR+S2 was the least-poor
+zero-shot representation. Holding S2+DEM approximately constant, source performance
+was effectively tied. All zero-shot R² values remained negative. In few-shot spatial
+holdout, AlphaEarth first became positive at 50 labels; S1+S2, PALSAR+S2 and full
+fusion at 500; S1, PALSAR and C+L at 1,000; and DEM at 2,500.
+After the QA/extraction correction, PALSAR's first-positive milestone improved
+from the earlier 2,500-label result to 1,000 labels.
+No representation reached mean R² 0.20, so wall-to-wall mapping was withheld.
+
 ![Source representation comparison](figures/source_representation_comparison.png)
 ![Zero-shot transfer](figures/zero_shot_transfer.png)
 ![Kaihua label efficiency](figures/kaihua_label_efficiency.png)
+
+![PALSAR-common source benchmark](figures/radar_representation_source_comparison.png)
+![PALSAR-common zero-shot benchmark](figures/radar_zero_shot_comparison.png)
+![PALSAR-common label efficiency](figures/radar_fewshot_label_efficiency.png)
 
 ## Method summary
 
@@ -68,8 +119,11 @@ required fewer target labels to recover positive spatial-holdout performance, bu
   target model selection forbidden.
 - **Evaluation metrics.** R², RMSE, MAE, Bias (Mg/ha); domain diagnostics (PCA,
   logistic classifier AUROC, nearest-embedding distance vs error).
+- **Radar extension.** Availability is audited first; all representations are rerun
+  on one frozen PALSAR-common sample with shared folds/model budgets. Kaihua labels
+  remain inaccessible until zero-shot prediction hashes are frozen.
 
-![Cross-region GEDI biomass workflow](figures/final_workflow.png)
+![Current cross-region GEDI biomass workflow](figures/final_workflow_v2.png)
 
 Full detail: [`docs/methodology.md`](docs/methodology.md),
 [`docs/experiments.md`](docs/experiments.md),
@@ -150,3 +204,11 @@ SHA-256 checksums remain so the experiment can be verified without them.
   hyperparameter search.
 - Absolute Kaihua performance remained too weak for a reliable operational biomass
   map; wall-to-wall mapping was not pursued.
+- Sentinel-1 and PALSAR-2 also differ in polarization, geometry, acquisition
+  strategy, temporal sampling and preprocessing. This is a sensor/wavelength
+  representation benchmark, not a perfectly controlled wavelength experiment.
+- PALSAR yearly mosaics are not temporally equivalent to Sentinel-1 annual medians;
+  epoch timing is audited but excluded from primary predictors.
+- PALSAR validity masking reduced 124,303 source rows to 109,830 and 130,195
+  target rows to 107,809. The selection audit found small AGBD and year/block
+  distribution shifts, so the frozen sample was not rebalanced.

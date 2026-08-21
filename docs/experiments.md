@@ -1,5 +1,21 @@
 # Experiments
 
+## Experiment groups
+
+### Group 1 — legacy frozen experiment
+
+The original 2019–2024 AlphaEarth versus S1/S2 experiment and its headline tables
+remain frozen with their original interpretation.
+
+### Group 2 — PALSAR-common paired benchmark
+
+After the availability audit, DEM, S1_C, PALSAR_L, S1_C+PALSAR_L, S1+S2,
+PALSAR+S2, S1+PALSAR+S2 and AlphaEarth are evaluated on identical rows for source
+CV, frozen zero-shot transfer and shared-draw few-shot adaptation. Required source
+contrasts are stored fold by fold. With five folds, interpretation emphasizes effect
+size and consistency, not manufactured significance.
+
+
 This page summarizes the experiments that support the project's conclusions. It
 is the companion to [`technical_report.md`](technical_report.md) and
 [`methodology.md`](methodology.md). All numbers are taken from the frozen result
@@ -89,3 +105,22 @@ labels recovered only modest spatial-holdout performance. The project therefore
 reports a restricted positive result (representation-level transfer advantage and
 label efficiency) rather than presenting itself as a successful operational
 mapping system. Formal Kaihua wall-to-wall biomass mapping was not pursued.
+
+## 5. PALSAR-common paired benchmark
+
+The exact-year common set uses all years 2019–2024, with 109,830 source and
+107,809 target footprints. Source spatial-CV R² values were 0.097
+(DEM), 0.283 (S1_C), 0.296 (PALSAR_L), 0.347 (C+L), 0.421 (S1+S2), 0.419
+(PALSAR+S2), 0.430 (S1+PALSAR+S2) and 0.574 (AlphaEarth). PALSAR_L exceeded
+S1_C in all five folds (mean ΔR² +0.0128; mean ΔRMSE −0.81 Mg/ha); C+L exceeded
+both single-radar branches in all five folds.
+
+All frozen zero-shot R² values were negative. PALSAR+S2 was least poor at −0.297
+(RMSE 99.15 Mg/ha). PALSAR_L (−0.596) remained less poor than S1_C (−0.718),
+and C+L reached −0.513, but full fusion was worst at −1.104.
+
+Under the shared-draw local XGBoost protocol, AlphaEarth first achieved positive
+mean holdout R² at 50 labels; S1+S2, PALSAR+S2 and full fusion at 500; S1_C,
+C+L and PALSAR_L at 1,000; DEM at 2,500. At 2,500 labels AlphaEarth was
+best (0.142 ± 0.020), and no representation reached 0.20. The predeclared mapping
+gate therefore withheld a Kaihua wall-to-wall product.

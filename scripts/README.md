@@ -33,6 +33,9 @@ GEDI, AlphaEarth, Sentinel, and DEM inputs.
 | `submit_source_sampling_audit_recovery.py` | One-off export supporting the sampling audit. |
 | `download_source_aef_central_direct.py` | Download the frozen full-source central AEF directly from Earth Engine. |
 | `download_source_conventional_direct.py` | Download frozen annual-median S1/S2 features directly from Earth Engine. |
+| `audit_palsar_availability.py` | Freeze exact-year PALSAR coverage, QA and common years before extraction. |
+| `download_source_palsar_direct.py` | Restart-safe central-25 m source PALSAR extraction. |
+| `download_kaihua_palsar_direct.py` | Identical locked-target extraction without AGBD. |
 
 ## 02 — Data preparation (`02_data_preparation/`)
 
@@ -50,6 +53,8 @@ the Kaihua few-shot design.
 | `finalize_source_dem.py` | Merge, validate, and freeze completed source DEM chunk exports. |
 | `freeze_aef_method_and_prepare_full_source.py` | Freeze the selected AEF method and materialize its DEM-valid source input. |
 | `prepare_kaihua_fewshot_design.py` | Build the frozen Kaihua few-shot fold design and label-draw budgets. |
+| `finalize_source_palsar.py` / `finalize_kaihua_palsar.py` | Validate PALSAR physics/QA and derive acquisition dates. |
+| `build_palsar_common_sample.py` | Freeze identical ordered rows and eight schemas. |
 
 ## 03 — Modeling (`03_modeling/`)
 
@@ -65,6 +70,9 @@ Train source models, evaluate zero-shot transfer, and run few-shot adaptation.
 | `run_kaihua_fewshot_adaptation.py` | Run few-shot local adaptation on Kaihua. |
 | `finalize_kaihua_locked_zero_shot.py` | Finalize Kaihua predictors and freeze zero-shot predictions before label unlock. |
 | `submit_aef_development_exports.py` | Submit AEF development exports. |
+| `run_radar_representation_benchmark.py` | Eight-way paired nested source spatial CV. |
+| `run_palsar_zero_shot.py` | Separate prediction-freeze and post-unlock evaluation. |
+| `run_palsar_fewshot_adaptation.py` | Shared folds/draws fixed-XGBoost label efficiency. |
 
 ## 04 — Diagnostics (`04_diagnostics/`)
 
@@ -75,6 +83,10 @@ Domain-shift diagnostics and final figure/manifest generation.
 | `gpu_exact_nearest_aef.py` | Exact brute-force nearest-source AEF distances on CUDA. |
 | `build_summary_outputs.py` | Verify frozen results, build the final master table, and generate summary figures. |
 | `build_final_reproducibility_manifest.py` | Build the final compact reproducibility manifest from frozen artifacts. |
+| `analyze_radar_biomass_sensitivity.py` | Source-defined bins, radar response and permutation importance. |
+| `analyze_radar_domain_shift.py` | PCA, AUROC, nearest-source distance and error relation. |
+| `analyze_palsar_acquisition_timing.py` | Month/year timing and source-defined unusual-date fractions from epoch. |
+| `build_palsar_benchmark_outputs.py` | Paired contrasts, headline tables, figures and mapping gate. |
 
 ## utilities (`utilities/`)
 

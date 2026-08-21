@@ -1,0 +1,7 @@
+{
+  "status": "PALSAR_ZERO_SHOT_EVALUATED_AFTER_LABEL_UNLOCK",
+  "evaluated_at": "2026-08-21T15:18:22.865447+00:00",
+  "prediction_freeze_sha256": "07d2120c0aeafabe99b30479bb863f8e1e27c253857e8d8f12f28b24dc8eb39c",
+  "label_file_sha256": "be72533125bc6e18e7b530e558680ac15f64ea8ad3eaa7dce061ca1a2c632231",
+  "result_sha256": "e9bc46e9180adcffc8804d500651db0db562c34907da6b8e91b74851c1397a22"
+}

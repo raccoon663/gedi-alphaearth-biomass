@@ -1,0 +1,40 @@
+{
+  "status": "PRE_2023_QA_FORENSIC_AUDIT_FROZEN",
+  "frozen_at": "2026-08-21T12:33:00Z",
+  "branch": "feature/palsar-lband-benchmark",
+  "head": "91e35b05de6ce7452d730e2c7d8a30ccbd9279d0",
+  "artifact_sha256": {
+    "outputs/manifests/palsar_availability_freeze.json": "2837f333c482d1fe4e6b772cac3865c55f4a51f34a24340e3214ea5697a9b86a",
+    "outputs/manifests/palsar_common_sample_freeze.json": "c353f29020e4e5d373d3d436766801fd8333d722ca77c71049e9f38305ed2616",
+    "outputs/tables/main_results/radar_representation_comparison.csv": "bb0b93f97b815dbb6c3596a53a0e70fa3d49680b107e2c62aa3fa87b7108852d",
+    "outputs/tables/main_results/palsar_source_spatial_cv.csv": "3b992a2f1cd18b149b793e7ceba0e4fb5ed080bc2ad6481e66ed262ad1cffc83",
+    "outputs/tables/main_results/palsar_zero_shot.csv": "4bf420e54476b24daa10ac11017a12bb311d5bc8c6386589f9f225e0b3e47c49",
+    "outputs/tables/main_results/palsar_fewshot_label_efficiency.csv": "1cd9cea4726368e9c2c95536f5e0b537a0c8cca0162bfd3fef3d7f1378e85c74"
+  },
+  "headline_metrics": {
+    "source_cv_R2": {
+      "sentinel1_c": 0.2775978588282037,
+      "palsar_l": 0.2989517391746725,
+      "sentinel1_c_palsar_l": 0.3458088309865929,
+      "alphaearth": 0.5708688933609868
+    },
+    "zero_shot_R2": {
+      "palsar_l": -0.3876311578280165,
+      "best_representation": "palsar_l",
+      "best_value": -0.3876311578280165
+    },
+    "fewshot_first_positive_R2_labels": {
+      "alphaearth": 100,
+      "sentinel1_sentinel2": 500,
+      "sentinel1_palsar_sentinel2": 500,
+      "sentinel1_c": 1000,
+      "sentinel1_c_palsar_l": 1000,
+      "palsar_sentinel2": 1000,
+      "dem": 2500,
+      "palsar_l": 2500
+    }
+  },
+  "palsar_common_years": [2019, 2020, 2021, 2022, 2024],
+  "source_n": 91526,
+  "target_n": 102315
+}

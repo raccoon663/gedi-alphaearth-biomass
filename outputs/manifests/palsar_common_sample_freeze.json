@@ -1,0 +1,147 @@
+{
+  "status": "PALSAR_COMMON_SAMPLE_FROZEN",
+  "domains": {
+    "source": {
+      "domain": "source",
+      "n": 109830,
+      "years": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "block_count": 114,
+      "fold_counts": {
+        "0": 21506,
+        "1": 21697,
+        "2": 22305,
+        "3": 22246,
+        "4": 22076
+      },
+      "sample_ids_hash": "2ad3c9099da8624f01042afe171e9b8776bd23382fb714204698dbf11a3004dd",
+      "ordered_row_hash": "c06ff7e1cf97113ea490eb6a9e28aed8c4ce23d7607c2ce3c256f6ad85757784",
+      "response_hash": "a62ed618ce8a92e9579f7825da213734fefddfd4500b273359764311a84d7d8e",
+      "feature_schema_hashes": {
+        "dem": "54f5e2072f14d0d581833c4d0902651665d479905e8de0b46eeff80e9ea827dd",
+        "sentinel1_c": "6bf6658f33eeb9215226f85a9f12964f13895c7f234bc4b76f437b9d66c7338d",
+        "palsar_l": "deba6607967b2286ad785d38de5c175f24c00687b984d052679a872481dae018",
+        "sentinel1_c_palsar_l": "ae3762f5614ff7038a7a1a1a83753c67c29868c70d483e4c616c121cb09d8499",
+        "sentinel1_sentinel2": "03dda0e9222bb7f8a00f5f48bb13078e7b7b94bd74dd895184f45efc81693658",
+        "palsar_sentinel2": "f0e60df84bb27bcb421d430a030824fed6e2afca4f622a32cc0a73b6e38ab803",
+        "sentinel1_palsar_sentinel2": "62a1dcd5db459ec0b68e5aaeda52a40a4511e54a00df40ffc0fbec98d2f82686",
+        "alphaearth": "21ec96e7333ad4a037ebda50d6fca82f8ba7a825ce9120ff7cba21378829193a"
+      },
+      "exclusion_counts": {
+        "not_in_palsar_common_years": 0,
+        "invalid_or_missing_palsar": 14473,
+        "missing_s1": 0,
+        "missing_s2": 0,
+        "missing_dem": 0,
+        "missing_alphaearth": 0
+      },
+      "private_rows_committed": false,
+      "status": "PALSAR_COMMON_SAMPLE_FROZEN",
+      "frozen_at": "2026-08-21T14:41:01.588065+00:00",
+      "n_before_masking": 124303,
+      "n_after_masking": 109830,
+      "exact_year_matching": true,
+      "nearest_year_substitution": false,
+      "input_hashes": {
+        "conventional": "58254790c541bd67c5ff4593ce8be7809b8c10fc7ba6d1990b97d12c90ac3888",
+        "alphaearth": "0085b3f0b4a293f90c67693adbda507a709b449e568029294199aeaa6c2c95da",
+        "palsar": "3eb705bc6f0a570fc172785415e5c9faa5e3fa9149bf14739832dbc7638a9d77"
+      },
+      "representation_file_hashes": {
+        "dem": "d89e9044851e97a5136ec7c94256779f536f9ac59220fc9897e2598c2fe82921",
+        "sentinel1_c": "b00f4e76356944d772640b854ec1d12fa45714ba9f410c775159b09a614e5b05",
+        "palsar_l": "d5357eb392fd9d5f446434e48e30ee2e4a26d8579648e340af21aa22abb898b1",
+        "sentinel1_c_palsar_l": "291ef44bb2cfb2fcab96087f1f9863497bb7c22956bf26252158a610860b97d7",
+        "sentinel1_sentinel2": "6910ee007a43949e1fd77e03150cace6b4c1f182289bb18ab8e968d7124697fc",
+        "palsar_sentinel2": "b48e38bbe101402ebf91ce44dc305e641bc72f26a38dc0e29f24b9598bf2691b",
+        "sentinel1_palsar_sentinel2": "8282f5aa4dce40c5621695fbe2b003124b7ddd67e3c5ec4de59b09e067211e75",
+        "alphaearth": "9718158f997059d6ce4f341e438ff0b29fad1ab71f84676957c422697f75e3ec"
+      },
+      "target_labels_loaded": true,
+      "private_per_sample_outputs_committed": false
+    },
+    "target": {
+      "domain": "target",
+      "n": 107809,
+      "years": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "block_count": 117,
+      "fold_counts": {
+        "0": 21891,
+        "1": 21409,
+        "2": 21562,
+        "3": 21272,
+        "4": 21675
+      },
+      "sample_ids_hash": "25efe35b1c3595ddb887e8f0473c3985db3b16123d02a603b075ee616198ce64",
+      "ordered_row_hash": "e8459dfdb93ddf4b26aedfcd1c79ea54758da8974ef45a960183a2ecf60ff7d0",
+      "response_hash": "80404844c64c038f8a48822d0384d9d3dad777689f07352c014eea66ae557fd5",
+      "feature_schema_hashes": {
+        "dem": "54f5e2072f14d0d581833c4d0902651665d479905e8de0b46eeff80e9ea827dd",
+        "sentinel1_c": "6bf6658f33eeb9215226f85a9f12964f13895c7f234bc4b76f437b9d66c7338d",
+        "palsar_l": "deba6607967b2286ad785d38de5c175f24c00687b984d052679a872481dae018",
+        "sentinel1_c_palsar_l": "ae3762f5614ff7038a7a1a1a83753c67c29868c70d483e4c616c121cb09d8499",
+        "sentinel1_sentinel2": "03dda0e9222bb7f8a00f5f48bb13078e7b7b94bd74dd895184f45efc81693658",
+        "palsar_sentinel2": "f0e60df84bb27bcb421d430a030824fed6e2afca4f622a32cc0a73b6e38ab803",
+        "sentinel1_palsar_sentinel2": "62a1dcd5db459ec0b68e5aaeda52a40a4511e54a00df40ffc0fbec98d2f82686",
+        "alphaearth": "21ec96e7333ad4a037ebda50d6fca82f8ba7a825ce9120ff7cba21378829193a"
+      },
+      "exclusion_counts": {
+        "not_in_palsar_common_years": 0,
+        "invalid_or_missing_palsar": 22386,
+        "missing_s1": 0,
+        "missing_s2": 0,
+        "missing_dem": 0,
+        "missing_alphaearth": 0
+      },
+      "private_rows_committed": false,
+      "status": "PALSAR_COMMON_SAMPLE_FROZEN",
+      "frozen_at": "2026-08-21T14:41:21.447553+00:00",
+      "n_before_masking": 130195,
+      "n_after_masking": 107809,
+      "exact_year_matching": true,
+      "nearest_year_substitution": false,
+      "input_hashes": {
+        "conventional": "e3548e95d71eed2365716fbb62c9382f7cc14ec06d9bebd7d9fe1845d8f84271",
+        "alphaearth": "ecc5a5f7f17477c79d303707cd452237db2a55deb876a75d0ec8c4db4edb512a",
+        "palsar": "af633e2ab5b3f22da3d639f46e0cf604e6d7bc21b0f67624c01b4c8cffd452d4"
+      },
+      "representation_file_hashes": {
+        "dem": "c97b413ddc4a6466cbec25730b5e7dbb666801d7c41e5a09e3e9575367af5fb5",
+        "sentinel1_c": "ef2635624a44fc31a3f777452735fefce24278a13f44bd9296333dadfa297edb",
+        "palsar_l": "db89ccdb53517057b30fdb0cebee6faf84c3b600a400c40bf0fe6b5460a40c4e",
+        "sentinel1_c_palsar_l": "a08834e336f71fc25f5581efecc137bb8996b3a05b66c06a83a33aa4620c9ce1",
+        "sentinel1_sentinel2": "3cbb861a3dc016e001ed2e8c1b9661fffd11052851723ddb74e283a9805c15bc",
+        "palsar_sentinel2": "6e934b291c57e1286974a698adefe524970c7996c47e45f4de34be74428b5d6f",
+        "sentinel1_palsar_sentinel2": "9f2b921eadb1ec6f7aedd9f26ebd486451190ff9b57a3c4498cedd905baa17d0",
+        "alphaearth": "1b5b4acd13e6741ce82c1bbe64a1e8d9a7293943094ef4c7ad2fdd5350b92b5a"
+      },
+      "target_labels_loaded": false,
+      "private_per_sample_outputs_committed": false
+    }
+  },
+  "updated_at": "2026-08-21T14:41:21.473552+00:00",
+  "paired_representations": [
+    "dem",
+    "sentinel1_c",
+    "palsar_l",
+    "sentinel1_c_palsar_l",
+    "sentinel1_sentinel2",
+    "palsar_sentinel2",
+    "sentinel1_palsar_sentinel2",
+    "alphaearth"
+  ],
+  "private_per_sample_outputs_committed": false
+}

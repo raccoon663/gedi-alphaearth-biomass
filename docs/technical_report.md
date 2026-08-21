@@ -1,4 +1,7 @@
-# AlphaEarth versus Conventional Earth Observation for Cross-Region Forest Biomass Transfer from the Southeastern United States to Eastern China
+# GEDI Biomass Transfer across Foundation, C-band and L-band Representations
+
+> Version-2 adds a PALSAR-common paired benchmark. Numerical conclusions below
+> remain the legacy frozen experiment unless explicitly labelled PALSAR.
 
 ## 1. Motivation
 
@@ -6,7 +9,7 @@ GEDI provides globally distributed footprint measurements and model-based estima
 
 This project asks whether AlphaEarth annual embeddings provide stronger geographic transfer than conventional Sentinel-1/Sentinel-2 predictors. It distinguishes source-domain accuracy from direct zero-shot transfer and target-domain label efficiency. The source region is Georgia and South Carolina in the southeastern United States; the target is Kaihua County, Zhejiang, eastern China.
 
-![Project workflow](../figures/final_workflow.png)
+![Project workflow](../figures/final_workflow_v2.png)
 
 ## 2. Study regions
 
@@ -117,3 +120,59 @@ However, absolute Kaihua performance remained modest, and the tested models do n
 ## 13. Conclusion
 
 AlphaEarth provides a better representation for source-domain biomass prediction and a measurable target-domain label-efficiency advantage under severe geographic shift. The experiment also shows why source accuracy must not be equated with geographic transfer: both frozen source models failed zero-shot, and even 2,500 local labels recovered only modest spatial-holdout performance. The project therefore answers its representation-transfer question without presenting itself as a successful operational mapping system. Formal Kaihua wall-to-wall biomass mapping was not pursued.
+
+## 14. Radar wavelength benchmark extension
+
+The extension asks whether PALSAR-2 L-band, Sentinel-1 C-band, fusion and optical
+counterparts differ in source prediction, USA→Kaihua transfer and target label
+efficiency. Exact-year matching and one identical PALSAR-common sample prevent
+legacy full-sample metrics from entering the paired table. A wall-to-wall product
+remains gated on stable positive target spatial-holdout performance—preferably
+R² ≥ 0.20 without catastrophic bias—and would be described only as a
+GEDI-calibrated biomass prediction.
+
+### 14.1 Completed radar results
+
+The PALSAR-common set contains 109,830 source and 107,809 target footprints from
+all years 2019–2024. A direct QA audit established that JAXA v2.4 class 1 is
+ScanSAR land and that the Earth Engine catalog omits the 1–4 ScanSAR classes.
+It also found that `mosaic()` discarded the native default projection despite one
+image per year; direct `first()` extraction and `qa in {1,255}` were therefore
+used. Thus 2023 is included without nearest-year substitution. PALSAR_L modestly
+outperformed S1_C in source CV (R² 0.296 versus 0.283), and C+L fusion improved
+to 0.347. AlphaEarth remained strongest at 0.574. The optical-controlled source
+comparison was effectively tied (PALSAR+S2 0.419; S1+S2 0.421).
+
+PALSAR masking reduced 124,303 source rows to 109,830 and 130,195 target rows to
+107,809. The aggregate selection audit showed a +0.75 Mg/ha source-mean and
+−3.22 Mg/ha target-mean AGBD shift; year/block total-variation distances were
+0.046/0.047 for source and 0.0066/0.0179 for target. These shifts were judged
+small and no rebalancing was introduced.
+
+No source model achieved positive Kaihua zero-shot R². PALSAR+S2 was least poor
+(−0.297; RMSE 99.15 Mg/ha). PALSAR_L reached −0.596 versus S1_C at −0.718,
+while C+L reached −0.513; these are relative reductions in failure, not successful
+transfer. Full fusion transferred poorly at −1.104 despite its source gain. Domain
+classifiers remained essentially saturated (AUROC 0.99984–1.0000), so PALSAR did
+not materially erase the USA–China predictor shift.
+
+At the highest local-label budget, AlphaEarth remained best (R² 0.142 ± 0.020),
+followed by full conventional fusion (0.071 ± 0.010), S1+S2 (0.070 ± 0.010),
+and PALSAR+S2 (0.067 ± 0.009). High-biomass-bin RMSE was 155.12 for S1_C,
+155.13 for PALSAR_L and 150.31 Mg/ha for C+L; this small fusion advantage does
+not establish a formal saturation threshold. Within-bin interpretation emphasizes
+RMSE, bias, median residual and residual IQR. Within-bin R² is secondary: it is
+unstable and difficult to interpret because each bin has deliberately restricted
+response variance. Wall-to-wall mapping was withheld.
+
+### Radar benchmark limitations
+
+The C-versus-L comparison is not an isolated wavelength experiment: Sentinel-1
+uses VV/VH while PALSAR uses HH/HV, temporal composition and sensor geometry also
+differ, and PALSAR is distributed as a yearly mosaic product. PALSAR validity
+masking reduces the identical-row common sample and can introduce selection.
+GEDI L4A is the response product rather than independent field biomass. Strong
+source-target separability persists under every representation, and nearest-source
+representation distance is weak or negative for several radar branches, so it is
+not a universal sample-level error proxy. No reliable zero-shot operational map
+was achieved.

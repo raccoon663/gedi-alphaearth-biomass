@@ -111,3 +111,50 @@ wall_to_wall:
   source_map: false
   target_map: false
   preferred_resolution_m: 30
+
+# Version-2 extension.  The legacy 2019-2024 experiment above remains frozen.
+palsar:
+  dataset: JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH
+  year_match: exact
+  scale_m: 25
+  # JAXA v2.4: 1=ScanSAR land and 255=land; both are valid.
+  qa_land_values: [1, 255]
+  raw_bands: [HH, HV]
+  metadata_bands: [angle, epoch, qa]
+  conversion:
+    units: gamma0_db
+    formula: "10*log10(DN^2)-83"
+  features: [palsar_hh_db, palsar_hv_db, palsar_hh_minus_hv_db, palsar_rfdi]
+  extraction_method: central_pixel
+  nearest_year_substitution: false
+  target_selected_processing: false
+  angle_epoch_as_primary_predictors: false
+  textures_enabled: false
+  patches_enabled: false
+
+radar_benchmark:
+  experiment_name: palsar_common_paired_benchmark
+  legacy_experiment_name: legacy_frozen_experiment
+  representations: [dem, sentinel1_c, palsar_l, sentinel1_c_palsar_l,
+                    sentinel1_sentinel2, palsar_sentinel2,
+                    sentinel1_palsar_sentinel2, alphaearth]
+  common_sample_required: true
+  common_years_source: outputs/manifests/palsar_availability_freeze.json
+  source_spatial_block_km: 50
+  target_spatial_block_km: 5
+  spatial_folds: 5
+  model_families: [random_forest, xgboost]
+  selection_metric: source_spatial_cv_rmse
+  target_model_selection_forbidden: true
+  target_feature_engineering_forbidden: true
+  fewshot_budgets: [25, 50, 100, 250, 500, 1000, 2500]
+  fewshot_seeds: [42, 43, 44]
+  wall_to_wall_gate:
+    positive_target_spatial_R2_required: true
+    preferred_minimum_R2: 0.20
+
+future_radar:
+  nisar:
+    status: prospective_only
+    experiment: 2026 prospective NISAR L-band experiment
+    included_in_historical_benchmark: false

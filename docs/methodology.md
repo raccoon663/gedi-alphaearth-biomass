@@ -128,3 +128,40 @@ Dataset IDs and access paths are also listed in `config.yaml` and
 - All dataset IDs, AOI/sample/model/prediction hashes, spatial designs, feature
   rules, seeds, and final artifact hashes:
   `outputs/manifests/final_reproducibility_manifest.json`.
+
+## Radar wavelength benchmark
+
+Version 2 adds a paired sensor/wavelength representation benchmark. L-band may
+respond differently to woody structure than C-band, but this is not a perfectly
+isolated wavelength experiment: Sentinel-1 and PALSAR-2 also differ in polarization
+(VV/VH versus HH/HV), geometry, acquisition strategy, temporal sampling and
+preprocessing.
+
+PALSAR is read only from `JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH`. Nonpositive HH/HV DN
+are masked before gamma-naught conversion (`20 log10(DN) - 83`). Primary features
+are HH dB, HV dB, HH−HV dB and RFDI; RFDI uses squared DN (linear power). `angle`,
+`epoch`, derived acquisition date and `qa` are QC metadata and forbidden predictors.
+The authenticated QA audit follows the authoritative JAXA v2.4 product description:
+`qa=1` is ScanSAR land and `qa=255` is land, so both are valid. Classes 2/3/4 and
+50/100/150 remain excluded as layover, shadow or water. Earth Engine's catalog page
+omits the ScanSAR 1–4 classes even though they occur in the raw asset. Each exact-year
+collection contains one image and is read with `first()`; `mosaic()` is avoided because
+it discards the native 25 m default projection even for a one-image collection.
+
+The central 25 m pixel is frozen before target results. No textures, patches,
+timing predictors or nearest-year substitutions are permitted. An authenticated
+audit fixes `palsar_common_years`; all eight representations are then rerun on one
+ordered common sample with whole-block folds and the same tuning budget.
+
+The validity filter retained 109,830 of 124,303 source rows and 107,809 of 130,195
+target rows. The aggregate selection audit found only small AGBD shifts (source
+mean 117.13→117.88 Mg/ha; target 122.74→119.52) and small year/block distribution
+shifts, so the frozen sample was not rebalanced.
+
+GEDI L4A AGBD remains the response; GEDI L2A RH metrics are excluded as predictors.
+Zhao et al.'s IGARSS 2023 project is methodological inspiration only; its unlicensed
+repository code was not copied. References: [Earth Engine JAXA yearly mosaic](https://developers.google.com/earth-engine/datasets/catalog/JAXA_ALOS_PALSAR_YEARLY_SAR_EPOCH),
+[JAXA PALSAR-2 mosaic v2.4 product description](https://www.eorc.jaxa.jp/ALOS/en/dataset/pdf/DatasetDescription_PALSAR2_Mosaic_ver240.pdf),
+[Sentinel-1](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S1_GRD),
+[GEDI L4A](https://developers.google.com/earth-engine/datasets/catalog/LARSE_GEDI_GEDI04_A_002_MONTHLY),
+and [Zhao et al. 2023](https://doi.org/10.1109/IGARSS52108.2023.10282061).

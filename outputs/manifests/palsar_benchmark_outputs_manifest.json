@@ -1,0 +1,14 @@
+{
+  "status": "PALSAR_BENCHMARK_OUTPUTS_BUILT",
+  "legacy_results_overwritten": false,
+  "comparison_sha256": "d7426804e89b6f78ba8647b115a2c0867abb4a1cdc180bdb7f50d1c3e197e9fd",
+  "figures": [
+    "radar_representation_source_comparison.png",
+    "radar_zero_shot_comparison.png",
+    "radar_fewshot_label_efficiency.png",
+    "radar_biomass_range_sensitivity.png",
+    "radar_feature_importance.png",
+    "radar_domain_shift.png",
+    "final_workflow_v2.png"
+  ]
+}

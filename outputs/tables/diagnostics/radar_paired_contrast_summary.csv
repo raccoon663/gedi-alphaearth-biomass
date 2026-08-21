@@ -1,0 +1,7 @@
+contrast,folds,mean_delta_R2,mean_delta_RMSE,folds_favoring_first_R2,folds_favoring_first_RMSE
+alphaearth - palsar_l,5,0.2786058131016108,-19.832844453870475,5,5
+palsar_l - sentinel1_c,5,0.012832757469290319,-0.8125391597395151,5,5
+palsar_sentinel2 - sentinel1_sentinel2,5,-0.001836192148684157,0.1306840057118052,1,1
+sentinel1_c_palsar_l - palsar_l,5,0.050704560554814204,-3.263951280873678,5,5
+sentinel1_c_palsar_l - sentinel1_c,5,0.06353731802410452,-4.076490440613194,5,5
+sentinel1_palsar_sentinel2 - sentinel1_sentinel2,5,0.008656563038555831,-0.605910034430147,5,5

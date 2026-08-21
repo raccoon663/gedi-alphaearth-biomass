@@ -1,0 +1,34 @@
+{
+  "status": "PALSAR_AVAILABILITY_FROZEN",
+  "frozen_at": "2026-08-21T14:07:19.211837+00:00",
+  "dataset": "JAXA/ALOS/PALSAR/YEARLY/SAR_EPOCH",
+  "year_match": "exact",
+  "valid_qa_values": [
+    1,
+    255
+  ],
+  "qa_semantics_source": "JAXA PALSAR-2 ScanSAR/stripmap mosaic v2.4 product description",
+  "nearest_year_substitution": false,
+  "audited_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "palsar_common_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "source_manifest_sha256": "28d98c52976a5a8bc87cc6d0b0574aa09fc4735a335a20a439f04f71519df9a2",
+  "target_manifest_sha256": "e3548e95d71eed2365716fbb62c9382f7cc14ec06d9bebd7d9fe1845d8f84271",
+  "target_fold_manifest_sha256": "89db7de20e71178d8242a4854b90e8505cfac7692d2396f46c90bf73d04a321d",
+  "audit_csv_sha256": "99f7a8ae70a0742623c3341ef4460ec7f23d90e1b1d5e64fc212dfdaaaa2cdcb",
+  "audit_rows": 1208,
+  "private_sample_rows_committed": false
+}

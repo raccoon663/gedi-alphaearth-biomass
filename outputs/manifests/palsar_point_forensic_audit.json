@@ -1,0 +1,1125 @@
+{
+  "status": "PALSAR_POINT_FORENSIC_AUDIT_COMPLETE",
+  "created_at": "2026-08-21T13:35:41.914783+00:00",
+  "private_point_file_sha256": "f7f59f166d1aaf2a5d7caed92332417633530f7c1ece290a5fa2fc4b29e0a6ea",
+  "private_point_file_committed": false,
+  "private_rows": 356,
+  "coordinate_free_examples": [
+    {
+      "audit_domain": "source",
+      "audit_year": 2022,
+      "HH": 2303,
+      "HV": 736,
+      "angle": 36,
+      "epoch": 1639440000000,
+      "qa": 255
+    },
+    {
+      "audit_domain": "source",
+      "audit_year": 2022,
+      "HH": 4648,
+      "HV": 1426,
+      "angle": 29,
+      "epoch": 1642636800000,
+      "qa": 255
+    },
+    {
+      "audit_domain": "source",
+      "audit_year": 2022,
+      "HH": -9999,
+      "HV": -9999,
+      "angle": -9999,
+      "epoch": -9999,
+      "qa": -9999
+    },
+    {
+      "audit_domain": "target",
+      "audit_year": 2022,
+      "HH": 3909,
+      "HV": 1596,
+      "angle": 44,
+      "epoch": 1653350400000,
+      "qa": 255
+    },
+    {
+      "audit_domain": "target",
+      "audit_year": 2022,
+      "HH": 8873,
+      "HV": 3417,
+      "angle": 45,
+      "epoch": 1653350400000,
+      "qa": 255
+    },
+    {
+      "audit_domain": "target",
+      "audit_year": 2022,
+      "HH": 3058,
+      "HV": 1615,
+      "angle": 15,
+      "epoch": 1653350400000,
+      "qa": 255
+    },
+    {
+      "audit_domain": "source",
+      "audit_year": 2023,
+      "HH": 5922,
+      "HV": 4320,
+      "angle": 37,
+      "epoch": 1697500800000,
+      "qa": 1
+    },
+    {
+      "audit_domain": "source",
+      "audit_year": 2023,
+      "HH": 4558,
+      "HV": 1179,
+      "angle": 29,
+      "epoch": 1675296000000,
+      "qa": 255
+    },
+    {
+      "audit_domain": "source",
+      "audit_year": 2023,
+      "HH": -9999,
+      "HV": -9999,
+      "angle": -9999,
+      "epoch": -9999,
+      "qa": -9999
+    },
+    {
+      "audit_domain": "target",
+      "audit_year": 2023,
+      "HH": 5381,
+      "HV": 2030,
+      "angle": 60,
+      "epoch": 1698105600000,
+      "qa": 255
+    },
+    {
+      "audit_domain": "target",
+      "audit_year": 2023,
+      "HH": 5696,
+      "HV": 1785,
+      "angle": 37,
+      "epoch": 1694908800000,
+      "qa": 1
+    },
+    {
+      "audit_domain": "target",
+      "audit_year": 2023,
+      "HH": 6260,
+      "HV": 2959,
+      "angle": 55,
+      "epoch": 1698105600000,
+      "qa": 255
+    },
+    {
+      "audit_domain": "source",
+      "audit_year": 2024,
+      "HH": 7089,
+      "HV": 3180,
+      "angle": 34,
+      "epoch": 1702339200000,
+      "qa": 255
+    },
+    {
+      "audit_domain": "source",
+      "audit_year": 2024,
+      "HH": 7188,
+      "HV": 3539,
+      "angle": 44,
+      "epoch": 1722470400000,
+      "qa": 1
+    },
+    {
+      "audit_domain": "source",
+      "audit_year": 2024,
+      "HH": 3119,
+      "HV": 1556,
+      "angle": 44,
+      "epoch": 1722470400000,
+      "qa": 4
+    },
+    {
+      "audit_domain": "target",
+      "audit_year": 2024,
+      "HH": 3327,
+      "HV": 2189,
+      "angle": 54,
+      "epoch": 1728345600000,
+      "qa": 255
+    },
+    {
+      "audit_domain": "target",
+      "audit_year": 2024,
+      "HH": 2096,
+      "HV": 1914,
+      "angle": 37,
+      "epoch": 1728345600000,
+      "qa": 255
+    },
+    {
+      "audit_domain": "target",
+      "audit_year": 2024,
+      "HH": 5429,
+      "HV": 3796,
+      "angle": 58,
+      "epoch": 1728345600000,
+      "qa": 255
+    }
+  ],
+  "qa_frequency_by_stage": [
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "source",
+      "year": 2022,
+      "qa": -9999,
+      "n": 1
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "source",
+      "year": 2022,
+      "qa": 255,
+      "n": 7
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "source",
+      "year": 2023,
+      "qa": -9999,
+      "n": 5
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "source",
+      "year": 2023,
+      "qa": 1,
+      "n": 7
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "source",
+      "year": 2023,
+      "qa": 50,
+      "n": 1
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "source",
+      "year": 2023,
+      "qa": 255,
+      "n": 7
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "source",
+      "year": 2024,
+      "qa": 1,
+      "n": 4
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "source",
+      "year": 2024,
+      "qa": 4,
+      "n": 1
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "source",
+      "year": 2024,
+      "qa": 255,
+      "n": 3
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "target",
+      "year": 2022,
+      "qa": 100,
+      "n": 2
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "target",
+      "year": 2022,
+      "qa": 255,
+      "n": 6
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "target",
+      "year": 2023,
+      "qa": 1,
+      "n": 14
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "target",
+      "year": 2023,
+      "qa": 3,
+      "n": 1
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "target",
+      "year": 2023,
+      "qa": 100,
+      "n": 1
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "target",
+      "year": 2023,
+      "qa": 255,
+      "n": 4
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "target",
+      "year": 2024,
+      "qa": 100,
+      "n": 2
+    },
+    {
+      "stage": "A_raw_collection_first",
+      "domain": "target",
+      "year": 2024,
+      "qa": 255,
+      "n": 6
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "source",
+      "year": 2022,
+      "qa": -9999,
+      "n": 1
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "source",
+      "year": 2022,
+      "qa": 255,
+      "n": 7
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "source",
+      "year": 2023,
+      "qa": -9999,
+      "n": 5
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "source",
+      "year": 2023,
+      "qa": 1,
+      "n": 7
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "source",
+      "year": 2023,
+      "qa": 50,
+      "n": 1
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "source",
+      "year": 2023,
+      "qa": 255,
+      "n": 6
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "source",
+      "year": 2024,
+      "qa": 1,
+      "n": 5
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "source",
+      "year": 2024,
+      "qa": 255,
+      "n": 3
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "target",
+      "year": 2022,
+      "qa": 100,
+      "n": 2
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "target",
+      "year": 2022,
+      "qa": 255,
+      "n": 6
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "target",
+      "year": 2023,
+      "qa": 1,
+      "n": 13
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "target",
+      "year": 2023,
+      "qa": 2,
+      "n": 1
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "target",
+      "year": 2023,
+      "qa": 3,
+      "n": 1
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "target",
+      "year": 2023,
+      "qa": 100,
+      "n": 1
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "target",
+      "year": 2023,
+      "qa": 255,
+      "n": 4
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "target",
+      "year": 2024,
+      "qa": 100,
+      "n": 1
+    },
+    {
+      "stage": "B_collection_mosaic",
+      "domain": "target",
+      "year": 2024,
+      "qa": 255,
+      "n": 7
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "source",
+      "year": 2022,
+      "qa": -9999,
+      "n": 1
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "source",
+      "year": 2022,
+      "qa": 255,
+      "n": 7
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "source",
+      "year": 2023,
+      "qa": -9999,
+      "n": 5
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "source",
+      "year": 2023,
+      "qa": 1,
+      "n": 7
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "source",
+      "year": 2023,
+      "qa": 50,
+      "n": 1
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "source",
+      "year": 2023,
+      "qa": 255,
+      "n": 6
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "source",
+      "year": 2024,
+      "qa": 1,
+      "n": 5
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "source",
+      "year": 2024,
+      "qa": 255,
+      "n": 3
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "target",
+      "year": 2022,
+      "qa": 100,
+      "n": 2
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "target",
+      "year": 2022,
+      "qa": 255,
+      "n": 6
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "target",
+      "year": 2023,
+      "qa": 1,
+      "n": 13
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "target",
+      "year": 2023,
+      "qa": 2,
+      "n": 1
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "target",
+      "year": 2023,
+      "qa": 3,
+      "n": 1
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "target",
+      "year": 2023,
+      "qa": 100,
+      "n": 1
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "target",
+      "year": 2023,
+      "qa": 255,
+      "n": 4
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "target",
+      "year": 2024,
+      "qa": 100,
+      "n": 1
+    },
+    {
+      "stage": "C_select_bands",
+      "domain": "target",
+      "year": 2024,
+      "qa": 255,
+      "n": 7
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "source",
+      "year": 2022,
+      "qa": -9999,
+      "n": 1
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "source",
+      "year": 2022,
+      "qa": 255,
+      "n": 7
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "source",
+      "year": 2023,
+      "qa": -9999,
+      "n": 5
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "source",
+      "year": 2023,
+      "qa": 1,
+      "n": 7
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "source",
+      "year": 2023,
+      "qa": 50,
+      "n": 1
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "source",
+      "year": 2023,
+      "qa": 255,
+      "n": 6
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "source",
+      "year": 2024,
+      "qa": 1,
+      "n": 5
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "source",
+      "year": 2024,
+      "qa": 255,
+      "n": 3
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "target",
+      "year": 2022,
+      "qa": 100,
+      "n": 2
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "target",
+      "year": 2022,
+      "qa": 255,
+      "n": 6
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "target",
+      "year": 2023,
+      "qa": 1,
+      "n": 13
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "target",
+      "year": 2023,
+      "qa": 2,
+      "n": 1
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "target",
+      "year": 2023,
+      "qa": 3,
+      "n": 1
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "target",
+      "year": 2023,
+      "qa": 100,
+      "n": 1
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "target",
+      "year": 2023,
+      "qa": 255,
+      "n": 4
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "target",
+      "year": 2024,
+      "qa": 100,
+      "n": 1
+    },
+    {
+      "stage": "D_sampleRegions",
+      "domain": "target",
+      "year": 2024,
+      "qa": 255,
+      "n": 7
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "source",
+      "year": 2022,
+      "qa": -9999,
+      "n": 1
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "source",
+      "year": 2022,
+      "qa": 255,
+      "n": 7
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "source",
+      "year": 2023,
+      "qa": -9999,
+      "n": 5
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "source",
+      "year": 2023,
+      "qa": 1,
+      "n": 7
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "source",
+      "year": 2023,
+      "qa": 50,
+      "n": 1
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "source",
+      "year": 2023,
+      "qa": 255,
+      "n": 6
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "source",
+      "year": 2024,
+      "qa": 1,
+      "n": 5
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "source",
+      "year": 2024,
+      "qa": 255,
+      "n": 3
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "target",
+      "year": 2022,
+      "qa": 100,
+      "n": 2
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "target",
+      "year": 2022,
+      "qa": 255,
+      "n": 6
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "target",
+      "year": 2023,
+      "qa": 1,
+      "n": 13
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "target",
+      "year": 2023,
+      "qa": 2,
+      "n": 1
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "target",
+      "year": 2023,
+      "qa": 3,
+      "n": 1
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "target",
+      "year": 2023,
+      "qa": 100,
+      "n": 1
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "target",
+      "year": 2023,
+      "qa": 255,
+      "n": 4
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "target",
+      "year": 2024,
+      "qa": 100,
+      "n": 1
+    },
+    {
+      "stage": "E_pandas_dataframe",
+      "domain": "target",
+      "year": 2024,
+      "qa": 255,
+      "n": 7
+    }
+  ],
+  "stage_checks": {
+    "2022": {
+      "collection_size": 1,
+      "stage_comparison_to_raw": {
+        "A_raw_collection_first": {
+          "raw_n": 16,
+          "candidate_n": 16,
+          "common_n": 16,
+          "raw_only_n": 0,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 0,
+            "HV": 0,
+            "angle": 0,
+            "epoch": 0,
+            "qa": 0
+          },
+          "identical": true
+        },
+        "B_collection_mosaic": {
+          "raw_n": 16,
+          "candidate_n": 16,
+          "common_n": 16,
+          "raw_only_n": 0,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 10,
+            "HV": 10,
+            "angle": 9,
+            "epoch": 0,
+            "qa": 0
+          },
+          "identical": false
+        },
+        "C_select_bands": {
+          "raw_n": 16,
+          "candidate_n": 16,
+          "common_n": 16,
+          "raw_only_n": 0,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 10,
+            "HV": 10,
+            "angle": 9,
+            "epoch": 0,
+            "qa": 0
+          },
+          "identical": false
+        },
+        "D_sampleRegions": {
+          "raw_n": 16,
+          "candidate_n": 16,
+          "common_n": 16,
+          "raw_only_n": 0,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 10,
+            "HV": 10,
+            "angle": 9,
+            "epoch": 0,
+            "qa": 0
+          },
+          "identical": false
+        },
+        "E_pandas_dataframe": {
+          "raw_n": 16,
+          "candidate_n": 16,
+          "common_n": 16,
+          "raw_only_n": 0,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 10,
+            "HV": 10,
+            "angle": 9,
+            "epoch": 0,
+            "qa": 0
+          },
+          "identical": false
+        }
+      },
+      "first_projection": {
+        "type": "Projection",
+        "crs": "EPSG:4326",
+        "transform": [
+          0.00022222222222222223,
+          0,
+          -180,
+          0,
+          -0.00022222222222222223,
+          84
+        ]
+      },
+      "mosaic_projection": {
+        "type": "Projection",
+        "crs": "EPSG:4326",
+        "transform": [
+          1,
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    "2023": {
+      "collection_size": 1,
+      "stage_comparison_to_raw": {
+        "A_raw_collection_first": {
+          "raw_n": 40,
+          "candidate_n": 40,
+          "common_n": 40,
+          "raw_only_n": 0,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 0,
+            "HV": 0,
+            "angle": 0,
+            "epoch": 0,
+            "qa": 0
+          },
+          "identical": true
+        },
+        "B_collection_mosaic": {
+          "raw_n": 40,
+          "candidate_n": 39,
+          "common_n": 39,
+          "raw_only_n": 1,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 24,
+            "HV": 24,
+            "angle": 18,
+            "epoch": 0,
+            "qa": 1
+          },
+          "identical": false
+        },
+        "C_select_bands": {
+          "raw_n": 40,
+          "candidate_n": 39,
+          "common_n": 39,
+          "raw_only_n": 1,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 24,
+            "HV": 24,
+            "angle": 18,
+            "epoch": 0,
+            "qa": 1
+          },
+          "identical": false
+        },
+        "D_sampleRegions": {
+          "raw_n": 40,
+          "candidate_n": 39,
+          "common_n": 39,
+          "raw_only_n": 1,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 24,
+            "HV": 24,
+            "angle": 18,
+            "epoch": 0,
+            "qa": 1
+          },
+          "identical": false
+        },
+        "E_pandas_dataframe": {
+          "raw_n": 40,
+          "candidate_n": 39,
+          "common_n": 39,
+          "raw_only_n": 1,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 24,
+            "HV": 24,
+            "angle": 18,
+            "epoch": 0,
+            "qa": 1
+          },
+          "identical": false
+        }
+      },
+      "first_projection": {
+        "type": "Projection",
+        "crs": "EPSG:4326",
+        "transform": [
+          0.00022222222222222223,
+          0,
+          -180,
+          0,
+          -0.00022222222222222223,
+          84
+        ]
+      },
+      "mosaic_projection": {
+        "type": "Projection",
+        "crs": "EPSG:4326",
+        "transform": [
+          1,
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    "2024": {
+      "collection_size": 1,
+      "stage_comparison_to_raw": {
+        "A_raw_collection_first": {
+          "raw_n": 16,
+          "candidate_n": 16,
+          "common_n": 16,
+          "raw_only_n": 0,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 0,
+            "HV": 0,
+            "angle": 0,
+            "epoch": 0,
+            "qa": 0
+          },
+          "identical": true
+        },
+        "B_collection_mosaic": {
+          "raw_n": 16,
+          "candidate_n": 16,
+          "common_n": 16,
+          "raw_only_n": 0,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 14,
+            "HV": 14,
+            "angle": 12,
+            "epoch": 0,
+            "qa": 2
+          },
+          "identical": false
+        },
+        "C_select_bands": {
+          "raw_n": 16,
+          "candidate_n": 16,
+          "common_n": 16,
+          "raw_only_n": 0,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 14,
+            "HV": 14,
+            "angle": 12,
+            "epoch": 0,
+            "qa": 2
+          },
+          "identical": false
+        },
+        "D_sampleRegions": {
+          "raw_n": 16,
+          "candidate_n": 16,
+          "common_n": 16,
+          "raw_only_n": 0,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 14,
+            "HV": 14,
+            "angle": 12,
+            "epoch": 0,
+            "qa": 2
+          },
+          "identical": false
+        },
+        "E_pandas_dataframe": {
+          "raw_n": 16,
+          "candidate_n": 16,
+          "common_n": 16,
+          "raw_only_n": 0,
+          "candidate_only_n": 0,
+          "band_mismatch_n_on_common_points": {
+            "HH": 14,
+            "HV": 14,
+            "angle": 12,
+            "epoch": 0,
+            "qa": 2
+          },
+          "identical": false
+        }
+      },
+      "first_projection": {
+        "type": "Projection",
+        "crs": "EPSG:4326",
+        "transform": [
+          0.00022222222222222223,
+          0,
+          -180,
+          0,
+          -0.00022222222222222223,
+          84
+        ]
+      },
+      "mosaic_projection": {
+        "type": "Projection",
+        "crs": "EPSG:4326",
+        "transform": [
+          1,
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    }
+  },
+  "property_collision_test": {
+    "input_dummy_properties": {
+      "qa": 7,
+      "HH": -101,
+      "HV": -102,
+      "angle": -103,
+      "epoch": -104
+    },
+    "safe_properties_argument": [
+      "audit_id"
+    ],
+    "colliding_properties_argument": [
+      "audit_id",
+      "HH",
+      "HV",
+      "angle",
+      "epoch",
+      "qa"
+    ],
+    "safe_result": {
+      "HH": 5922,
+      "HV": 4320,
+      "angle": 37,
+      "audit_id": "collision_control",
+      "epoch": 1697500800000,
+      "qa": 1
+    },
+    "colliding_result": {
+      "HH": -101,
+      "HV": -102,
+      "angle": -103,
+      "audit_id": "collision_control",
+      "epoch": -104,
+      "qa": 7
+    },
+    "safe_result_uses_image_qa": true,
+    "colliding_result_uses_image_qa": false,
+    "current_pipeline_properties_collide": false
+  },
+  "input_manifest_band_name_collisions": {
+    "source": [],
+    "target": []
+  }
+}
